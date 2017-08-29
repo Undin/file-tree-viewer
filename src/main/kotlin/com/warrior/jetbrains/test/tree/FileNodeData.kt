@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test
+package com.warrior.jetbrains.test.tree
 
 import java.nio.file.Path
 

@@ -1,5 +1,6 @@
 package com.warrior.jetbrains.test
 
+import com.warrior.jetbrains.test.ui.FileViewerPanel
 import java.nio.file.Paths
 import javax.swing.JFrame
 import javax.swing.SwingUtilities
