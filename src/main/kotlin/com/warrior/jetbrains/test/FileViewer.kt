@@ -1,7 +1,7 @@
 package com.warrior.jetbrains.test
 
 import com.warrior.jetbrains.test.ui.FileViewerPanel
-import java.nio.file.Paths
+import java.nio.file.FileSystems
 import javax.swing.JFrame
 import javax.swing.SwingUtilities
 
@@ -16,8 +16,7 @@ object FileViewer {
         val frame = JFrame("FileViewer")
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
 
-        val homeDir = System.getProperty("user.home")
-        frame.add(FileViewerPanel(Paths.get(homeDir)))
+        frame.add(FileViewerPanel(FileSystems.getDefault().rootDirectories))
 
         frame.pack()
         frame.isVisible = true

@@ -12,8 +12,13 @@ import kotlin.collections.HashMap
 // TODO: load children asynchronously
 class FileTreeNode(data: FileNodeData) : DefaultMutableTreeNode(data) {
 
-    private val childFiles: Lazy<List<Path>> = lazy { Files.newDirectoryStream(data.path).toList() }
+    private var childPaths: List<Path> = emptyList()
     private val childNodes: MutableMap<Path, FileTreeNode> = HashMap()
+
+    fun updateChildren(paths: List<Path>) {
+        childPaths = paths
+        childNodes.clear()
+    }
 
     override fun getUserObject(): FileNodeData = super.getUserObject() as FileNodeData
     override fun setUserObject(userObject: Any?) {
@@ -23,7 +28,7 @@ class FileTreeNode(data: FileNodeData) : DefaultMutableTreeNode(data) {
 
     override fun getAllowsChildren(): Boolean = Files.isDirectory(getUserObject().path)
 
-    override fun children(): Enumeration<*> = childFiles.value.asSequence()
+    override fun children(): Enumeration<*> = childPaths.asSequence()
             .map { getChild(it) }
             .iterator()
             .asEnumeration()
@@ -40,10 +45,10 @@ class FileTreeNode(data: FileNodeData) : DefaultMutableTreeNode(data) {
         throw UnsupportedOperationException()
     }
 
-    override fun getChildCount(): Int = childFiles.value.size
+    override fun getChildCount(): Int = childPaths.size
 
     override fun getChildAt(index: Int): TreeNode {
-        val path = childFiles.value[index]
+        val path = childPaths[index]
         return getChild(path)
     }
 
@@ -51,7 +56,7 @@ class FileTreeNode(data: FileNodeData) : DefaultMutableTreeNode(data) {
         if (aChild == null) throw IllegalArgumentException("argument is null")
         if (aChild !is FileTreeNode || !isNodeChild(aChild)) return -1
         val path = aChild.getUserObject().path
-        return childFiles.value.indexOf(path)
+        return childPaths.indexOf(path)
     }
 
     private fun getChild(path: Path): FileTreeNode = childNodes.getOrPut(path) {

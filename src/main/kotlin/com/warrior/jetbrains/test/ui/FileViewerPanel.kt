@@ -1,6 +1,7 @@
 package com.warrior.jetbrains.test.ui
 
 import com.warrior.jetbrains.test.presenter.Presenter
+import com.warrior.jetbrains.test.presenter.PresenterImpl
 import com.warrior.jetbrains.test.tree.FileNodeData
 import com.warrior.jetbrains.test.tree.FileTreeNode
 import com.warrior.jetbrains.test.view.View
@@ -9,26 +10,32 @@ import org.apache.logging.log4j.Logger
 import java.awt.GridLayout
 import java.nio.file.Path
 import javax.swing.*
-import javax.swing.tree.DefaultTreeModel
-import javax.swing.tree.TreeSelectionModel
+import javax.swing.event.*
+import javax.swing.tree.*
 
-class FileViewerPanel(path: Path) : JPanel(GridLayout(1, 1)), View {
+class FileViewerPanel(
+        rootPaths: Iterable<Path>
+) : JPanel(GridLayout(1, 1)),
+    View,
+    TreeSelectionListener,
+    TreeWillExpandListener {
 
     private val logger: Logger = LogManager.getLogger(javaClass)
 
-    private val presenter: Presenter = Presenter(this)
+    private val presenter: Presenter = PresenterImpl(this)
 
-    private val root: FileTreeNode = node(path)
-    private val tree = JTree(DefaultTreeModel(root, true))
+    private val root: DefaultMutableTreeNode
+    private val tree: JTree
     private val content: ContentPanel = ContentPanel()
 
     init {
-        tree.selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
-        tree.addTreeSelectionListener { e ->
-            val selectedNode = e.newLeadSelectionPath.lastPathComponent as? FileTreeNode
-                    ?: return@addTreeSelectionListener
-            presenter.onItemSelected(selectedNode.userObject.path)
+        root = DefaultMutableTreeNode()
+        for (path in rootPaths) {
+            root.add(node(path))
         }
+
+        tree = createFileTree(DefaultTreeModel(root, true))
+
         val contentScrollPane = JScrollPane(content).apply {
             verticalScrollBar.unitIncrement = 16
         }
@@ -40,6 +47,30 @@ class FileViewerPanel(path: Path) : JPanel(GridLayout(1, 1)), View {
     override fun setContentData(data: List<Path>) {
         logger.debug("setContentData: " + data)
         content.setContent(data)
+    }
+
+    override fun valueChanged(e: TreeSelectionEvent) {
+        val node = e.newLeadSelectionPath.lastPathComponent as? FileTreeNode ?: return
+        presenter.onNodeSelected(node)
+    }
+
+    override fun treeWillExpand(event: TreeExpansionEvent) {
+        val node = event.path.lastPathComponent as? FileTreeNode ?: return
+        presenter.onPreNodeExpand(node)
+    }
+
+    override fun treeWillCollapse(event: TreeExpansionEvent) {
+        val node = event.path.lastPathComponent as? FileTreeNode ?: return
+        presenter.onPreNodeCollapse(node)
+    }
+
+    private fun createFileTree(model: TreeModel): JTree {
+        return JTree(model).apply {
+            selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
+            isRootVisible = false
+            addTreeSelectionListener(this@FileViewerPanel)
+            addTreeWillExpandListener(this@FileViewerPanel)
+        }
     }
 
     private fun node(path: Path): FileTreeNode = FileTreeNode(FileNodeData(path))
