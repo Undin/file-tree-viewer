@@ -9,11 +9,11 @@ class PresenterImpl(private val view: View): Presenter {
     private val model: Model = Model(this)
 
     override fun onNodeSelected(node: FileTreeNode) {
-        view.setContentData(model.getChildren(node.userObject.path))
+        view.setContentData(model.getChildren(node.userObject.file))
     }
 
     override fun onPreNodeExpand(node: FileTreeNode) {
-        node.updateChildren(model.getChildren(node.userObject.path))
+        node.updateChildren(model.getChildren(node.userObject.file))
     }
 
     override fun onPreNodeCollapse(node: FileTreeNode) {

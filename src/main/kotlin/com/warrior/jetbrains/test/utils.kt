@@ -1,12 +1,21 @@
 package com.warrior.jetbrains.test
 
-import java.nio.file.FileSystems
-import java.nio.file.Path
+import org.apache.commons.vfs2.FileObject
+import java.io.IOException
 
-val Path.isZip: Boolean get() {
-    if (fileSystem != FileSystems.getDefault()) return false
-    val stringPath = toString()
-    return stringPath.endsWith(".zip") || stringPath.endsWith(".jar")
+val FileObject.isZip: Boolean get() {
+    val extension = name.extension
+    return extension == "zip" || extension == "jar"
 }
 
-val Path.name: String get() = fileName?.toString()?.removeSuffix("/") ?: toString()
+val FileObject.isDirectory get(): Boolean = try {
+    isFolder
+} catch (e: IOException) {
+    false
+}
+
+val FileObject.childrenSafe get(): Array<FileObject> = try {
+    children
+} catch (e: IOException) {
+    emptyArray()
+}

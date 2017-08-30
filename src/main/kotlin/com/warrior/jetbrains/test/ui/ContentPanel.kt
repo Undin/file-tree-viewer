@@ -1,10 +1,13 @@
 package com.warrior.jetbrains.test.ui
 
-import com.warrior.jetbrains.test.name
-import java.awt.*
-import java.nio.file.Files
-import java.nio.file.Path
-import javax.swing.*
+import com.warrior.jetbrains.test.isDirectory
+import org.apache.commons.vfs2.FileObject
+import java.awt.Color
+import java.awt.Dimension
+import java.awt.GridLayout
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.SwingConstants
 
 class ContentPanel : JPanel(GridLayout(0, 5, 4, 4)) {
 
@@ -12,11 +15,11 @@ class ContentPanel : JPanel(GridLayout(0, 5, 4, 4)) {
         background = Color.WHITE
     }
 
-    fun setContent(content: List<Path>) {
+    fun setContent(content: List<FileObject>) {
         removeAll()
-        for (path in content) {
-            val icon = if (Files.isDirectory(path)) Icons.FOLDER_ICON else Icons.FILE_ICON
-            val label = JLabel(path.name, icon, SwingConstants.CENTER)
+        for (file in content) {
+            val icon = if (file.isDirectory) Icons.FOLDER_ICON else Icons.FILE_ICON
+            val label = JLabel(file.name.baseName, icon, SwingConstants.CENTER)
             label.verticalTextPosition = SwingConstants.BOTTOM
             label.horizontalTextPosition = SwingConstants.CENTER
             label.preferredSize = Dimension(ITEM_WIDTH, ITEM_HEIGHT)

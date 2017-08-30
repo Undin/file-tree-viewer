@@ -1,8 +1,8 @@
 package com.warrior.jetbrains.test.tree
 
+import com.warrior.jetbrains.test.isDirectory
 import com.warrior.jetbrains.test.isZip
-import java.nio.file.Files
-import java.nio.file.Path
+import org.apache.commons.vfs2.FileObject
 import java.util.*
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.MutableTreeNode
@@ -13,10 +13,10 @@ import kotlin.collections.HashMap
 // TODO: load children asynchronously
 class FileTreeNode(data: FileNodeData) : DefaultMutableTreeNode(data) {
 
-    private var childPaths: List<Path> = emptyList()
-    private val childNodes: MutableMap<Path, FileTreeNode> = HashMap()
+    private var childPaths: List<FileObject> = emptyList()
+    private val childNodes: MutableMap<FileObject, FileTreeNode> = HashMap()
 
-    fun updateChildren(paths: List<Path>) {
+    fun updateChildren(paths: List<FileObject>) {
         childPaths = paths
         childNodes.clear()
     }
@@ -28,8 +28,8 @@ class FileTreeNode(data: FileNodeData) : DefaultMutableTreeNode(data) {
     }
 
     override fun getAllowsChildren(): Boolean {
-        val path = getUserObject().path
-        return Files.isDirectory(path) || path.isZip
+        val file = getUserObject().file
+        return file.isDirectory || file.isZip
     }
 
     override fun children(): Enumeration<*> = childPaths.asSequence()
@@ -59,12 +59,12 @@ class FileTreeNode(data: FileNodeData) : DefaultMutableTreeNode(data) {
     override fun getIndex(aChild: TreeNode?): Int {
         if (aChild == null) throw IllegalArgumentException("argument is null")
         if (aChild !is FileTreeNode || !isNodeChild(aChild)) return -1
-        val path = aChild.getUserObject().path
-        return childPaths.indexOf(path)
+        val file = aChild.getUserObject().file
+        return childPaths.indexOf(file)
     }
 
-    private fun getChild(path: Path): FileTreeNode = childNodes.getOrPut(path) {
-        FileTreeNode(FileNodeData(path)).apply { parent = this }
+    private fun getChild(file: FileObject): FileTreeNode = childNodes.getOrPut(file) {
+        FileTreeNode(FileNodeData(file)).apply { parent = this }
     }
 }
 

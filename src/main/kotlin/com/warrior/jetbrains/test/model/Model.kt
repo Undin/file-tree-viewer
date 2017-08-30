@@ -1,44 +1,42 @@
 package com.warrior.jetbrains.test.model
 
+import com.warrior.jetbrains.test.isDirectory
 import com.warrior.jetbrains.test.isZip
 import com.warrior.jetbrains.test.presenter.Presenter
+import org.apache.commons.vfs2.FileObject
+import org.apache.commons.vfs2.VFS
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.IOException
-import java.nio.file.FileSystems
-import java.nio.file.Files
-import java.nio.file.Path
 
 class Model(private val presenter: Presenter) {
 
     private val logger: Logger = LogManager.getLogger(javaClass)
 
-    fun getChildren(path: Path): List<Path> {
-        logger.debug("getChildren. path: ${path.toUri()}")
-        if (path.isZip) {
-            val zipChildren = getZipRootChildren(path)
+    fun getChildren(file: FileObject): List<FileObject> {
+        logger.debug("getChildren. path: $file")
+        if (file.isZip) {
+            val zipChildren = getArchiveChildren(file)
             if (zipChildren != null) {
                 return zipChildren
             }
         }
 
-        if (!Files.isDirectory(path)) return emptyList()
+        if (!file.isDirectory) return emptyList()
         return try {
-            return Files.newDirectoryStream(path).use { it.filter { !Files.isHidden(it) }.toList() }
+            file.children.filter { !it.isHidden }
         } catch (e: IOException) {
-            logger.error("Failed to get children of $path", e)
+            logger.error("Failed to get children of $file", e)
             emptyList()
         }
     }
 
-    private fun getZipRootChildren(zipPath: Path): List<Path>? {
-        val zipfs = try {
-            FileSystems.newFileSystem(zipPath, null)
-        } catch (e: IOException) {
-            logger.error("Failed to create new file system for $zipPath")
-            return null
+    private fun getArchiveChildren(zipFile: FileObject): List<FileObject>? {
+        val extension = zipFile.name.extension
+        check(extension == "zip" || extension == "jar") {
+            "Archive file must be zip or jar"
         }
-        val roots = zipfs.rootDirectories.toList()
-        return if (roots.size == 1) getChildren(roots[0]) else roots
+        val archiveFile = VFS.getManager().resolveFile("$extension:$zipFile")
+        return getChildren(archiveFile)
     }
 }

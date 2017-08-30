@@ -5,16 +5,16 @@ import com.warrior.jetbrains.test.presenter.PresenterImpl
 import com.warrior.jetbrains.test.tree.FileNodeData
 import com.warrior.jetbrains.test.tree.FileTreeNode
 import com.warrior.jetbrains.test.view.View
+import org.apache.commons.vfs2.FileObject
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.awt.GridLayout
-import java.nio.file.Path
 import javax.swing.*
 import javax.swing.event.*
 import javax.swing.tree.*
 
 class FileViewerPanel(
-        rootPaths: Iterable<Path>
+        rootPaths: List<FileObject>
 ) : JPanel(GridLayout(1, 1)),
     View,
     TreeSelectionListener,
@@ -47,7 +47,7 @@ class FileViewerPanel(
         add(splitView)
     }
 
-    override fun setContentData(data: List<Path>) {
+    override fun setContentData(data: List<FileObject>) {
         logger.debug("setContentData: " + data)
         content.setContent(data)
     }
@@ -76,5 +76,5 @@ class FileViewerPanel(
         }
     }
 
-    private fun node(path: Path): FileTreeNode = FileTreeNode(FileNodeData(path))
+    private fun node(file: FileObject): FileTreeNode = FileTreeNode(FileNodeData(file))
 }

@@ -27,6 +27,7 @@ shadowJar {
 dependencies {
     compile 'org.jetbrains.kotlin:kotlin-stdlib-jre8:' + kotlin_version
     compile 'org.apache.logging.log4j:log4j-core:2.8.2'
+    compile 'org.apache.commons:commons-vfs2:2.1'
 }
 
 compileKotlin {
