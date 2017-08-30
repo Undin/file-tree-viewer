@@ -1,37 +1,21 @@
 package com.warrior.jetbrains.test
 
-import com.warrior.jetbrains.test.ui.FileViewerPanel
-import com.warrior.jetbrains.test.ui.INITIAL_HEIGHT
-import com.warrior.jetbrains.test.ui.INITIAL_WIDTH
-import org.apache.commons.vfs2.FileObject
-import org.apache.commons.vfs2.VFS
-import java.awt.Dimension
-import java.nio.file.FileSystems
-import javax.swing.JFrame
+import com.warrior.jetbrains.test.ui.FileViewerFrame
 import javax.swing.SwingUtilities
+import javax.swing.UIManager
 
 object FileViewer {
 
     @JvmStatic
     fun main(args: Array<String>) {
+        // TODO: find out behaviour on not mac os
+        System.setProperty("apple.laf.useScreenMenuBar", "true")
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
         SwingUtilities.invokeLater { createUI() }
     }
 
     private fun createUI() {
-        val frame = JFrame("FileViewer")
-        frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-
-        frame.add(FileViewerPanel(getLocalRoots()))
-        frame.preferredSize = Dimension(INITIAL_WIDTH, INITIAL_HEIGHT)
-
-        frame.pack()
+        val frame = FileViewerFrame()
         frame.isVisible = true
-    }
-
-    private fun getLocalRoots(): List<FileObject> {
-        val fileSystemManager = VFS.getManager()
-        return FileSystems.getDefault()
-                .rootDirectories
-                .map { fileSystemManager.resolveFile(it.toUri()) }
     }
 }

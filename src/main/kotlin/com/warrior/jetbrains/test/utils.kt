@@ -11,11 +11,6 @@ val FileObject.isZip: Boolean get() {
 val FileObject.isDirectory get(): Boolean = try {
     isFolder
 } catch (e: IOException) {
+    e.printStackTrace()
     false
-}
-
-val FileObject.childrenSafe get(): Array<FileObject> = try {
-    children
-} catch (e: IOException) {
-    emptyArray()
 }

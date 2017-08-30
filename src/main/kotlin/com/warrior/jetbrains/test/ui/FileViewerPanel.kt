@@ -1,41 +1,26 @@
 package com.warrior.jetbrains.test.ui
 
 import com.warrior.jetbrains.test.presenter.Presenter
-import com.warrior.jetbrains.test.presenter.PresenterImpl
 import com.warrior.jetbrains.test.tree.FileNodeData
 import com.warrior.jetbrains.test.tree.FileTreeNode
-import com.warrior.jetbrains.test.view.View
 import org.apache.commons.vfs2.FileObject
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 import java.awt.GridLayout
 import javax.swing.*
 import javax.swing.event.*
 import javax.swing.tree.*
 
 class FileViewerPanel(
-        rootPaths: List<FileObject>
+        private val presenter: Presenter
 ) : JPanel(GridLayout(1, 1)),
-    View,
     TreeSelectionListener,
     TreeWillExpandListener {
 
-    private val logger: Logger = LogManager.getLogger(javaClass)
-
-    private val presenter: Presenter = PresenterImpl(this)
-
-    private val root: DefaultMutableTreeNode
-    private val tree: JTree
+    private val treeRoot: DefaultMutableTreeNode = DefaultMutableTreeNode()
+    private val model: DefaultTreeModel = DefaultTreeModel(treeRoot, true)
+    private val tree: JTree = createFileTree(model)
     private val content: ContentPanel = ContentPanel()
 
     init {
-        root = DefaultMutableTreeNode()
-        for (path in rootPaths) {
-            root.add(node(path))
-        }
-
-        tree = createFileTree(DefaultTreeModel(root, true))
-
         val contentScrollPane = JScrollPane(content).apply {
             verticalScrollBar.unitIncrement = 16
         }
@@ -47,8 +32,12 @@ class FileViewerPanel(
         add(splitView)
     }
 
-    override fun setContentData(data: List<FileObject>) {
-        logger.debug("setContentData: " + data)
+    fun addRoot(root: FileObject) {
+        val count = treeRoot.childCount
+        model.insertNodeInto(node(root), treeRoot, count)
+    }
+
+    fun setContentData(data: List<FileObject>) {
         content.setContent(data)
     }
 
