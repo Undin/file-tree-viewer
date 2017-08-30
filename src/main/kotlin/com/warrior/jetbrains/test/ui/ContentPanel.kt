@@ -1,5 +1,6 @@
 package com.warrior.jetbrains.test.ui
 
+import com.warrior.jetbrains.test.name
 import java.awt.*
 import java.nio.file.Files
 import java.nio.file.Path
@@ -15,7 +16,7 @@ class ContentPanel : JPanel(GridLayout(0, 5, 4, 4)) {
         removeAll()
         for (path in content) {
             val icon = if (Files.isDirectory(path)) Icons.FOLDER_ICON else Icons.FILE_ICON
-            val label = JLabel(path.fileName.toString(), icon, SwingConstants.CENTER)
+            val label = JLabel(path.name, icon, SwingConstants.CENTER)
             label.verticalTextPosition = SwingConstants.BOTTOM
             label.horizontalTextPosition = SwingConstants.CENTER
             label.preferredSize = Dimension(ITEM_WIDTH, ITEM_HEIGHT)

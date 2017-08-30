@@ -1,5 +1,6 @@
 package com.warrior.jetbrains.test.tree
 
+import com.warrior.jetbrains.test.isZip
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
@@ -26,7 +27,10 @@ class FileTreeNode(data: FileNodeData) : DefaultMutableTreeNode(data) {
         super.setUserObject(userObject)
     }
 
-    override fun getAllowsChildren(): Boolean = Files.isDirectory(getUserObject().path)
+    override fun getAllowsChildren(): Boolean {
+        val path = getUserObject().path
+        return Files.isDirectory(path) || path.isZip
+    }
 
     override fun children(): Enumeration<*> = childPaths.asSequence()
             .map { getChild(it) }
