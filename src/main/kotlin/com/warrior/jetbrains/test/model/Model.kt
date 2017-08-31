@@ -15,14 +15,19 @@ class Model(private val presenter: Presenter) {
 
     private val logger: Logger = LogManager.getLogger(javaClass)
 
-    fun getLocalRoots(): List<FileObject> {
+    fun getLocalRoots(): List<NodeData> {
         logger.debug("getLocalRoots")
         return FileSystems.getDefault()
                 .rootDirectories
-                .mapNotNull { path -> resolveFile(path.toUri()) }
+                .mapNotNull { path ->
+                    val file = resolveFile(path.toUri()) ?: return@mapNotNull null
+                    val baseName = file.name.baseName
+                    val name = if (baseName.isNotEmpty()) baseName else path.toString()
+                    NodeData(file, name)
+                }
     }
 
-    fun getChildren(file: FileObject): List<FileObject> {
+    fun getChildren(file: FileObject): List<NodeData> {
         logger.debug("getChildren. path: $file")
         if (file.isZip) {
             val zipChildren = getArchiveChildren(file)
@@ -33,14 +38,14 @@ class Model(private val presenter: Presenter) {
 
         if (!file.isDirectory) return emptyList()
         return try {
-            file.children.filter { !it.isHidden }
+            file.children.filter { !it.isHidden }.map { NodeData(it, it.name.baseName) }
         } catch (e: IOException) {
             logger.error("Failed to get children of $file", e)
             emptyList()
         }
     }
 
-    private fun getArchiveChildren(zipFile: FileObject): List<FileObject>? {
+    private fun getArchiveChildren(zipFile: FileObject): List<NodeData>? {
         val extension = zipFile.name.extension
         check(extension == "zip" || extension == "jar") {
             "Archive file must be zip or jar"
@@ -49,10 +54,11 @@ class Model(private val presenter: Presenter) {
         return getChildren(archiveFile)
     }
 
-    fun createFtpServerRoot(host: String, username: String?, password: CharArray?): FileObject? {
+    fun createFtpServerRoot(host: String, username: String?, password: CharArray?): NodeData? {
         logger.debug("createFtpServerRoot. host: $host, username: $username, password: $password")
         val uri = createFtpUri(host, username, password) ?: return null
-        return resolveFile(uri)
+        val file = resolveFile(uri) ?: return null
+        return NodeData(file, host)
     }
 
     private fun resolveFile(uri: URI): FileObject? {

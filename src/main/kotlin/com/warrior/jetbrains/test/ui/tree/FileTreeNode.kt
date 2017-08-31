@@ -1,29 +1,27 @@
-package com.warrior.jetbrains.test.tree
+package com.warrior.jetbrains.test.ui.tree
 
 import com.warrior.jetbrains.test.isDirectory
 import com.warrior.jetbrains.test.isZip
-import org.apache.commons.vfs2.FileObject
+import com.warrior.jetbrains.test.model.NodeData
 import java.util.*
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.MutableTreeNode
 import javax.swing.tree.TreeNode
 import kotlin.collections.HashMap
 
-// TODO: remove unused children to prevent unnecessary memory using
-// TODO: load children asynchronously
-class FileTreeNode(data: FileNodeData) : DefaultMutableTreeNode(data) {
+class FileTreeNode(data: NodeData) : DefaultMutableTreeNode(data) {
 
-    private var childPaths: List<FileObject> = emptyList()
-    private val childNodes: MutableMap<FileObject, FileTreeNode> = HashMap()
+    private var childPaths: List<NodeData> = emptyList()
+    private val childNodes: MutableMap<NodeData, FileTreeNode> = HashMap()
 
-    fun updateChildren(paths: List<FileObject>) {
+    fun updateChildren(paths: List<NodeData>) {
         childPaths = paths
         childNodes.clear()
     }
 
-    override fun getUserObject(): FileNodeData = super.getUserObject() as FileNodeData
+    override fun getUserObject(): NodeData = super.getUserObject() as NodeData
     override fun setUserObject(userObject: Any?) {
-        if (userObject !is FileNodeData?) error("userObject must be `FileNodeData`")
+        if (userObject !is NodeData?) error("userObject must be `NodeData`")
         super.setUserObject(userObject)
     }
 
@@ -59,12 +57,12 @@ class FileTreeNode(data: FileNodeData) : DefaultMutableTreeNode(data) {
     override fun getIndex(aChild: TreeNode?): Int {
         if (aChild == null) throw IllegalArgumentException("argument is null")
         if (aChild !is FileTreeNode || !isNodeChild(aChild)) return -1
-        val file = aChild.getUserObject().file
-        return childPaths.indexOf(file)
+        val data = aChild.getUserObject()
+        return childPaths.indexOf(data)
     }
 
-    private fun getChild(file: FileObject): FileTreeNode = childNodes.getOrPut(file) {
-        FileTreeNode(FileNodeData(file)).apply { parent = this }
+    private fun getChild(data: NodeData): FileTreeNode = childNodes.getOrPut(data) {
+        FileTreeNode(data).apply { parent = this }
     }
 }
 

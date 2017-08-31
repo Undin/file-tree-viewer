@@ -1,6 +1,6 @@
 package com.warrior.jetbrains.test.presenter
 
-import com.warrior.jetbrains.test.tree.FileTreeNode
+import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 
 interface Presenter {
     fun onStart()

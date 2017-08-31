@@ -1,9 +1,9 @@
 package com.warrior.jetbrains.test.ui
 
+import com.warrior.jetbrains.test.model.NodeData
 import com.warrior.jetbrains.test.presenter.Presenter
 import com.warrior.jetbrains.test.presenter.PresenterImpl
 import com.warrior.jetbrains.test.view.View
-import org.apache.commons.vfs2.FileObject
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.awt.Dimension
@@ -25,12 +25,12 @@ class FileViewerFrame : JFrame("FileViewer"), View {
         presenter.onStart()
     }
 
-    override fun addRoot(root: FileObject) {
+    override fun addRoot(root: NodeData) {
         logger.debug("addRoot: $root")
         SwingUtilities.invokeLater { panel.addRoot(root) }
     }
 
-    override fun setContentData(data: List<FileObject>) {
+    override fun setContentData(data: List<NodeData>) {
         logger.debug("setContentData: $data")
         SwingUtilities.invokeLater { panel.setContentData(data) }
     }

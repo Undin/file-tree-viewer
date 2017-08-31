@@ -1,7 +1,7 @@
 package com.warrior.jetbrains.test.ui
 
 import com.warrior.jetbrains.test.isDirectory
-import org.apache.commons.vfs2.FileObject
+import com.warrior.jetbrains.test.model.NodeData
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.GridLayout
@@ -15,11 +15,11 @@ class ContentPanel : JPanel(GridLayout(0, 5, 4, 4)) {
         background = Color.WHITE
     }
 
-    fun setContent(content: List<FileObject>) {
+    fun setContent(content: List<NodeData>) {
         removeAll()
-        for (file in content) {
-            val icon = if (file.isDirectory) Icons.FOLDER_ICON else Icons.FILE_ICON
-            val label = JLabel(file.name.baseName, icon, SwingConstants.CENTER)
+        for (data in content) {
+            val icon = if (data.file.isDirectory) Icons.FOLDER_ICON else Icons.FILE_ICON
+            val label = JLabel(data.name, icon, SwingConstants.CENTER)
             label.verticalTextPosition = SwingConstants.BOTTOM
             label.horizontalTextPosition = SwingConstants.CENTER
             label.preferredSize = Dimension(ITEM_WIDTH, ITEM_HEIGHT)

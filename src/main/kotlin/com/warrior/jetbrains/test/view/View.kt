@@ -1,8 +1,8 @@
 package com.warrior.jetbrains.test.view
 
-import org.apache.commons.vfs2.FileObject
+import com.warrior.jetbrains.test.model.NodeData
 
 interface View {
-    fun addRoot(root: FileObject)
-    fun setContentData(data: List<FileObject>)
+    fun addRoot(root: NodeData)
+    fun setContentData(data: List<NodeData>)
 }

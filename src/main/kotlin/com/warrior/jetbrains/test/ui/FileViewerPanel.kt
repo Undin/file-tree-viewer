@@ -1,9 +1,8 @@
 package com.warrior.jetbrains.test.ui
 
+import com.warrior.jetbrains.test.model.NodeData
 import com.warrior.jetbrains.test.presenter.Presenter
-import com.warrior.jetbrains.test.tree.FileNodeData
-import com.warrior.jetbrains.test.tree.FileTreeNode
-import org.apache.commons.vfs2.FileObject
+import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import java.awt.GridLayout
 import javax.swing.*
 import javax.swing.event.*
@@ -32,12 +31,12 @@ class FileViewerPanel(
         add(splitView)
     }
 
-    fun addRoot(root: FileObject) {
+    fun addRoot(root: NodeData) {
         val count = treeRoot.childCount
-        model.insertNodeInto(node(root), treeRoot, count)
+        model.insertNodeInto(FileTreeNode(root), treeRoot, count)
     }
 
-    fun setContentData(data: List<FileObject>) {
+    fun setContentData(data: List<NodeData>) {
         content.setContent(data)
     }
 
@@ -64,6 +63,4 @@ class FileViewerPanel(
             addTreeWillExpandListener(this@FileViewerPanel)
         }
     }
-
-    private fun node(file: FileObject): FileTreeNode = FileTreeNode(FileNodeData(file))
 }
