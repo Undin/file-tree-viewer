@@ -24,6 +24,23 @@ shadowJar {
     }
 }
 
+afterEvaluate {
+    if (it.hasProperty('test')) {
+        test {
+            testLogging {
+                events "passed", "skipped", "failed"
+                exceptionFormat = 'full'
+            }
+            afterSuite { desc, result ->
+                if (!desc.parent) {
+                    def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+                    println("\n$output\n")
+                }
+            }
+        }
+    }
+}
+
 dependencies {
     compile 'org.jetbrains.kotlin:kotlin-stdlib-jre8:' + kotlin_version
     compile 'org.apache.logging.log4j:log4j-core:2.8.2'
