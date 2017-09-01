@@ -2,18 +2,27 @@ package com.warrior.jetbrains.test.model
 
 import com.warrior.jetbrains.test.isDirectory
 import com.warrior.jetbrains.test.isZip
-import com.warrior.jetbrains.test.presenter.Presenter
+import org.apache.commons.vfs2.CacheStrategy
 import org.apache.commons.vfs2.FileObject
-import org.apache.commons.vfs2.VFS
+import org.apache.commons.vfs2.impl.StandardFileSystemManager
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.IOException
 import java.net.URI
 import java.nio.file.FileSystems
+import java.util.concurrent.*
 
-class Model(private val presenter: Presenter) {
+class Model {
 
     private val logger: Logger = LogManager.getLogger(javaClass)
+
+    private val fileSystemManager = StandardFileSystemManager()
+    private val executor: ExecutorService = Executors.newSingleThreadExecutor()
+
+    init {
+        fileSystemManager.cacheStrategy = CacheStrategy.MANUAL
+        fileSystemManager.init()
+    }
 
     fun getLocalRoots(): List<NodeData> {
         logger.debug("getLocalRoots")
@@ -24,11 +33,27 @@ class Model(private val presenter: Presenter) {
                     val baseName = file.name.baseName
                     val name = if (baseName.isNotEmpty()) baseName else path.toString()
                     NodeData(file, name)
-                }
+                }// + listOfNotNull(createFtpServerRoot("ftp.lip6.fr", "", CharArray(0)))
     }
 
-    fun getChildren(file: FileObject): List<NodeData> {
-        logger.debug("getChildren. path: $file")
+    fun getChildrenAsync(file: FileObject, onSuccess: (List<NodeData>) -> Unit): Future<*> {
+        logger.debug("getChildrenAsync. path: $file")
+        return executor.submit {
+            logger.debug("runAsync: $file")
+            val children = getChildren(file)
+//            Thread.sleep(2000)
+            onSuccess(children)
+        }
+    }
+
+    fun createFtpServerRoot(host: String, username: String?, password: CharArray?): NodeData? {
+        logger.debug("createFtpServerRoot. host: $host, username: $username, password: $password")
+        val uri = createFtpUri(host, username, password) ?: return null
+        val file = resolveFile(uri) ?: return null
+        return NodeData(file, host)
+    }
+
+    private fun getChildren(file: FileObject): List<NodeData> {
         if (file.isZip) {
             val zipChildren = getArchiveChildren(file)
             if (zipChildren != null) {
@@ -38,7 +63,7 @@ class Model(private val presenter: Presenter) {
 
         if (!file.isDirectory) return emptyList()
         return try {
-            file.children.filter { !it.isHidden }.map { NodeData(it, it.name.baseName) }
+            file.children/*.filter { !it.isHidden }*/.map { NodeData(it, it.name.baseName) }
         } catch (e: IOException) {
             logger.error("Failed to get children of $file", e)
             emptyList()
@@ -54,16 +79,9 @@ class Model(private val presenter: Presenter) {
         return getChildren(archiveFile)
     }
 
-    fun createFtpServerRoot(host: String, username: String?, password: CharArray?): NodeData? {
-        logger.debug("createFtpServerRoot. host: $host, username: $username, password: $password")
-        val uri = createFtpUri(host, username, password) ?: return null
-        val file = resolveFile(uri) ?: return null
-        return NodeData(file, host)
-    }
-
     private fun resolveFile(uri: URI): FileObject? {
         return try {
-            VFS.getManager().resolveFile(uri)
+            fileSystemManager.resolveFile(uri)
         } catch (e: IOException) {
             logger.error("Failed to resolve $uri", e)
             null

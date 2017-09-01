@@ -8,6 +8,7 @@ val FileObject.isZip: Boolean get() {
     return extension == "zip" || extension == "jar"
 }
 
+// TODO: check it for FTP
 val FileObject.isDirectory get(): Boolean = try {
     isFolder
 } catch (e: IOException) {

@@ -3,6 +3,7 @@ package com.warrior.jetbrains.test.ui
 import com.warrior.jetbrains.test.model.NodeData
 import com.warrior.jetbrains.test.presenter.Presenter
 import com.warrior.jetbrains.test.presenter.PresenterImpl
+import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import com.warrior.jetbrains.test.view.View
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -30,7 +31,22 @@ class FileViewerFrame : JFrame("FileViewer"), View {
         SwingUtilities.invokeLater { panel.addRoot(root) }
     }
 
-    override fun setContentData(data: List<NodeData>) {
+    override fun setLoadingState(node: FileTreeNode) {
+        logger.debug("setLoadingState: $node")
+        SwingUtilities.invokeLater { panel.setLoadingState(node) }
+    }
+
+    override fun setChildren(node: FileTreeNode, children: List<FileTreeNode>) {
+        logger.debug("setChildren: $node, $children")
+        SwingUtilities.invokeLater { panel.setChildren(node, children) }
+    }
+
+    override fun onStartLoadingContent() {
+        logger.debug("onStartLoadingContent")
+        SwingUtilities.invokeLater { panel.setContentLoading() }
+    }
+
+    override fun onContentLoaded(data: List<NodeData>) {
         logger.debug("setContentData: $data")
         SwingUtilities.invokeLater { panel.setContentData(data) }
     }

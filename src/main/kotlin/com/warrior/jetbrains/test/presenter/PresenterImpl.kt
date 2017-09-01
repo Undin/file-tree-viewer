@@ -1,15 +1,19 @@
 package com.warrior.jetbrains.test.presenter
 
 import com.warrior.jetbrains.test.model.Model
+import com.warrior.jetbrains.test.ui.LoadingState
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import com.warrior.jetbrains.test.view.View
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import java.util.concurrent.Future
 
 class PresenterImpl(private val view: View): Presenter {
 
     private val logger: Logger = LogManager.getLogger(javaClass)
-    private val model: Model = Model(this)
+    private val model: Model = Model()
+
+    private var contentFuture: Future<*>? = null
 
     override fun onStart() {
         logger.debug("onStart")
@@ -21,14 +25,22 @@ class PresenterImpl(private val view: View): Presenter {
 
     override fun onNodeSelected(node: FileTreeNode) {
         logger.debug("onNodeSelected: $node")
-        // TODO: load children asynchronously
-        view.setContentData(model.getChildren(node.userObject.file))
+        view.onStartLoadingContent()
+        contentFuture?.cancel(true)
+        contentFuture = model.getChildrenAsync(node.userObject.file) {
+            view.onContentLoaded(it)
+        }
     }
 
     override fun onPreNodeExpand(node: FileTreeNode) {
         logger.debug("onPreNodeExpand: $node")
-        // TODO: load children asynchronously
-        node.updateChildren(model.getChildren(node.userObject.file))
+        if (node.state == LoadingState.EMPTY) {
+            view.setLoadingState(node)
+            model.getChildrenAsync(node.userObject.file) {
+                val children = it.map { FileTreeNode(it) }
+                view.setChildren(node, children)
+            }
+        }
     }
 
     override fun onPreNodeCollapse(node: FileTreeNode) {

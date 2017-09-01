@@ -3,6 +3,7 @@ package com.warrior.jetbrains.test.ui
 import com.warrior.jetbrains.test.model.NodeData
 import com.warrior.jetbrains.test.presenter.Presenter
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
+import com.warrior.jetbrains.test.ui.tree.LoadingNode
 import java.awt.GridLayout
 import javax.swing.*
 import javax.swing.event.*
@@ -36,12 +37,28 @@ class FileViewerPanel(
         model.insertNodeInto(FileTreeNode(root), treeRoot, count)
     }
 
+    fun setLoadingState(node: FileTreeNode) {
+        model.insertNodeInto(LoadingNode(), node, 0)
+        node.state = LoadingState.LOADING
+    }
+
+    fun setChildren(node: FileTreeNode, children: List<FileTreeNode>) {
+        node.removeAllChildren()
+        children.forEach(node::add)
+        model.reload(node)
+        node.state = LoadingState.LOADED
+    }
+
     fun setContentData(data: List<NodeData>) {
         content.setContent(data)
     }
 
+    fun setContentLoading() {
+        content.setContentLoading()
+    }
+
     override fun valueChanged(e: TreeSelectionEvent) {
-        val node = e.newLeadSelectionPath.lastPathComponent as? FileTreeNode ?: return
+        val node = e.newLeadSelectionPath?.lastPathComponent as? FileTreeNode ?: return
         presenter.onNodeSelected(node)
     }
 
