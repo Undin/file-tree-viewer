@@ -27,7 +27,7 @@ class PresenterImpl(private val view: View): Presenter {
         logger.debug("onNodeSelected: $node")
         view.onStartLoadingContent()
         contentFuture?.cancel(true)
-        contentFuture = model.getChildrenAsync(node.userObject.file) {
+        contentFuture = model.getChildrenAsync(node.userObject) {
             view.onContentLoaded(it)
         }
     }
@@ -36,7 +36,7 @@ class PresenterImpl(private val view: View): Presenter {
         logger.debug("onPreNodeExpand: $node")
         if (node.state == LoadingState.EMPTY) {
             view.setLoadingState(node)
-            model.getChildrenAsync(node.userObject.file) {
+            model.getChildrenAsync(node.userObject) {
                 val children = it.map { FileTreeNode(it) }
                 view.setChildren(node, children)
             }

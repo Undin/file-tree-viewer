@@ -1,6 +1,6 @@
 package com.warrior.jetbrains.test.ui
 
-import com.warrior.jetbrains.test.model.NodeData
+import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.presenter.Presenter
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import com.warrior.jetbrains.test.ui.tree.LoadingNode
@@ -32,7 +32,7 @@ class FileViewerPanel(
         add(splitView)
     }
 
-    fun addRoot(root: NodeData) {
+    fun addRoot(root: FileInfo) {
         val count = treeRoot.childCount
         model.insertNodeInto(FileTreeNode(root), treeRoot, count)
     }
@@ -49,7 +49,7 @@ class FileViewerPanel(
         node.state = LoadingState.LOADED
     }
 
-    fun setContentData(data: List<NodeData>) {
+    fun setContentData(data: List<FileInfo>) {
         content.setContent(data)
     }
 

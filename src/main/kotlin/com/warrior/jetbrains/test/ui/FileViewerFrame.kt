@@ -1,6 +1,6 @@
 package com.warrior.jetbrains.test.ui
 
-import com.warrior.jetbrains.test.model.NodeData
+import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.presenter.Presenter
 import com.warrior.jetbrains.test.presenter.PresenterImpl
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
@@ -26,7 +26,7 @@ class FileViewerFrame : JFrame("FileViewer"), View {
         presenter.onStart()
     }
 
-    override fun addRoot(root: NodeData) {
+    override fun addRoot(root: FileInfo) {
         logger.debug("addRoot: $root")
         SwingUtilities.invokeLater { panel.addRoot(root) }
     }
@@ -46,7 +46,7 @@ class FileViewerFrame : JFrame("FileViewer"), View {
         SwingUtilities.invokeLater { panel.setContentLoading() }
     }
 
-    override fun onContentLoaded(data: List<NodeData>) {
+    override fun onContentLoaded(data: List<FileInfo>) {
         logger.debug("setContentData: $data")
         SwingUtilities.invokeLater { panel.setContentData(data) }
     }

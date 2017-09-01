@@ -1,7 +1,7 @@
 package com.warrior.jetbrains.test.ui
 
 import com.warrior.jetbrains.test.isDirectory
-import com.warrior.jetbrains.test.model.NodeData
+import com.warrior.jetbrains.test.model.FileInfo
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.GridLayout
@@ -27,7 +27,7 @@ class ContentPanel : JPanel(GridLayout(0, 5, 4, 4)) {
         }
     }
 
-    fun setContent(content: List<NodeData>) {
+    fun setContent(content: List<FileInfo>) {
         removeAll()
         for (data in content) {
             val icon = if (data.file.isDirectory) Icons.FOLDER_ICON else Icons.FILE_ICON

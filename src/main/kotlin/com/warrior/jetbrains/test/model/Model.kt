@@ -10,7 +10,10 @@ import org.apache.logging.log4j.Logger
 import java.io.IOException
 import java.net.URI
 import java.nio.file.FileSystems
-import java.util.concurrent.*
+import java.nio.file.Path
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
 
 class Model {
 
@@ -24,36 +27,39 @@ class Model {
         fileSystemManager.init()
     }
 
-    fun getLocalRoots(): List<NodeData> {
+    fun getLocalFile(path: Path): FileInfo? {
+        val fileObject = resolveFile(path.toUri()) ?: return null
+        val baseName = fileObject.name.baseName
+        val name = if (baseName.isNotEmpty()) baseName else path.toString()
+        return FileInfo(fileObject, name)
+    }
+
+    fun getLocalRoots(): List<FileInfo> {
         logger.debug("getLocalRoots")
         return FileSystems.getDefault()
                 .rootDirectories
-                .mapNotNull { path ->
-                    val file = resolveFile(path.toUri()) ?: return@mapNotNull null
-                    val baseName = file.name.baseName
-                    val name = if (baseName.isNotEmpty()) baseName else path.toString()
-                    NodeData(file, name)
-                }// + listOfNotNull(createFtpServerRoot("ftp.lip6.fr", "", CharArray(0)))
+                .mapNotNull { getLocalFile(it) }
+                .sortedBy { it.name } //+ listOfNotNull(createFtpServerRoot("ftp.lip6.fr", "", CharArray(0)))
     }
 
-    fun getChildrenAsync(file: FileObject, onSuccess: (List<NodeData>) -> Unit): Future<*> {
-        logger.debug("getChildrenAsync. path: $file")
+    fun getChildrenAsync(fileInfo: FileInfo, onSuccess: (List<FileInfo>) -> Unit): Future<*> {
+        logger.debug("getChildrenAsync. path: $fileInfo")
         return executor.submit {
-            logger.debug("runAsync: $file")
-            val children = getChildren(file)
+            logger.debug("runAsync: $fileInfo")
+            val children = getChildren(fileInfo.file)
 //            Thread.sleep(2000)
             onSuccess(children)
         }
     }
 
-    fun createFtpServerRoot(host: String, username: String?, password: CharArray?): NodeData? {
+    fun createFtpServerRoot(host: String, username: String?, password: CharArray?): FileInfo? {
         logger.debug("createFtpServerRoot. host: $host, username: $username, password: $password")
         val uri = createFtpUri(host, username, password) ?: return null
         val file = resolveFile(uri) ?: return null
-        return NodeData(file, host)
+        return FileInfo(file, host)
     }
 
-    private fun getChildren(file: FileObject): List<NodeData> {
+    private fun getChildren(file: FileObject): List<FileInfo> {
         if (file.isZip) {
             val zipChildren = getArchiveChildren(file)
             if (zipChildren != null) {
@@ -63,19 +69,22 @@ class Model {
 
         if (!file.isDirectory) return emptyList()
         return try {
-            file.children/*.filter { !it.isHidden }*/.map { NodeData(it, it.name.baseName) }
+            file.children
+                    .filter { !it.isHidden }
+                    .map { FileInfo(it, it.name.baseName) }
+                    .sortedBy { it.name }
         } catch (e: IOException) {
             logger.error("Failed to get children of $file", e)
             emptyList()
         }
     }
 
-    private fun getArchiveChildren(zipFile: FileObject): List<NodeData>? {
-        val extension = zipFile.name.extension
+    private fun getArchiveChildren(archive: FileObject): List<FileInfo>? {
+        val extension = archive.name.extension
         check(extension == "zip" || extension == "jar") {
             "Archive file must be zip or jar"
         }
-        val archiveFile = resolveFile(URI.create("$extension:$zipFile")) ?: return null
+        val archiveFile = resolveFile(URI.create("$extension:$archive!")) ?: return null
         return getChildren(archiveFile)
     }
 
