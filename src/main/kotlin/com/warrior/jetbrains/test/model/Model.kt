@@ -12,6 +12,7 @@ import java.io.IOException
 import java.net.URI
 import java.nio.file.FileSystems
 import java.nio.file.Path
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -54,7 +55,7 @@ class Model {
     }
 
     fun createFtpServerRoot(host: String, username: String?, password: CharArray?): FileInfo? {
-        logger.debug("createFtpServerRoot. host: $host, username: $username, password: $password")
+        logger.debug("createFtpServerRoot. host: $host, username: $username, password: ${Arrays.toString(password)}")
         val host = host.removePrefix("ftp://")
         val uri = createFtpUri(host, username, password) ?: return null
         val file = resolveFile(uri) ?: return null

@@ -20,4 +20,17 @@ class FileTreeNode(data: FileInfo) : DefaultMutableTreeNode(data) {
         val file = getUserObject().file
         return file.isDirectory || file.isZip
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as FileTreeNode
+
+        if (getUserObject() != other.getUserObject()) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int = getUserObject().hashCode()
 }

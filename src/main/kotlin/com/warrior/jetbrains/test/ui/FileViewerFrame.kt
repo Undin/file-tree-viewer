@@ -31,13 +31,13 @@ class FileViewerFrame : JFrame("FileViewer"), View {
         SwingUtilities.invokeLater { panel.addRoot(root) }
     }
 
-    override fun setLoadingState(node: FileTreeNode) {
-        logger.debug("setLoadingState: $node")
+    override fun onStartLoadingChildren(node: FileTreeNode) {
+        logger.debug("setContentLoading: $node")
         SwingUtilities.invokeLater { panel.setLoadingState(node) }
     }
 
-    override fun setChildren(node: FileTreeNode, children: List<FileTreeNode>) {
-        logger.debug("setChildren: $node, $children")
+    override fun onChildrenLoaded(node: FileTreeNode, children: List<FileTreeNode>) {
+        logger.debug("onChildrenLoaded: $node, $children")
         SwingUtilities.invokeLater { panel.setChildren(node, children) }
     }
 

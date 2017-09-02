@@ -6,12 +6,14 @@ import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import com.warrior.jetbrains.test.view.View
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import java.util.*
 import java.util.concurrent.Future
 
-class PresenterImpl(private val view: View): Presenter {
+open class PresenterImpl(private val view: View): Presenter {
 
     private val logger: Logger = LogManager.getLogger(javaClass)
-    private val model: Model = Model()
+
+    protected val model: Model = Model()
 
     private var contentFuture: Future<*>? = null
 
@@ -35,10 +37,10 @@ class PresenterImpl(private val view: View): Presenter {
     override fun onPreNodeExpand(node: FileTreeNode) {
         logger.debug("onPreNodeExpand: $node")
         if (node.state == LoadingState.EMPTY) {
-            view.setLoadingState(node)
+            view.onStartLoadingChildren(node)
             model.getChildrenAsync(node.userObject) {
                 val children = it.map { FileTreeNode(it) }
-                view.setChildren(node, children)
+                view.onChildrenLoaded(node, children)
             }
         }
     }
@@ -48,7 +50,7 @@ class PresenterImpl(private val view: View): Presenter {
     }
 
     override fun onAddNewFtpServer(host: String, username: String?, password: CharArray) {
-        logger.debug("onAddNewFtpServer. host: $host, username: $username, password: $password")
+        logger.debug("onAddNewFtpServer. host: $host, username: $username, password: ${Arrays.toString(password)}")
         val ftpRoot = model.createFtpServerRoot(host, username, password) ?: return
         view.addRoot(ftpRoot)
     }
