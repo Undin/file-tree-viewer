@@ -100,7 +100,7 @@ class Model {
     private fun createFtpUri(host: String, username: String?, password: CharArray?): URI? {
         val stringURI = buildString {
             append("ftp://")
-            if (username.isNullOrBlank()) {
+            if (!username.isNullOrEmpty()) {
                 append(username)
                 if (password != null && password.isNotEmpty()) {
                     append(":")
