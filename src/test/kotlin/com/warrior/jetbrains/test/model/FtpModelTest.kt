@@ -22,7 +22,7 @@ class FtpModelTest : BaseModelTest() {
             dir("/dir")
             file("/file.txt")
         }
-        val ftpObject = localFtpServerRoot(ftpServer.serverControlPort, USERNAME, PASSWORD)
+        val ftpObject = localFtpServerRoot(ftpServer.serverControlPort, USER1, PASSWORD)
                 ?: error("Failed to create ftp server object")
         checkChildren(ftpObject, "dir", "file.txt")
     }
@@ -35,16 +35,30 @@ class FtpModelTest : BaseModelTest() {
             file("/user1/dir")
             file("/user1/file.txt")
         }
-        val ftpObject = localFtpServerRoot(ftpServer.serverControlPort, USERNAME, PASSWORD)
+        val ftpObject = localFtpServerRoot(ftpServer.serverControlPort, USER1, PASSWORD)
                 ?: error("Failed to create ftp server object")
         checkChildren(ftpObject, "dir", "file.txt")
     }
 
     @Test
     fun `wrong credentials`() {
-        ftpServer = createFakeFtpServer {  }
-        val ftpObject = localFtpServerRoot(ftpServer.serverControlPort, USERNAME, WRONG_PASSWORD)
+        ftpServer = createFakeFtpServer { file("/file.txt") }
+        val ftpObject = localFtpServerRoot(ftpServer.serverControlPort, USER1, WRONG_PASSWORD)
         assertThat(ftpObject).isNull()
+    }
+
+    @Test
+    fun `host with schema prefix`() {
+        ftpServer = createFakeFtpServer { file("/file.txt") }
+        val ftpObject = model.createFtpServerRoot("ftp://localhost:${ftpServer.serverControlPort}", USER1, PASSWORD.toCharArray())
+        assertThat(ftpObject).isNotNull()
+    }
+
+    @Test
+    fun `username escaping`() {
+        ftpServer = createFakeFtpServer { file("/file.txt") }
+        val ftpObject = localFtpServerRoot(ftpServer.serverControlPort, USER2, PASSWORD)
+        assertThat(ftpObject).isNotNull()
     }
 
     private fun localFtpServerRoot(port: Int, username: String, password: String): FileInfo? =
@@ -56,8 +70,8 @@ class FtpModelTest : BaseModelTest() {
         fakeFtpServer.serverControlPort = 0
         fakeFtpServer.fileSystem = fileSystem(block)
 
-        val userAccount = UserAccount(USERNAME, PASSWORD, homeDir)
-        fakeFtpServer.addUserAccount(userAccount)
+        fakeFtpServer.addUserAccount(UserAccount(USER1, PASSWORD, homeDir))
+        fakeFtpServer.addUserAccount(UserAccount(USER2, PASSWORD, homeDir))
         fakeFtpServer.start()
         return fakeFtpServer
     }
@@ -74,7 +88,8 @@ class FtpModelTest : BaseModelTest() {
     }
 
     companion object {
-        private const val USERNAME = "user"
+        private const val USER1 = "user"
+        private const val USER2 = "user/user"
         private const val PASSWORD = "password"
         private const val WRONG_PASSWORD = "wrong_password"
     }

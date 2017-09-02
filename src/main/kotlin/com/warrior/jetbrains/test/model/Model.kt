@@ -2,6 +2,7 @@ package com.warrior.jetbrains.test.model
 
 import com.warrior.jetbrains.test.isDirectory
 import com.warrior.jetbrains.test.isZip
+import org.apache.commons.httpclient.util.URIUtil
 import org.apache.commons.vfs2.CacheStrategy
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.impl.StandardFileSystemManager
@@ -54,6 +55,7 @@ class Model {
 
     fun createFtpServerRoot(host: String, username: String?, password: CharArray?): FileInfo? {
         logger.debug("createFtpServerRoot. host: $host, username: $username, password: $password")
+        val host = host.removePrefix("ftp://")
         val uri = createFtpUri(host, username, password) ?: return null
         val file = resolveFile(uri) ?: return null
         return FileInfo(file, host)
@@ -101,7 +103,8 @@ class Model {
         val stringURI = buildString {
             append("ftp://")
             if (!username.isNullOrEmpty()) {
-                append(username)
+                // '!!' is safe here because of previous check
+                append(username!!.escaped)
                 if (password != null && password.isNotEmpty()) {
                     append(":")
                     append(password)
@@ -119,4 +122,6 @@ class Model {
             null
         }
     }
+
+    private val String.escaped get() = URIUtil.encodeAll(this)
 }
