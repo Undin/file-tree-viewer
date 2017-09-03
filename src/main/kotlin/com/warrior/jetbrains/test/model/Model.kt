@@ -1,5 +1,6 @@
 package com.warrior.jetbrains.test.model
 
+import com.warrior.jetbrains.test.model.filetype.NameFileTypeDetector
 import com.warrior.jetbrains.test.ui.IMAGE_PREVIEW_SIZE
 import org.apache.commons.httpclient.util.URIUtil
 import org.apache.commons.vfs2.CacheStrategy
@@ -129,14 +130,10 @@ class Model {
         }
     }
 
-    // TODO: support other file types
     private fun fileType(file: FileObject): FileType {
-        return when {
-            file.isDirectory -> FileType.FOLDER
-            file.isArchive -> FileType.ARCHIVE
-            file.isImage -> FileType.IMAGE
-            else -> FileType.GENERIC
-        }
+        if (file.isDirectory) return FileType.FOLDER
+        val detector = NameFileTypeDetector()
+        return detector.fileType(file.name.baseName)
     }
 
     private fun createFtpUri(host: String, username: String?, password: CharArray?): URI? {
