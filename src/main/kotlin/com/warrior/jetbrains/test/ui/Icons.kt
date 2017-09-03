@@ -13,8 +13,8 @@ object Icons {
     val TEXT_FILE_ICON = icon("icons/text64.png")
     val LARGE_TEXT_FILE_ICON = icon("icons/text256.png")
 
-    val IMAGE_FILE_ICON = GENERIC_FILE_ICON
-    val LARGE_IMAGE_FILE_ICON = LARGE_GENERIC_FILE_ICON
+    val IMAGE_FILE_ICON = icon("icons/image64.png")
+    val LARGE_IMAGE_FILE_ICON = icon("icons/image256.png")
 
     val AUDIO_FILE_ICON = icon("icons/audio64.png")
     val LARGE_AUDIO_FILE_ICON = icon("icons/audio256.png")
