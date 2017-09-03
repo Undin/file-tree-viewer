@@ -1,7 +1,7 @@
 package com.warrior.jetbrains.test.model
 
 import com.warrior.jetbrains.test.isDirectory
-import com.warrior.jetbrains.test.isZip
+import com.warrior.jetbrains.test.isArchive
 import org.apache.commons.httpclient.util.URIUtil
 import org.apache.commons.vfs2.CacheStrategy
 import org.apache.commons.vfs2.FileObject
@@ -33,7 +33,8 @@ class Model {
         val fileObject = resolveFile(path.toUri()) ?: return null
         val baseName = fileObject.name.baseName
         val name = if (baseName.isNotEmpty()) baseName else path.toString()
-        return FileInfo(fileObject, name)
+        val type = fileType(fileObject)
+        return FileInfo(fileObject, name, FileLocation.LOCAL, type)
     }
 
     fun getLocalRoots(): List<FileInfo> {
@@ -48,7 +49,7 @@ class Model {
         logger.debug("getChildrenAsync. path: $fileInfo")
         return executor.submit {
             logger.debug("runAsync: $fileInfo")
-            val children = getChildren(fileInfo.file)
+            val children = getChildren(fileInfo)
 //            Thread.sleep(2000)
             onSuccess(children)
         }
@@ -59,36 +60,38 @@ class Model {
         val host = host.removePrefix("ftp://")
         val uri = createFtpUri(host, username, password) ?: return null
         val file = resolveFile(uri) ?: return null
-        return FileInfo(file, host)
+        return FileInfo(file, host, FileLocation.FTP, fileType(file))
     }
 
-    private fun getChildren(file: FileObject): List<FileInfo> {
-        if (file.isZip) {
-            val zipChildren = getArchiveChildren(file)
+    private fun getChildren(fileInfo: FileInfo): List<FileInfo> {
+        if (fileInfo.isArchive && fileInfo.isLocal) {
+            val zipChildren = getArchiveChildren(fileInfo)
             if (zipChildren != null) {
                 return zipChildren
             }
         }
 
-        if (!file.isDirectory) return emptyList()
+        if (!fileInfo.isFolder) return emptyList()
         return try {
-            file.children
+            fileInfo.file
+                    .children
                     .filter { !it.isHidden }
-                    .map { FileInfo(it, it.name.baseName) }
+                    .map { FileInfo(it, it.name.baseName, fileInfo.location, fileType(it)) }
                     .sortedBy { it.name }
         } catch (e: IOException) {
-            logger.error("Failed to get children of $file", e)
+            logger.error("Failed to get children of $fileInfo", e)
             emptyList()
         }
     }
 
-    private fun getArchiveChildren(archive: FileObject): List<FileInfo>? {
-        val extension = archive.name.extension
-        check(extension == "zip" || extension == "jar") {
-            "Archive file must be zip or jar"
+    private fun getArchiveChildren(fileInfo: FileInfo): List<FileInfo>? {
+        check(fileInfo.isLocal && fileInfo.isArchive) {
+            "Archive file must be local archive"
         }
-        val archiveFile = resolveFile(URI.create("$extension:$archive!")) ?: return null
-        return getChildren(archiveFile)
+        val extension = fileInfo.file.name.extension
+        val archiveRoot = resolveFile(URI.create("$extension:${fileInfo.file}!")) ?: return null
+        val archive = FileInfo(archiveRoot, "", FileLocation.ARCHIVE, fileType(archiveRoot))
+        return getChildren(archive)
     }
 
     private fun resolveFile(uri: URI): FileObject? {
@@ -97,6 +100,15 @@ class Model {
         } catch (e: IOException) {
             logger.error("Failed to resolve $uri", e)
             null
+        }
+    }
+
+    // TODO: support other file types
+    private fun fileType(file: FileObject): FileType {
+        return when {
+            file.isDirectory -> FileType.FOLDER
+            file.isArchive -> FileType.ARCHIVE
+            else -> FileType.GENERIC
         }
     }
 

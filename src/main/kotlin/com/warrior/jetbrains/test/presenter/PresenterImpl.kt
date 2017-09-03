@@ -1,7 +1,10 @@
 package com.warrior.jetbrains.test.presenter
 
 import com.warrior.jetbrains.test.model.Model
+import com.warrior.jetbrains.test.model.canHaveChildren
 import com.warrior.jetbrains.test.ui.LoadingState
+import com.warrior.jetbrains.test.ui.content.FilePreview
+import com.warrior.jetbrains.test.ui.content.FolderContentProvider
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import com.warrior.jetbrains.test.view.View
 import org.apache.logging.log4j.LogManager

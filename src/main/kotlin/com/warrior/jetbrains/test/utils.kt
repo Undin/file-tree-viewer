@@ -3,7 +3,7 @@ package com.warrior.jetbrains.test
 import org.apache.commons.vfs2.FileObject
 import java.io.IOException
 
-val FileObject.isZip: Boolean get() {
+val FileObject.isArchive: Boolean get() {
     val extension = name.extension
     return extension == "zip" || extension == "jar"
 }
