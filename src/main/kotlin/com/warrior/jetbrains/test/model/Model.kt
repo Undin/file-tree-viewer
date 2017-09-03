@@ -2,6 +2,7 @@ package com.warrior.jetbrains.test.model
 
 import com.warrior.jetbrains.test.model.filetype.NameFileTypeDetector
 import com.warrior.jetbrains.test.ui.IMAGE_PREVIEW_SIZE
+import com.warrior.jetbrains.test.ui.TEXT_PREVIEW_LINES
 import org.apache.commons.httpclient.util.URIUtil
 import org.apache.commons.vfs2.CacheStrategy
 import org.apache.commons.vfs2.FileObject
@@ -69,24 +70,50 @@ class Model {
     }
 
     fun loadImage(fileInfo: FileInfo, callback: (Icon?) -> Unit): Future<*> {
-        logger.debug("loadImage: $fileInfo")
+        logger.debug("loadImage: ${fileInfo.file}")
         return executor.submit {
-            try {
-                val image = ImageIO.read(File(fileInfo.file.name.path))
+            val icon = try {
+                val image = ImageIO.read(File(fileInfo.path))
                 val maxSize = maxOf(image.width, image.height)
                 if (maxSize <= IMAGE_PREVIEW_SIZE) {
-                    callback(ImageIcon(image))
+                    ImageIcon(image)
                 } else {
                     val scale = maxOf(image.width, image.height) / IMAGE_PREVIEW_SIZE.toDouble()
                     val scaledWidth = (image.width / scale).toInt()
                     val scaledHeight = (image.height / scale).toInt()
                     val scaledImage = image.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH)
-                    callback(ImageIcon(scaledImage))
+                    ImageIcon(scaledImage)
                 }
             } catch (e: IOException) {
                 logger.error("Failed to load image ${fileInfo.file}", e)
-                callback(null)
+                null
             }
+            callback(icon)
+        }
+    }
+
+    fun loadText(fileInfo: FileInfo, callback: (String?) -> Unit): Future<*> {
+        logger.debug("loadImage: ${fileInfo.file}")
+        return executor.submit {
+            val text = try {
+                File(fileInfo.path).useLines { lines ->
+                    val iterator = lines.iterator()
+                    var linesCount = 0
+                    val builder = StringBuilder()
+                    while (iterator.hasNext() && linesCount < TEXT_PREVIEW_LINES) {
+                        builder.append(iterator.next()).append("\n")
+                        linesCount++
+                    }
+                    if (iterator.hasNext()) {
+                        builder.append("...")
+                    }
+                    builder.toString()
+                }
+            } catch (e: IOException) {
+                logger.debug("Failed to load text from ${fileInfo.file}", e)
+                null
+            }
+            callback(text)
         }
     }
 

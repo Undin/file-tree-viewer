@@ -13,6 +13,8 @@ data class FileInfo(
     override fun toString(): String = name
 }
 
+val FileInfo.path: String get() = file.name.path
+
 val FileInfo.isLocal: Boolean get() = location == FileLocation.LOCAL || location == FileLocation.ARCHIVE
 val FileInfo.isFolder: Boolean get() = type == FileType.FOLDER
 val FileInfo.isArchive: Boolean get() = type == FileType.ARCHIVE

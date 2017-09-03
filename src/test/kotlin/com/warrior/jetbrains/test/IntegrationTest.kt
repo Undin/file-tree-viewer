@@ -2,9 +2,7 @@ package com.warrior.jetbrains.test
 
 import com.warrior.jetbrains.test.model.Model
 import com.warrior.jetbrains.test.presenter.Presenter
-import com.warrior.jetbrains.test.ui.content.FilePreview
-import com.warrior.jetbrains.test.ui.content.FolderContentProvider
-import com.warrior.jetbrains.test.ui.content.ImagePreview
+import com.warrior.jetbrains.test.ui.content.*
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import com.warrior.jetbrains.test.view.View
 import org.junit.Before
@@ -55,7 +53,7 @@ class IntegrationTest {
 
     @Test
     fun `select generic file`() {
-        val file = model.localFile("root/file.txt")
+        val file = model.localFile("root/unknown_file")
         presenter.onNodeSelected(FileTreeNode(file))
         Thread.sleep(1000)
 
@@ -63,7 +61,7 @@ class IntegrationTest {
     }
 
     @Test
-    fun `select zip`() {
+    fun `select archive file`() {
         val archive = model.localFile("root/archive.zip")
         presenter.onNodeSelected(FileTreeNode(archive))
         Thread.sleep(1000)
@@ -72,13 +70,23 @@ class IntegrationTest {
     }
 
     @Test
-    fun `select image`() {
+    fun `select image file`() {
         val image = model.localFile("root/image.png")
         presenter.onNodeSelected(FileTreeNode(image))
         Thread.sleep(1000)
 
         verify(view).onStartLoadingContent()
         verify(view).onContentLoaded(any(ImagePreview::class.java))
+    }
+
+    @Test
+    fun `select text file`() {
+        val image = model.localFile("root/file.txt")
+        presenter.onNodeSelected(FileTreeNode(image))
+        Thread.sleep(1000)
+
+        verify(view).onStartLoadingContent()
+        verify(view).onContentLoaded(any(TextPreview::class.java))
     }
 
     @Test
