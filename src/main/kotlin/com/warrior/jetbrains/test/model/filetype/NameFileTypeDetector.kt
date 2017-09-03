@@ -8,9 +8,9 @@ class NameFileTypeDetector : FileTypeDetector {
         val ext = fileName.substringAfterLast(".", "").toLowerCase()
         return when (ext) {
             "txt", "xml", "html", "csv" -> FileType.TEXT
-            "jpg", "png", "gif" -> FileType.IMAGE
-            "mp3", "flac" -> FileType.AUDIO
-            "avi", "mkv" -> FileType.VIDEO
+            "jpg", "jpeg", "png", "gif" -> FileType.IMAGE
+            "mp3", "flac", "wav", "aac" -> FileType.AUDIO
+            "avi", "mkv", "mov", "mp4", "m4v" -> FileType.VIDEO
             "zip", "jar" -> FileType.ARCHIVE
             else -> FileType.GENERIC
         }
