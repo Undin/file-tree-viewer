@@ -64,7 +64,7 @@ class IntegrationTest {
 
     @Test
     fun `select zip`() {
-        val archive = model.localFile("archive.zip")
+        val archive = model.localFile("root/archive.zip")
         presenter.onNodeSelected(FileTreeNode(archive))
         Thread.sleep(1000)
 
@@ -73,7 +73,7 @@ class IntegrationTest {
 
     @Test
     fun `select image`() {
-        val image = model.localFile("image.png")
+        val image = model.localFile("root/image.png")
         presenter.onNodeSelected(FileTreeNode(image))
         Thread.sleep(1000)
 

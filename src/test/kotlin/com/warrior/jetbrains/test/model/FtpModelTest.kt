@@ -1,6 +1,8 @@
 package com.warrior.jetbrains.test.model
 
 import com.warrior.jetbrains.test.ftp
+import com.warrior.jetbrains.test.model.FileLocation.*
+import com.warrior.jetbrains.test.model.FileType.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Test
@@ -27,7 +29,11 @@ class FtpModelTest : BaseModelTest() {
 
         val ftpObject = localFtpServerRoot(ftpServer.serverControlPort, USER1, PASSWORD)
                 ?: error("Failed to create ftp server object")
-        checkChildren(ftpObject, "dir", "file.txt")
+        checkChildren(
+                ftpObject,
+                file("dir", FTP, FOLDER),
+                file("file.txt", FTP, TEXT)
+        )
     }
 
     @Test
@@ -36,7 +42,7 @@ class FtpModelTest : BaseModelTest() {
             content {
                 dir("/user1")
                 dir("/user2")
-                file("/user1/dir")
+                dir("/user1/dir")
                 file("/user1/file.txt")
             }
             user(USER1, PASSWORD, "/user1")
@@ -44,7 +50,11 @@ class FtpModelTest : BaseModelTest() {
 
         val ftpObject = localFtpServerRoot(ftpServer.serverControlPort, USER1, PASSWORD)
                 ?: error("Failed to create ftp server object")
-        checkChildren(ftpObject, "dir", "file.txt")
+        checkChildren(
+                ftpObject,
+                file("dir", FTP, FOLDER),
+                file("file.txt", FTP, TEXT)
+        )
     }
 
     @Test
