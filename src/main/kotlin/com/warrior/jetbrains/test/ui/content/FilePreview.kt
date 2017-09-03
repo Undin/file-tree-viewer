@@ -4,18 +4,18 @@ import com.warrior.jetbrains.test.model.FileInfo
 import java.awt.Color
 import java.awt.Component
 import java.awt.GridLayout
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.SwingConstants
+import javax.swing.*
 
-class FilePreview(private val file: FileInfo) : ContentComponentProvider {
+open class FilePreview(protected val file: FileInfo) : ContentComponentProvider {
     override fun contentComponent(): Component {
         val panel = JPanel(GridLayout(1, 1))
         panel.background = Color.WHITE
-        val label = JLabel(file.name, file.type.largeIcon, SwingConstants.CENTER)
+        val label = JLabel(file.name, fileIcon(), SwingConstants.CENTER)
         label.verticalTextPosition = SwingConstants.BOTTOM
         label.horizontalTextPosition = SwingConstants.CENTER
         panel.add(label)
         return panel
     }
+
+    open protected fun fileIcon(): Icon = file.type.largeIcon
 }

@@ -1,10 +1,10 @@
 package com.warrior.jetbrains.test.presenter
 
-import com.warrior.jetbrains.test.model.Model
-import com.warrior.jetbrains.test.model.canHaveChildren
+import com.warrior.jetbrains.test.model.*
 import com.warrior.jetbrains.test.ui.LoadingState
 import com.warrior.jetbrains.test.ui.content.FilePreview
 import com.warrior.jetbrains.test.ui.content.FolderContentProvider
+import com.warrior.jetbrains.test.ui.content.ImagePreview
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import com.warrior.jetbrains.test.view.View
 import org.apache.logging.log4j.LogManager
@@ -38,7 +38,21 @@ open class PresenterImpl(private val view: View): Presenter {
                 view.onContentLoaded(FolderContentProvider(it))
             }
         } else {
-            view.onContentLoaded(FilePreview(fileInfo))
+            if (fileInfo.location == FileLocation.LOCAL) {
+                when (fileInfo.type) {
+                    FileType.IMAGE -> {
+                        view.onStartLoadingContent()
+                        contentFuture = model.loadImage(fileInfo) { image ->
+                            val provider = if (image != null) ImagePreview(fileInfo, image) else FilePreview(fileInfo)
+                            view.onContentLoaded(provider)
+                        }
+                    }
+                    else -> view.onContentLoaded(FilePreview(fileInfo))
+                }
+            } else {
+                view.onContentLoaded(FilePreview(fileInfo))
+            }
+
         }
     }
 

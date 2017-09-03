@@ -1,13 +1,14 @@
 package com.warrior.jetbrains.test.model
 
-import com.warrior.jetbrains.test.isDirectory
-import com.warrior.jetbrains.test.isArchive
+import com.warrior.jetbrains.test.ui.IMAGE_PREVIEW_SIZE
 import org.apache.commons.httpclient.util.URIUtil
 import org.apache.commons.vfs2.CacheStrategy
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.impl.StandardFileSystemManager
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import java.awt.Image
+import java.io.File
 import java.io.IOException
 import java.net.URI
 import java.nio.file.FileSystems
@@ -16,6 +17,9 @@ import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
+import javax.imageio.ImageIO
+import javax.swing.Icon
+import javax.swing.ImageIcon
 
 class Model {
 
@@ -63,6 +67,28 @@ class Model {
         return FileInfo(file, host, FileLocation.FTP, fileType(file))
     }
 
+    fun loadImage(fileInfo: FileInfo, callback: (Icon?) -> Unit): Future<*> {
+        logger.debug("loadImage: $fileInfo")
+        return executor.submit {
+            try {
+                val image = ImageIO.read(File(fileInfo.file.name.path))
+                val maxSize = maxOf(image.width, image.height)
+                if (maxSize <= IMAGE_PREVIEW_SIZE) {
+                    callback(ImageIcon(image))
+                } else {
+                    val scale = maxOf(image.width, image.height) / IMAGE_PREVIEW_SIZE.toDouble()
+                    val scaledWidth = (image.width / scale).toInt()
+                    val scaledHeight = (image.height / scale).toInt()
+                    val scaledImage = image.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH)
+                    callback(ImageIcon(scaledImage))
+                }
+            } catch (e: IOException) {
+                logger.error("Failed to load image ${fileInfo.file}", e)
+                callback(null)
+            }
+        }
+    }
+
     private fun getChildren(fileInfo: FileInfo): List<FileInfo> {
         if (fileInfo.isArchive && fileInfo.isLocal) {
             val zipChildren = getArchiveChildren(fileInfo)
@@ -108,6 +134,7 @@ class Model {
         return when {
             file.isDirectory -> FileType.FOLDER
             file.isArchive -> FileType.ARCHIVE
+            file.isImage -> FileType.IMAGE
             else -> FileType.GENERIC
         }
     }
