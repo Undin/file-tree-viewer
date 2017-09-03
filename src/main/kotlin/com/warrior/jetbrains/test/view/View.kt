@@ -1,6 +1,7 @@
 package com.warrior.jetbrains.test.view
 
 import com.warrior.jetbrains.test.model.FileInfo
+import com.warrior.jetbrains.test.ui.content.ContentComponentProvider
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 
 interface View {
@@ -8,5 +9,5 @@ interface View {
     fun onStartLoadingChildren(node: FileTreeNode)
     fun onChildrenLoaded(node: FileTreeNode, children: List<FileTreeNode>)
     fun onStartLoadingContent()
-    fun onContentLoaded(data: List<FileInfo>)
+    fun onContentLoaded(provider: ContentComponentProvider)
 }

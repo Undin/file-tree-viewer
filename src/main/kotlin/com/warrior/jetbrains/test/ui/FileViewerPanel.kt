@@ -2,6 +2,8 @@ package com.warrior.jetbrains.test.ui
 
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.presenter.Presenter
+import com.warrior.jetbrains.test.ui.content.ContentComponentProvider
+import com.warrior.jetbrains.test.ui.content.ContentPanel
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import com.warrior.jetbrains.test.ui.tree.LoadingNode
 import java.awt.GridLayout
@@ -49,8 +51,8 @@ class FileViewerPanel(
         node.state = LoadingState.LOADED
     }
 
-    fun setContentData(data: List<FileInfo>) {
-        content.setContent(data)
+    fun setContentData(provider: ContentComponentProvider) {
+        content.setContent(provider)
     }
 
     fun setContentLoading() {

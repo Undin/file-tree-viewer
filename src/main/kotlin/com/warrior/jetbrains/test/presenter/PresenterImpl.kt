@@ -30,10 +30,15 @@ open class PresenterImpl(private val view: View): Presenter {
 
     override fun onNodeSelected(node: FileTreeNode) {
         logger.debug("onNodeSelected: $node")
-        view.onStartLoadingContent()
         contentFuture?.cancel(true)
-        contentFuture = model.getChildrenAsync(node.userObject) {
-            view.onContentLoaded(it)
+        val fileInfo = node.userObject
+        if (fileInfo.canHaveChildren) {
+            view.onStartLoadingContent()
+            contentFuture = model.getChildrenAsync(fileInfo) {
+                view.onContentLoaded(FolderContentProvider(it))
+            }
+        } else {
+            view.onContentLoaded(FilePreview(fileInfo))
         }
     }
 
