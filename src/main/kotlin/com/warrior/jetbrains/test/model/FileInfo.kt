@@ -1,6 +1,6 @@
 package com.warrior.jetbrains.test.model
 
-import com.warrior.jetbrains.test.ui.Icons
+import com.warrior.jetbrains.test.ui.icon.Icons
 import org.apache.commons.vfs2.FileObject
 import javax.swing.Icon
 

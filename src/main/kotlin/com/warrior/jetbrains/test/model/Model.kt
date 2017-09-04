@@ -1,16 +1,12 @@
 package com.warrior.jetbrains.test.model
 
 import com.warrior.jetbrains.test.model.filetype.NameFileTypeDetector
-import com.warrior.jetbrains.test.ui.IMAGE_PREVIEW_SIZE
-import com.warrior.jetbrains.test.ui.TEXT_PREVIEW_LINES
 import org.apache.commons.httpclient.util.URIUtil
 import org.apache.commons.vfs2.CacheStrategy
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.impl.StandardFileSystemManager
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import java.awt.Image
-import java.io.File
 import java.io.IOException
 import java.net.URI
 import java.nio.file.FileSystems
@@ -19,9 +15,6 @@ import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
-import javax.imageio.ImageIO
-import javax.swing.Icon
-import javax.swing.ImageIcon
 
 class Model {
 
@@ -67,54 +60,6 @@ class Model {
         val uri = createFtpUri(host, username, password) ?: return null
         val file = resolveFile(uri) ?: return null
         return FileInfo(file, host, FileLocation.FTP, fileType(file))
-    }
-
-    fun loadImage(fileInfo: FileInfo, callback: (Icon?) -> Unit): Future<*> {
-        logger.debug("loadImage: ${fileInfo.file}")
-        return executor.submit {
-            val icon = try {
-                val image = ImageIO.read(File(fileInfo.path))
-                val maxSize = maxOf(image.width, image.height)
-                if (maxSize <= IMAGE_PREVIEW_SIZE) {
-                    ImageIcon(image)
-                } else {
-                    val scale = maxOf(image.width, image.height) / IMAGE_PREVIEW_SIZE.toDouble()
-                    val scaledWidth = (image.width / scale).toInt()
-                    val scaledHeight = (image.height / scale).toInt()
-                    val scaledImage = image.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH)
-                    ImageIcon(scaledImage)
-                }
-            } catch (e: IOException) {
-                logger.error("Failed to load image ${fileInfo.file}", e)
-                null
-            }
-            callback(icon)
-        }
-    }
-
-    fun loadText(fileInfo: FileInfo, callback: (String?) -> Unit): Future<*> {
-        logger.debug("loadImage: ${fileInfo.file}")
-        return executor.submit {
-            val text = try {
-                File(fileInfo.path).useLines { lines ->
-                    val iterator = lines.iterator()
-                    var linesCount = 0
-                    val builder = StringBuilder()
-                    while (iterator.hasNext() && linesCount < TEXT_PREVIEW_LINES) {
-                        builder.append(iterator.next()).append("\n")
-                        linesCount++
-                    }
-                    if (iterator.hasNext()) {
-                        builder.append("...")
-                    }
-                    builder.toString()
-                }
-            } catch (e: IOException) {
-                logger.debug("Failed to load text from ${fileInfo.file}", e)
-                null
-            }
-            callback(text)
-        }
     }
 
     private fun getChildren(fileInfo: FileInfo): List<FileInfo> {

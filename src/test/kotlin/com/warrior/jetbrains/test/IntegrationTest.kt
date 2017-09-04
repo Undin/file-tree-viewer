@@ -75,7 +75,6 @@ class IntegrationTest {
         presenter.onNodeSelected(FileTreeNode(image))
         Thread.sleep(1000)
 
-        verify(view).onStartLoadingContent()
         verify(view).onContentLoaded(any(ImagePreview::class.java))
     }
 
@@ -85,7 +84,6 @@ class IntegrationTest {
         presenter.onNodeSelected(FileTreeNode(image))
         Thread.sleep(1000)
 
-        verify(view).onStartLoadingContent()
         verify(view).onContentLoaded(any(TextPreview::class.java))
     }
 

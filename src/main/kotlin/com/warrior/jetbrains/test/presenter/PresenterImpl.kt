@@ -29,6 +29,7 @@ open class PresenterImpl(private val view: View): Presenter {
     override fun onNodeSelected(node: FileTreeNode) {
         logger.debug("onNodeSelected: $node")
         contentFuture?.cancel(true)
+        contentFuture = null
         val fileInfo = node.userObject
         if (fileInfo.canHaveChildren) {
             view.onStartLoadingContent()
@@ -46,16 +47,9 @@ open class PresenterImpl(private val view: View): Presenter {
 
     private fun localFilePreview(fileInfo: FileInfo) {
         when (fileInfo.type) {
-            FileType.IMAGE -> {
-                view.onStartLoadingContent()
-                contentFuture = model.loadImage(fileInfo) { image ->
-                    val provider = if (image != null) ImagePreview(fileInfo, image) else FilePreview(fileInfo)
-                    view.onContentLoaded(provider)
-                }
-            }
+            FileType.IMAGE -> view.onContentLoaded(ImagePreview(fileInfo))
             FileType.TEXT -> {
-                view.onStartLoadingContent()
-                contentFuture = model.loadText(fileInfo) { text ->
+                ContentLoader.loadText(fileInfo) { text ->
                     val provider = if (text != null) TextPreview(text) else FilePreview(fileInfo)
                     view.onContentLoaded(provider)
                 }
