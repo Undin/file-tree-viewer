@@ -1,12 +1,11 @@
 package com.warrior.jetbrains.test.ui
 
 import com.warrior.jetbrains.test.model.FileInfo
+import com.warrior.jetbrains.test.ui.filter.FileFilter
 import com.warrior.jetbrains.test.presenter.Presenter
 import com.warrior.jetbrains.test.ui.content.ContentComponentProvider
 import com.warrior.jetbrains.test.ui.content.ContentPanel
-import com.warrior.jetbrains.test.ui.tree.FileTreeCellRender
-import com.warrior.jetbrains.test.ui.tree.FileTreeNode
-import com.warrior.jetbrains.test.ui.tree.LoadingNode
+import com.warrior.jetbrains.test.ui.tree.*
 import java.awt.GridLayout
 import javax.swing.*
 import javax.swing.event.*
@@ -19,8 +18,8 @@ class FileViewerPanel(
     TreeWillExpandListener {
 
     private val treeRoot: DefaultMutableTreeNode = DefaultMutableTreeNode()
-    private val model: DefaultTreeModel = DefaultTreeModel(treeRoot, true)
-    private val tree: JTree = createFileTree(model)
+    private val treeModel: FileTreeModel = FileTreeModel(treeRoot, true)
+    private val tree: JTree = createFileTree(treeModel)
     private val content: ContentPanel = ContentPanel()
 
     init {
@@ -38,19 +37,15 @@ class FileViewerPanel(
 
     fun addRoot(root: FileInfo) {
         val count = treeRoot.childCount
-        model.insertNodeInto(FileTreeNode(root), treeRoot, count)
+        treeModel.insertNodeInto(FileTreeNode(root), treeRoot, count)
     }
 
     fun setLoadingState(node: FileTreeNode) {
-        model.insertNodeInto(LoadingNode(), node, 0)
-        node.state = LoadingState.LOADING
+        treeModel.setLoadingState(node)
     }
 
     fun setChildren(node: FileTreeNode, children: List<FileTreeNode>) {
-        node.removeAllChildren()
-        children.forEach(node::add)
-        model.reload(node)
-        node.state = LoadingState.LOADED
+        treeModel.setNodeChildren(node, children)
     }
 
     fun setContentData(provider: ContentComponentProvider) {
@@ -74,6 +69,10 @@ class FileViewerPanel(
     override fun treeWillCollapse(event: TreeExpansionEvent) {
         val node = event.path.lastPathComponent as? FileTreeNode ?: return
         presenter.onPreNodeCollapse(node)
+    }
+
+    fun applyFileFilter(filter: FileFilter) {
+        treeModel.applyFilter(filter)
     }
 
     private fun createFileTree(model: TreeModel): JTree {

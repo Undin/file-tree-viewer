@@ -1,5 +1,7 @@
 package com.warrior.jetbrains.test.ui
 
+import com.warrior.jetbrains.test.ui.filter.AnyFileFilter
+import com.warrior.jetbrains.test.ui.filter.ExtensionFileFilter
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.presenter.Presenter
 import com.warrior.jetbrains.test.presenter.PresenterImpl
@@ -17,6 +19,8 @@ class FileViewerFrame : JFrame("FileViewer"), View {
 
     private val presenter: Presenter = PresenterImpl(this)
     private val panel: FileViewerPanel = FileViewerPanel(presenter)
+
+    private var currentExtension: String? = null
 
     init {
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
@@ -54,11 +58,15 @@ class FileViewerFrame : JFrame("FileViewer"), View {
 
     private fun createMenu(): JMenuBar {
         val settingsMenu = JMenu("Settings")
+
         val ftpMenuItem = JMenuItem("Add new FTP server")
-        ftpMenuItem.addActionListener { e ->
-            showAddFtpServerDialog()
-        }
+        ftpMenuItem.addActionListener { showAddFtpServerDialog() }
         settingsMenu.add(ftpMenuItem)
+
+        val filterMenuItem = JMenuItem("Set file filter")
+        filterMenuItem.addActionListener { showAddFileFilterDialog() }
+        settingsMenu.add(filterMenuItem)
+
         return JMenuBar().apply { add(settingsMenu) }
     }
 
@@ -76,5 +84,12 @@ class FileViewerFrame : JFrame("FileViewer"), View {
         if (result == JOptionPane.OK_OPTION) {
             presenter.onAddNewFtpServer(host.text, username.text, password.password)
         }
+    }
+
+    private fun showAddFileFilterDialog() {
+        val result = JOptionPane.showInputDialog("Input file extension", currentExtension) ?: return
+        currentExtension = result
+        val filter = if (result.isEmpty()) AnyFileFilter else ExtensionFileFilter(result)
+        panel.applyFileFilter(filter)
     }
 }
