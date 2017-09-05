@@ -48,7 +48,7 @@ class IntegrationTest {
         Thread.sleep(1000)
 
         verify(view).onStartLoadingContent()
-        verify(view).onContentLoaded(any(FolderContentProvider::class.java))
+        verify(view).onContentLoaded(any(FileList::class.java))
     }
 
     @Test
@@ -57,7 +57,7 @@ class IntegrationTest {
         presenter.onNodeSelected(FileTreeNode(file))
         Thread.sleep(1000)
 
-        verify(view).onContentLoaded(any(FilePreview::class.java))
+        verify(view).onContentLoaded(any(SingleFile::class.java))
     }
 
     @Test
@@ -66,7 +66,7 @@ class IntegrationTest {
         presenter.onNodeSelected(FileTreeNode(archive))
         Thread.sleep(1000)
 
-        verify(view).onContentLoaded(any(FolderContentProvider::class.java))
+        verify(view).onContentLoaded(any(FileList::class.java))
     }
 
     @Test
@@ -75,7 +75,7 @@ class IntegrationTest {
         presenter.onNodeSelected(FileTreeNode(image))
         Thread.sleep(1000)
 
-        verify(view).onContentLoaded(any(ImagePreview::class.java))
+        verify(view).onContentLoaded(any(SingleFile::class.java))
     }
 
     @Test
@@ -84,7 +84,7 @@ class IntegrationTest {
         presenter.onNodeSelected(FileTreeNode(image))
         Thread.sleep(1000)
 
-        verify(view).onContentLoaded(any(TextPreview::class.java))
+        verify(view).onContentLoaded(any(SingleFile::class.java))
     }
 
     @Test

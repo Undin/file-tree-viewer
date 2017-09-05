@@ -2,25 +2,21 @@ package com.warrior.jetbrains.test.ui.content
 
 import com.warrior.jetbrains.test.model.ContentLoader
 import com.warrior.jetbrains.test.model.FileInfo
+import com.warrior.jetbrains.test.ui.IMAGE_PREVIEW_SIZE
+import com.warrior.jetbrains.test.ui.icon.ImageIcon
 import java.util.concurrent.Future
-import javax.swing.JTextArea
 import javax.swing.SwingUtilities
 
-class TextPreviewPanel(file: FileInfo) : BasePreviewPanel() {
+class ImagePreviewPanel(file: FileInfo) : BasePreviewPanel() {
 
     private var task: Future<*>
 
     init {
         val label = defaultIcon(file)
         add(label)
-        task = ContentLoader.loadText(file) { text ->
-            if (text != null) {
-                SwingUtilities.invokeLater {
-                    remove(label)
-                    add(JTextArea(text))
-                    revalidate()
-                    repaint()
-                }
+        task = ContentLoader.loadImage(file, IMAGE_PREVIEW_SIZE) { image ->
+            if (image != null) {
+                SwingUtilities.invokeLater { label.icon = ImageIcon(image) }
             }
         }
     }

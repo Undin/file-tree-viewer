@@ -1,5 +1,7 @@
 package com.warrior.jetbrains.test.ui.content
 
+import com.warrior.jetbrains.test.model.FileLocation
+import com.warrior.jetbrains.test.model.FileType
 import com.warrior.jetbrains.test.ui.LoadingState
 import java.awt.Color
 import java.awt.Component
@@ -26,8 +28,22 @@ class ContentPanel : JPanel(GridLayout(1, 1)) {
         }
     }
 
-    fun setContent(provider: ContentComponentProvider) {
-        setComponent(provider.contentComponent())
+    fun setContent(content: Content) {
+        val contentComponent: JPanel = when (content) {
+            is FileList -> FolderContentPanel(content.files)
+            is SingleFile -> {
+                val file = content.file
+                if (file.location == FileLocation.LOCAL) {
+                    when (file.type) {
+                        FileType.TEXT -> TextPreviewPanel(file)
+                        FileType.IMAGE -> ImagePreviewPanel(file)
+                        else -> FilePreviewPanel(file)
+                    }
+                } else FilePreviewPanel(file)
+            }
+        }
+
+        setComponent(contentComponent)
         state = LoadingState.LOADED
     }
 

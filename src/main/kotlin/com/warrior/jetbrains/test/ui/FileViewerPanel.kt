@@ -3,7 +3,7 @@ package com.warrior.jetbrains.test.ui
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.ui.filter.FileFilter
 import com.warrior.jetbrains.test.presenter.Presenter
-import com.warrior.jetbrains.test.ui.content.ContentComponentProvider
+import com.warrior.jetbrains.test.ui.content.Content
 import com.warrior.jetbrains.test.ui.content.ContentPanel
 import com.warrior.jetbrains.test.ui.tree.*
 import java.awt.GridLayout
@@ -20,11 +20,11 @@ class FileViewerPanel(
     private val treeRoot: DefaultMutableTreeNode = DefaultMutableTreeNode()
     private val treeModel: FileTreeModel = FileTreeModel(treeRoot, true)
     private val tree: JTree = createFileTree(treeModel)
-    private val content: ContentPanel = ContentPanel()
+    private val contentPanel: ContentPanel = ContentPanel()
 
     init {
         tree.cellRenderer = FileTreeCellRender()
-        val contentScrollPane = JScrollPane(content).apply {
+        val contentScrollPane = JScrollPane(contentPanel).apply {
             verticalScrollBar.unitIncrement = 16
         }
         val splitView = JSplitPane(JSplitPane.HORIZONTAL_SPLIT, JScrollPane(tree), contentScrollPane).apply {
@@ -48,12 +48,12 @@ class FileViewerPanel(
         treeModel.setNodeChildren(node, children)
     }
 
-    fun setContentData(provider: ContentComponentProvider) {
-        content.setContent(provider)
+    fun setContent(content: Content) {
+        contentPanel.setContent(content)
     }
 
     fun setContentLoading() {
-        content.setContentLoading()
+        contentPanel.setContentLoading()
     }
 
     override fun valueChanged(e: TreeSelectionEvent) {

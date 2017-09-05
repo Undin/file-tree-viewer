@@ -5,7 +5,7 @@ import com.warrior.jetbrains.test.ui.filter.ExtensionFileFilter
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.presenter.Presenter
 import com.warrior.jetbrains.test.presenter.PresenterImpl
-import com.warrior.jetbrains.test.ui.content.ContentComponentProvider
+import com.warrior.jetbrains.test.ui.content.Content
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import com.warrior.jetbrains.test.view.View
 import org.apache.logging.log4j.LogManager
@@ -51,9 +51,9 @@ class FileViewerFrame : JFrame("FileViewer"), View {
         SwingUtilities.invokeLater { panel.setContentLoading() }
     }
 
-    override fun onContentLoaded(provider: ContentComponentProvider) {
-        logger.debug("setContentData: $provider")
-        SwingUtilities.invokeLater { panel.setContentData(provider) }
+    override fun onContentLoaded(content: Content) {
+        logger.debug("onContentLoaded: $content")
+        SwingUtilities.invokeLater { panel.setContent(content) }
     }
 
     private fun createMenu(): JMenuBar {

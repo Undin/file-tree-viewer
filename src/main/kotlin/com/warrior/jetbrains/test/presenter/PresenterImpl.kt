@@ -34,30 +34,26 @@ open class PresenterImpl(private val view: View): Presenter {
         if (fileInfo.canHaveChildren) {
             view.onStartLoadingContent()
             contentFuture = model.getChildrenAsync(fileInfo) {
-                view.onContentLoaded(FolderContentProvider(it))
+                view.onContentLoaded(FileList(it))
             }
         } else {
-            if (fileInfo.location == FileLocation.LOCAL) {
-                localFilePreview(fileInfo)
-            } else {
-                view.onContentLoaded(FilePreview(fileInfo))
-            }
+            view.onContentLoaded(SingleFile(fileInfo))
         }
     }
-
-    private fun localFilePreview(fileInfo: FileInfo) {
-        when (fileInfo.type) {
-            FileType.IMAGE -> view.onContentLoaded(ImagePreview(fileInfo))
-            FileType.TEXT -> {
-                ContentLoader.loadText(fileInfo) { text ->
-                    val provider = if (text != null) TextPreview(text) else FilePreview(fileInfo)
-                    view.onContentLoaded(provider)
-                }
-
-            }
-            else -> view.onContentLoaded(FilePreview(fileInfo))
-        }
-    }
+//
+//    private fun localFilePreview(fileInfo: FileInfo) {
+//        when (fileInfo.type) {
+//            FileType.IMAGE -> view.onContentLoaded(ImagePreview(fileInfo))
+//            FileType.TEXT -> {
+//                ContentLoader.loadText(fileInfo) { text ->
+//                    val provider = if (text != null) TextPreview(text) else FilePreview(fileInfo)
+//                    view.onContentLoaded(provider)
+//                }
+//
+//            }
+//            else -> view.onContentLoaded(FilePreview(fileInfo))
+//        }
+//    }
 
     override fun onPreNodeExpand(node: FileTreeNode) {
         logger.debug("onPreNodeExpand: $node")
