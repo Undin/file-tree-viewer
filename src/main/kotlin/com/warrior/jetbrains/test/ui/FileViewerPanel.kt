@@ -4,6 +4,7 @@ import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.presenter.Presenter
 import com.warrior.jetbrains.test.ui.content.ContentComponentProvider
 import com.warrior.jetbrains.test.ui.content.ContentPanel
+import com.warrior.jetbrains.test.ui.tree.FileTreeCellRender
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import com.warrior.jetbrains.test.ui.tree.LoadingNode
 import java.awt.GridLayout
@@ -23,6 +24,7 @@ class FileViewerPanel(
     private val content: ContentPanel = ContentPanel()
 
     init {
+        tree.cellRenderer = FileTreeCellRender()
         val contentScrollPane = JScrollPane(content).apply {
             verticalScrollBar.unitIncrement = 16
         }
