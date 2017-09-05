@@ -1,6 +1,6 @@
 package com.warrior.jetbrains.test.model
 
-import com.warrior.jetbrains.test.ui.TEXT_PREVIEW_LINES
+import com.warrior.jetbrains.test.view.TEXT_PREVIEW_LINES
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.awt.Image

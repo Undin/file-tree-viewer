@@ -1,7 +1,7 @@
-package com.warrior.jetbrains.test.ui.tree
+package com.warrior.jetbrains.test.view.tree
 
-import com.warrior.jetbrains.test.ui.filter.AnyFileFilter
-import com.warrior.jetbrains.test.ui.filter.FileFilter
+import com.warrior.jetbrains.test.view.filter.AnyFileFilter
+import com.warrior.jetbrains.test.view.filter.FileFilter
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode
 

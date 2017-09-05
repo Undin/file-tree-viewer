@@ -1,6 +1,6 @@
 package com.warrior.jetbrains.test
 
-import com.warrior.jetbrains.test.ui.FileViewerFrame
+import com.warrior.jetbrains.test.view.FileViewerFrame
 import javax.swing.SwingUtilities
 import javax.swing.UIManager
 

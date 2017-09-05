@@ -1,9 +1,9 @@
-package com.warrior.jetbrains.test.ui.content
+package com.warrior.jetbrains.test.view.content
 
 import com.warrior.jetbrains.test.model.ContentLoader
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.model.FileType
-import com.warrior.jetbrains.test.ui.icon.ImageIcon
+import com.warrior.jetbrains.test.view.icon.ImageIcon
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.GridLayout

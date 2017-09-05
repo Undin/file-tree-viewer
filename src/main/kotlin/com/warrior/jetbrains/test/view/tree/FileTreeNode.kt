@@ -1,10 +1,10 @@
-package com.warrior.jetbrains.test.ui.tree
+package com.warrior.jetbrains.test.view.tree
 
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.model.canHaveChildren
-import com.warrior.jetbrains.test.ui.filter.AnyFileFilter
-import com.warrior.jetbrains.test.ui.filter.FileFilter
-import com.warrior.jetbrains.test.ui.LoadingState
+import com.warrior.jetbrains.test.view.filter.AnyFileFilter
+import com.warrior.jetbrains.test.view.filter.FileFilter
+import com.warrior.jetbrains.test.view.LoadingState
 import java.util.*
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.TreeNode

@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test.ui
+package com.warrior.jetbrains.test.view
 
 const val INITIAL_WIDTH = 800
 const val INITIAL_HEIGHT = 500

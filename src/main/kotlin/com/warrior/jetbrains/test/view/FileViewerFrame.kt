@@ -1,13 +1,12 @@
-package com.warrior.jetbrains.test.ui
+package com.warrior.jetbrains.test.view
 
-import com.warrior.jetbrains.test.ui.filter.AnyFileFilter
-import com.warrior.jetbrains.test.ui.filter.ExtensionFileFilter
+import com.warrior.jetbrains.test.view.filter.AnyFileFilter
+import com.warrior.jetbrains.test.view.filter.ExtensionFileFilter
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.presenter.Presenter
 import com.warrior.jetbrains.test.presenter.PresenterImpl
-import com.warrior.jetbrains.test.ui.content.Content
-import com.warrior.jetbrains.test.ui.tree.FileTreeNode
-import com.warrior.jetbrains.test.view.View
+import com.warrior.jetbrains.test.view.content.Content
+import com.warrior.jetbrains.test.view.tree.FileTreeNode
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.awt.Dimension

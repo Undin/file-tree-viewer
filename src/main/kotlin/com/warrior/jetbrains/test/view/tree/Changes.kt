@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test.ui.tree
+package com.warrior.jetbrains.test.view.tree
 
 import javax.swing.tree.DefaultMutableTreeNode
 

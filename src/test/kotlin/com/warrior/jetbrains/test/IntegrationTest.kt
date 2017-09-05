@@ -2,8 +2,8 @@ package com.warrior.jetbrains.test
 
 import com.warrior.jetbrains.test.model.Model
 import com.warrior.jetbrains.test.presenter.Presenter
-import com.warrior.jetbrains.test.ui.content.*
-import com.warrior.jetbrains.test.ui.tree.FileTreeNode
+import com.warrior.jetbrains.test.view.content.*
+import com.warrior.jetbrains.test.view.tree.FileTreeNode
 import com.warrior.jetbrains.test.view.View
 import org.junit.Before
 import org.junit.Test

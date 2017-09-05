@@ -1,8 +1,8 @@
-package com.warrior.jetbrains.test.ui.content
+package com.warrior.jetbrains.test.view.content
 
 import com.warrior.jetbrains.test.model.FileLocation
 import com.warrior.jetbrains.test.model.FileType
-import com.warrior.jetbrains.test.ui.LoadingState
+import com.warrior.jetbrains.test.view.LoadingState
 import java.awt.Color
 import java.awt.Component
 import java.awt.GridLayout

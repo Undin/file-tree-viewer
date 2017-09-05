@@ -1,11 +1,11 @@
-package com.warrior.jetbrains.test.ui
+package com.warrior.jetbrains.test.view
 
 import com.warrior.jetbrains.test.model.FileInfo
-import com.warrior.jetbrains.test.ui.filter.FileFilter
+import com.warrior.jetbrains.test.view.filter.FileFilter
 import com.warrior.jetbrains.test.presenter.Presenter
-import com.warrior.jetbrains.test.ui.content.Content
-import com.warrior.jetbrains.test.ui.content.ContentPanel
-import com.warrior.jetbrains.test.ui.tree.*
+import com.warrior.jetbrains.test.view.content.Content
+import com.warrior.jetbrains.test.view.content.ContentPanel
+import com.warrior.jetbrains.test.view.tree.*
 import java.awt.GridLayout
 import javax.swing.*
 import javax.swing.event.*

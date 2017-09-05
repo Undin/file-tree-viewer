@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test.ui.icon
+package com.warrior.jetbrains.test.view.icon
 
 import javax.swing.Icon
 import javax.swing.ImageIcon

@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test.ui.icon
+package com.warrior.jetbrains.test.view.icon
 
 import java.awt.Component
 import java.awt.Graphics

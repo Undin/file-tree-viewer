@@ -1,8 +1,8 @@
 package com.warrior.jetbrains.test.view
 
 import com.warrior.jetbrains.test.model.FileInfo
-import com.warrior.jetbrains.test.ui.content.Content
-import com.warrior.jetbrains.test.ui.tree.FileTreeNode
+import com.warrior.jetbrains.test.view.content.Content
+import com.warrior.jetbrains.test.view.tree.FileTreeNode
 
 interface View {
     fun addRoot(root: FileInfo)

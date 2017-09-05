@@ -1,9 +1,9 @@
 package com.warrior.jetbrains.test.presenter
 
 import com.warrior.jetbrains.test.model.*
-import com.warrior.jetbrains.test.ui.LoadingState
-import com.warrior.jetbrains.test.ui.content.*
-import com.warrior.jetbrains.test.ui.tree.FileTreeNode
+import com.warrior.jetbrains.test.view.LoadingState
+import com.warrior.jetbrains.test.view.content.*
+import com.warrior.jetbrains.test.view.tree.FileTreeNode
 import com.warrior.jetbrains.test.view.View
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger

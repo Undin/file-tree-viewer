@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test.ui
+package com.warrior.jetbrains.test.view
 
 enum class LoadingState {
     EMPTY,
