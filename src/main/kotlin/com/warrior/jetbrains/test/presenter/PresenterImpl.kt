@@ -40,20 +40,6 @@ open class PresenterImpl(private val view: View): Presenter {
             view.onContentLoaded(SingleFile(fileInfo))
         }
     }
-//
-//    private fun localFilePreview(fileInfo: FileInfo) {
-//        when (fileInfo.type) {
-//            FileType.IMAGE -> view.onContentLoaded(ImagePreview(fileInfo))
-//            FileType.TEXT -> {
-//                ContentLoader.loadText(fileInfo) { text ->
-//                    val provider = if (text != null) TextPreview(text) else FilePreview(fileInfo)
-//                    view.onContentLoaded(provider)
-//                }
-//
-//            }
-//            else -> view.onContentLoaded(FilePreview(fileInfo))
-//        }
-//    }
 
     override fun onPreNodeExpand(node: FileTreeNode) {
         logger.debug("onPreNodeExpand: $node")
