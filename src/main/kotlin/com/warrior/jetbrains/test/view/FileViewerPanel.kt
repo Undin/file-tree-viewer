@@ -52,6 +52,7 @@ class FileViewerPanel(
 
     fun setContent(content: Content) {
         val previewPanel: BasePreviewPanel = when (content) {
+            is Empty -> EmptyPreviewPanel()
             is FileList -> FolderPreviewPanel(content.files)
             is SingleFile -> FilePreviewPanel(content.file)
         }
@@ -75,8 +76,7 @@ class FileViewerPanel(
     }
 
     override fun valueChanged(e: TreeSelectionEvent) {
-        val node = e.newLeadSelectionPath?.lastPathComponent as? FileTreeNode ?: return
-        presenter.onNodeSelected(node)
+        presenter.onNodeSelected(e.newLeadSelectionPath?.lastPathComponent as? FileTreeNode)
     }
 
     override fun treeWillExpand(event: TreeExpansionEvent) {

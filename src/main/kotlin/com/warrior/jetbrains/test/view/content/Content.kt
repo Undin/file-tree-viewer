@@ -5,8 +5,15 @@ import java.awt.Image
 
 sealed class Content
 
-data class SingleFile(val file: FileInfo): Content()
-data class FileList(val files: List<FileInfo>): Content()
+object Empty : Content() {
+    override fun toString(): String = "Empty"
+}
+data class SingleFile(val file: FileInfo): Content() {
+    override fun toString(): String = "SingleFile(file=$file)"
+}
+data class FileList(val files: List<FileInfo>): Content() {
+    override fun toString(): String = "FileList(files=$files)"
+}
 
 sealed class ContentData(val file: FileInfo)
 

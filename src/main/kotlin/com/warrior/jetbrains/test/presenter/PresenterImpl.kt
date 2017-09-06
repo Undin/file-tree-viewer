@@ -31,7 +31,7 @@ open class PresenterImpl(private val view: View): Presenter {
         }
     }
 
-    override fun onNodeSelected(node: FileTreeNode) {
+    override fun onNodeSelected(node: FileTreeNode?) {
         logger.debug("onNodeSelected: $node")
         selectedNode = node
 
@@ -40,20 +40,25 @@ open class PresenterImpl(private val view: View): Presenter {
         contentLoadingTasks.forEach { _, task -> task.cancel(true) }
         contentLoadingTasks.clear()
 
-        val fileInfo = node.userObject
-        if (fileInfo.canHaveChildren) {
-            view.onStartLoadingContent()
-            contentFuture = model.getChildrenAsync(fileInfo) { files ->
-                onContentLoaded(node, FileList(files))
+        if (node != null) {
+            val fileInfo = node.userObject
+            if (fileInfo.canHaveChildren) {
+                view.onStartLoadingContent()
+                contentFuture = model.getChildrenAsync(fileInfo) { files ->
+                    onContentLoaded(node, FileList(files))
+                }
+            } else {
+                onContentLoaded(node, SingleFile(fileInfo))
             }
         } else {
-            onContentLoaded(node, SingleFile(fileInfo))
+            view.displayContent(Empty)
         }
     }
 
     private fun onContentLoaded(node: FileTreeNode, content: Content) {
-        view.onContentLoaded(content)
+        view.displayContent(content)
         val (files, imageSize) = when (content) {
+            is Empty -> emptyList<FileInfo>() to 0
             is SingleFile -> listOf(content.file) to IMAGE_PREVIEW_SIZE
             is FileList -> content.files to SMALL_IMAGE_PREVIEW
         }

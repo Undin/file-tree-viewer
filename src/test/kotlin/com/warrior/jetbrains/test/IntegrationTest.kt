@@ -47,7 +47,7 @@ class IntegrationTest {
         Thread.sleep(1000)
 
         verify(view).onStartLoadingContent()
-        verify(view).onContentLoaded(any(FileList::class.java))
+        verify(view).displayContent(any(FileList::class.java))
         verify(view, times(2)).onContentDataLoaded(any(ContentData::class.java))
     }
 
@@ -57,7 +57,7 @@ class IntegrationTest {
         presenter.onNodeSelected(FileTreeNode(file))
         Thread.sleep(1000)
 
-        verify(view).onContentLoaded(any(SingleFile::class.java))
+        verify(view).displayContent(any(SingleFile::class.java))
     }
 
     @Test
@@ -66,7 +66,7 @@ class IntegrationTest {
         presenter.onNodeSelected(FileTreeNode(archive))
         Thread.sleep(1000)
 
-        verify(view).onContentLoaded(any(FileList::class.java))
+        verify(view).displayContent(any(FileList::class.java))
     }
 
     @Test
@@ -75,7 +75,7 @@ class IntegrationTest {
         presenter.onNodeSelected(FileTreeNode(image))
         Thread.sleep(1000)
 
-        verify(view).onContentLoaded(any(SingleFile::class.java))
+        verify(view).displayContent(any(SingleFile::class.java))
         verify(view).onContentDataLoaded(any(Image::class.java))
     }
 
@@ -85,8 +85,15 @@ class IntegrationTest {
         presenter.onNodeSelected(FileTreeNode(image))
         Thread.sleep(1000)
 
-        verify(view).onContentLoaded(any(SingleFile::class.java))
+        verify(view).displayContent(any(SingleFile::class.java))
         verify(view).onContentDataLoaded(any(Text::class.java))
+    }
+
+    @Test
+    fun `select nothing`() {
+        presenter.onNodeSelected(null)
+
+        verify(view).displayContent(Empty)
     }
 
     @Test

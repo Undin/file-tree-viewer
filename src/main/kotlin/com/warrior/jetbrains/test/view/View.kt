@@ -10,6 +10,6 @@ interface View {
     fun onStartLoadingChildren(node: FileTreeNode)
     fun onChildrenLoaded(node: FileTreeNode, children: List<FileInfo>)
     fun onStartLoadingContent()
-    fun onContentLoaded(content: Content)
+    fun displayContent(content: Content)
     fun onContentDataLoaded(data: ContentData)
 }

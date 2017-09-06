@@ -51,8 +51,8 @@ class FileViewerFrame : JFrame("FileViewer"), View {
         SwingUtilities.invokeLater { panel.setContentLoading() }
     }
 
-    override fun onContentLoaded(content: Content) {
-        logger.debug("onContentLoaded: $content")
+    override fun displayContent(content: Content) {
+        logger.debug("displayContent: $content")
         SwingUtilities.invokeLater { panel.setContent(content) }
     }
 
