@@ -5,8 +5,8 @@ import com.warrior.jetbrains.test.model.filter.FileFilter
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode
 
-class FileTreeModel(private val treeRoot: MutableTreeNode, asksAllowsChildren: Boolean) :
-        DefaultTreeModel(treeRoot, asksAllowsChildren) {
+class FileTreeModel(private val treeRoot: MutableTreeNode) :
+        DefaultTreeModel(treeRoot, true) {
 
     private var filter: FileFilter = AnyFileFilter
 

@@ -17,7 +17,7 @@ class FileViewerPanel(
     TreeWillExpandListener {
 
     private val treeRoot: DefaultMutableTreeNode = DefaultMutableTreeNode()
-    private val treeModel: FileTreeModel = FileTreeModel(treeRoot, true)
+    private val treeModel: FileTreeModel = FileTreeModel(treeRoot)
     private val tree: JTree = createFileTree(treeModel)
     private val contentPanel: JPanel = JPanel(GridLayout(1, 1))
     private var contentPreview: BasePreviewPanel = EmptyPreviewPanel()

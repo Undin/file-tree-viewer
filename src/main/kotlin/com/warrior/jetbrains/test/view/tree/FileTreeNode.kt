@@ -2,7 +2,6 @@ package com.warrior.jetbrains.test.view.tree
 
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.model.canHaveChildren
-import com.warrior.jetbrains.test.model.filter.AnyFileFilter
 import com.warrior.jetbrains.test.model.filter.FileFilter
 import com.warrior.jetbrains.test.view.LoadingState
 import java.util.*
@@ -14,7 +13,6 @@ class FileTreeNode(data: FileInfo) : DefaultMutableTreeNode(data) {
 
     var state: LoadingState = LoadingState.EMPTY
         private set
-    var filter: FileFilter = AnyFileFilter
 
     // Unfiltered list of children to support fast filtering.
     private var unfilteredChildren: List<FileTreeNode> = emptyList()
@@ -73,7 +71,12 @@ class FileTreeNode(data: FileInfo) : DefaultMutableTreeNode(data) {
         unfilteredChildren = children
         filteredChildren = children.filter { filter(it) }
         state = LoadingState.LOADED
-        return Changes(intArrayOf(0), arrayOf(loadingNode!!), IntArray(filteredChildren.size) { it })
+        val removedNode = loadingNode
+        return if (removedNode != null) {
+            Changes(intArrayOf(0), arrayOf(removedNode), IntArray(filteredChildren.size) { it })
+        } else {
+            Changes(intArrayOf(), emptyArray(), IntArray(filteredChildren.size) { it })
+        }
     }
 
     /**
