@@ -35,9 +35,9 @@ open class PresenterImpl(private val view: View): Presenter {
         logger.debug("onNodeSelected: $node")
         selectedNode = node
 
-        println("try cancel content loading: ${contentFuture?.cancel(true)}")
+        contentFuture?.cancel(true)
         contentFuture = null
-        contentLoadingTasks.forEach {file, task -> println("try cancel content loading of $file: ${task.cancel(true)}") }
+        contentLoadingTasks.forEach { _, task -> task.cancel(true) }
         contentLoadingTasks.clear()
 
         val fileInfo = node.userObject
