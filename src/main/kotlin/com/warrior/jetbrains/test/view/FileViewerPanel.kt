@@ -1,7 +1,7 @@
 package com.warrior.jetbrains.test.view
 
 import com.warrior.jetbrains.test.model.FileInfo
-import com.warrior.jetbrains.test.view.filter.FileFilter
+import com.warrior.jetbrains.test.presenter.filter.FileFilter
 import com.warrior.jetbrains.test.presenter.Presenter
 import com.warrior.jetbrains.test.view.content.*
 import com.warrior.jetbrains.test.view.tree.*
@@ -91,6 +91,7 @@ class FileViewerPanel(
 
     fun applyFileFilter(filter: FileFilter) {
         treeModel.applyFilter(filter)
+        contentPreview.applyFileFilter(filter)
     }
 
     private fun createFileTree(model: TreeModel): JTree {

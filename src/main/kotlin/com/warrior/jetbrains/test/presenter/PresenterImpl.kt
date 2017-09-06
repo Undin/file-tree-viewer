@@ -1,6 +1,8 @@
 package com.warrior.jetbrains.test.presenter
 
 import com.warrior.jetbrains.test.model.*
+import com.warrior.jetbrains.test.presenter.filter.AnyFileFilter
+import com.warrior.jetbrains.test.presenter.filter.ExtensionFileFilter
 import com.warrior.jetbrains.test.view.*
 import com.warrior.jetbrains.test.view.content.*
 import com.warrior.jetbrains.test.view.tree.FileTreeNode
@@ -19,6 +21,7 @@ open class PresenterImpl(private val view: View): Presenter {
 
     @Volatile
     private var selectedNode: FileTreeNode? = null
+    private var currentFilter = ""
 
     private var contentFuture: Future<*>? = null
     private val contentLoadingTasks: ConcurrentMap<FileInfo, Future<*>> = ConcurrentHashMap()
@@ -103,5 +106,14 @@ open class PresenterImpl(private val view: View): Presenter {
         logger.debug("onAddNewFtpServer. host: $host, username: $username, password: ${Arrays.toString(password)}")
         val ftpRoot = model.createFtpServerRoot(host, username, password) ?: return
         view.addRoot(ftpRoot)
+    }
+
+    override fun onAddFileFilter(filterString: String) {
+        logger.debug("onAddFileFilter: $filterString")
+        if (filterString != currentFilter) {
+            currentFilter = filterString
+            val filter = if (filterString.isEmpty()) AnyFileFilter else ExtensionFileFilter(filterString)
+            view.applyFileFilter(filter)
+        }
     }
 }

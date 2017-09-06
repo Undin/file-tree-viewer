@@ -8,4 +8,5 @@ interface Presenter {
     fun onPreNodeExpand(node: FileTreeNode)
     fun onPreNodeCollapse(node: FileTreeNode)
     fun onAddNewFtpServer(host: String, username: String?, password: CharArray)
+    fun onAddFileFilter(filterString: String)
 }

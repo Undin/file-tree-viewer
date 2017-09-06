@@ -1,6 +1,7 @@
 package com.warrior.jetbrains.test.view.content
 
 import com.warrior.jetbrains.test.model.FileInfo
+import com.warrior.jetbrains.test.presenter.filter.FileFilter
 import com.warrior.jetbrains.test.view.icon.ImageIcon
 import java.awt.Component
 import java.awt.GridLayout
@@ -8,7 +9,7 @@ import javax.swing.JLabel
 import javax.swing.JTextArea
 import javax.swing.SwingConstants
 
-class FilePreviewPanel(file: FileInfo): BasePreviewPanel() {
+class FilePreviewPanel(private val file: FileInfo): BasePreviewPanel() {
 
     private var component: Component
 
@@ -34,5 +35,15 @@ class FilePreviewPanel(file: FileInfo): BasePreviewPanel() {
                 repaint()
             }
         }
+    }
+
+    override fun applyFileFilter(filter: FileFilter) {
+        val accept = filter.accept(file)
+        if (accept && component.parent == null) { // file preview should be shown but its component isn't added
+            add(component)
+        } else if (!accept && component.parent != null) { // file preview shouldn't be shown but its component is added
+            remove(component)
+        }
+        update()
     }
 }

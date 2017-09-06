@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test.view.filter
+package com.warrior.jetbrains.test.presenter.filter
 
 import com.warrior.jetbrains.test.model.FileInfo
 

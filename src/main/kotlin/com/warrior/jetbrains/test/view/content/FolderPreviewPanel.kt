@@ -1,13 +1,14 @@
 package com.warrior.jetbrains.test.view.content
 
 import com.warrior.jetbrains.test.model.FileInfo
+import com.warrior.jetbrains.test.presenter.filter.FileFilter
 import com.warrior.jetbrains.test.view.icon.ImageIcon
 import java.awt.Dimension
 import java.awt.GridLayout
 import javax.swing.JLabel
 import javax.swing.SwingConstants
 
-class FolderPreviewPanel(files: List<FileInfo>): BasePreviewPanel() {
+class FolderPreviewPanel(private val files: List<FileInfo>): BasePreviewPanel() {
 
     private val labels: MutableMap<FileInfo, JLabel> = HashMap(files.size)
 
@@ -31,17 +32,16 @@ class FolderPreviewPanel(files: List<FileInfo>): BasePreviewPanel() {
         }
     }
 
-
-//    override fun applyFileFilter(filter: FileFilter) {
-//        removeAll()
-//        for (file in files) {
-//            if (filter.accept(file)) {
-//                // We are sure that there is corresponding label in labels
-//                add(labels[file])
-//            }
-//        }
-//        updateUI()
-//    }
+    override fun applyFileFilter(filter: FileFilter) {
+        removeAll()
+        for (file in files) {
+            if (filter.accept(file)) {
+                // We are sure that there is corresponding label in labels map
+                add(labels[file])
+            }
+        }
+        update()
+    }
 
     companion object {
         private const val ITEM_WIDTH = 72

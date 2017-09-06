@@ -1,10 +1,9 @@
 package com.warrior.jetbrains.test.view
 
-import com.warrior.jetbrains.test.view.filter.AnyFileFilter
-import com.warrior.jetbrains.test.view.filter.ExtensionFileFilter
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.presenter.Presenter
 import com.warrior.jetbrains.test.presenter.PresenterImpl
+import com.warrior.jetbrains.test.presenter.filter.FileFilter
 import com.warrior.jetbrains.test.view.content.Content
 import com.warrior.jetbrains.test.view.content.ContentData
 import com.warrior.jetbrains.test.view.tree.FileTreeNode
@@ -20,7 +19,7 @@ class FileViewerFrame : JFrame("FileViewer"), View {
     private val presenter: Presenter = PresenterImpl(this)
     private val panel: FileViewerPanel = FileViewerPanel(presenter)
 
-    private var currentExtension: String? = null
+    private var currentExtension: String = ""
 
     init {
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
@@ -61,6 +60,11 @@ class FileViewerFrame : JFrame("FileViewer"), View {
         SwingUtilities.invokeLater { panel.updateContentData(data) }
     }
 
+    override fun applyFileFilter(filter: FileFilter) {
+        logger.debug("applyFileFilter: $filter")
+        panel.applyFileFilter(filter)
+    }
+
     private fun createMenu(): JMenuBar {
         val settingsMenu = JMenu("Settings")
 
@@ -94,7 +98,6 @@ class FileViewerFrame : JFrame("FileViewer"), View {
     private fun showAddFileFilterDialog() {
         val result = JOptionPane.showInputDialog("Input file extension", currentExtension) ?: return
         currentExtension = result
-        val filter = if (result.isEmpty()) AnyFileFilter else ExtensionFileFilter(result)
-        panel.applyFileFilter(filter)
+        presenter.onAddFileFilter(result)
     }
 }

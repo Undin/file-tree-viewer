@@ -2,6 +2,8 @@ package com.warrior.jetbrains.test
 
 import com.warrior.jetbrains.test.model.Model
 import com.warrior.jetbrains.test.presenter.Presenter
+import com.warrior.jetbrains.test.presenter.filter.AnyFileFilter
+import com.warrior.jetbrains.test.presenter.filter.ExtensionFileFilter
 import com.warrior.jetbrains.test.view.View
 import com.warrior.jetbrains.test.view.content.*
 import com.warrior.jetbrains.test.view.tree.FileTreeNode
@@ -114,5 +116,32 @@ class IntegrationTest {
 
         verify(view).addRoot(ftpRoot)
         ftpServer.stop()
+    }
+
+    @Test
+    fun `add filter`() {
+        val extension = "png"
+        presenter.onAddFileFilter(extension)
+
+        verify(view).applyFileFilter(ExtensionFileFilter(extension))
+    }
+
+    @Test
+    fun `add filter several times`() {
+        val extensions = listOf("png", "", "pdf")
+        val expectedFilters = listOf(ExtensionFileFilter("png"), AnyFileFilter, ExtensionFileFilter("pdf"))
+        for ((ext, filter) in extensions.zip(expectedFilters)) {
+            presenter.onAddFileFilter(ext)
+            verify(view).applyFileFilter(filter)
+        }
+    }
+
+    @Test
+    fun `add same filter several times`() {
+        val extension = "png"
+        presenter.onAddFileFilter(extension)
+        presenter.onAddFileFilter(extension)
+
+        verify(view).applyFileFilter(ExtensionFileFilter(extension))
     }
 }

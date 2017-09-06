@@ -1,5 +1,6 @@
 package com.warrior.jetbrains.test.view.content
 
+import com.warrior.jetbrains.test.presenter.filter.FileFilter
 import java.awt.GridLayout
 
 class EmptyPreviewPanel : BasePreviewPanel() {
@@ -9,4 +10,5 @@ class EmptyPreviewPanel : BasePreviewPanel() {
     }
 
     override fun updateContentData(data: ContentData) {}
+    override fun applyFileFilter(filter: FileFilter) {}
 }

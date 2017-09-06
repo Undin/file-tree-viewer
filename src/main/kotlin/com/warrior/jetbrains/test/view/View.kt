@@ -1,6 +1,7 @@
 package com.warrior.jetbrains.test.view
 
 import com.warrior.jetbrains.test.model.FileInfo
+import com.warrior.jetbrains.test.presenter.filter.FileFilter
 import com.warrior.jetbrains.test.view.content.Content
 import com.warrior.jetbrains.test.view.content.ContentData
 import com.warrior.jetbrains.test.view.tree.FileTreeNode
@@ -12,4 +13,5 @@ interface View {
     fun onStartLoadingContent()
     fun displayContent(content: Content)
     fun onContentDataLoaded(data: ContentData)
+    fun applyFileFilter(filter: FileFilter)
 }

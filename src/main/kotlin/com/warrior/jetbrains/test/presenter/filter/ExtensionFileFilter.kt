@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test.view.filter
+package com.warrior.jetbrains.test.presenter.filter
 
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.model.extension
@@ -12,4 +12,17 @@ class ExtensionFileFilter(private val extension: String): FileFilter {
     }
 
     override fun toString(): String = "ExtensionFileFilter(extension=$extension)"
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ExtensionFileFilter
+
+        if (extension != other.extension) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int = extension.hashCode()
 }
