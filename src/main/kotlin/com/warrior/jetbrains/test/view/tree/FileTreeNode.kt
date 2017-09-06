@@ -49,6 +49,11 @@ class FileTreeNode(data: FileInfo) : DefaultMutableTreeNode(data) {
         }
     }
 
+    override fun getIndex(aChild: TreeNode?): Int {
+        if (aChild == null) throw IllegalArgumentException("argument is null")
+        return if (!isNodeChild(aChild)) -1 else filteredChildren.indexOf(aChild)
+    }
+
     override fun children(): Enumeration<DefaultMutableTreeNode> {
         return when (state) {
             LoadingState.EMPTY -> Collections.emptyEnumeration()
