@@ -50,13 +50,15 @@ class FileViewerPanel(
         treeModel.setNodeChildren(node, nodes)
     }
 
-    fun setContent(content: Content) {
+    fun setContent(content: Content, filter: FileFilter) {
         val previewPanel: BasePreviewPanel = when (content) {
             is Empty -> EmptyPreviewPanel()
             is FileList -> FolderPreviewPanel(content.files)
             is SingleFile -> FilePreviewPanel(content.file)
         }
         updateContentPanel(previewPanel)
+        contentPreview.applyFileFilter(filter)
+
     }
 
     fun setContentLoading() {
@@ -65,6 +67,11 @@ class FileViewerPanel(
 
     fun updateContentData(data: ContentData) {
         contentPreview.updateContentData(data)
+    }
+
+    fun applyFileFilter(filter: FileFilter) {
+        treeModel.applyFilter(filter)
+        contentPreview.applyFileFilter(filter)
     }
 
     private fun updateContentPanel(previewPanel: BasePreviewPanel) {
@@ -87,11 +94,6 @@ class FileViewerPanel(
     override fun treeWillCollapse(event: TreeExpansionEvent) {
         val node = event.path.lastPathComponent as? FileTreeNode ?: return
         presenter.onPreNodeCollapse(node)
-    }
-
-    fun applyFileFilter(filter: FileFilter) {
-        treeModel.applyFilter(filter)
-        contentPreview.applyFileFilter(filter)
     }
 
     private fun createFileTree(model: TreeModel): JTree {

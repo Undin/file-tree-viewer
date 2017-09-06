@@ -11,7 +11,7 @@ interface View {
     fun onStartLoadingChildren(node: FileTreeNode)
     fun onChildrenLoaded(node: FileTreeNode, children: List<FileInfo>)
     fun onStartLoadingContent()
-    fun displayContent(content: Content)
+    fun displayContent(content: Content, filter: FileFilter)
     fun onContentDataLoaded(data: ContentData)
     fun applyFileFilter(filter: FileFilter)
 }

@@ -1,9 +1,9 @@
 package com.warrior.jetbrains.test
 
 import com.warrior.jetbrains.test.model.Model
-import com.warrior.jetbrains.test.presenter.Presenter
 import com.warrior.jetbrains.test.model.filter.AnyFileFilter
 import com.warrior.jetbrains.test.model.filter.ExtensionFileFilter
+import com.warrior.jetbrains.test.presenter.Presenter
 import com.warrior.jetbrains.test.view.View
 import com.warrior.jetbrains.test.view.content.*
 import com.warrior.jetbrains.test.view.tree.FileTreeNode
@@ -49,7 +49,7 @@ class IntegrationTest {
         Thread.sleep(1000)
 
         verify(view).onStartLoadingContent()
-        verify(view).displayContent(any(FileList::class.java))
+        verify(view).displayContent(any(FileList::class.java), eq(AnyFileFilter))
         verify(view, times(2)).onContentDataLoaded(any(ContentData::class.java))
     }
 
@@ -59,7 +59,7 @@ class IntegrationTest {
         presenter.onNodeSelected(FileTreeNode(file))
         Thread.sleep(1000)
 
-        verify(view).displayContent(any(SingleFile::class.java))
+        verify(view).displayContent(any(SingleFile::class.java), eq(AnyFileFilter))
     }
 
     @Test
@@ -68,7 +68,7 @@ class IntegrationTest {
         presenter.onNodeSelected(FileTreeNode(archive))
         Thread.sleep(1000)
 
-        verify(view).displayContent(any(FileList::class.java))
+        verify(view).displayContent(any(FileList::class.java), eq(AnyFileFilter))
     }
 
     @Test
@@ -77,7 +77,7 @@ class IntegrationTest {
         presenter.onNodeSelected(FileTreeNode(image))
         Thread.sleep(1000)
 
-        verify(view).displayContent(any(SingleFile::class.java))
+        verify(view).displayContent(any(SingleFile::class.java), eq(AnyFileFilter))
         verify(view).onContentDataLoaded(any(Image::class.java))
     }
 
@@ -87,7 +87,7 @@ class IntegrationTest {
         presenter.onNodeSelected(FileTreeNode(image))
         Thread.sleep(1000)
 
-        verify(view).displayContent(any(SingleFile::class.java))
+        verify(view).displayContent(any(SingleFile::class.java), eq(AnyFileFilter))
         verify(view).onContentDataLoaded(any(Text::class.java))
     }
 
@@ -95,7 +95,7 @@ class IntegrationTest {
     fun `select nothing`() {
         presenter.onNodeSelected(null)
 
-        verify(view).displayContent(Empty)
+        verify(view).displayContent(Empty, AnyFileFilter)
     }
 
     @Test
@@ -143,5 +143,21 @@ class IntegrationTest {
         presenter.onAddFileFilter(extension)
 
         verify(view).applyFileFilter(ExtensionFileFilter(extension))
+    }
+
+    @Test
+    fun `update content panel after setting file filter`() {
+        val extension = "png"
+        val expectedFilter = ExtensionFileFilter(extension)
+
+        presenter.onAddFileFilter(extension)
+        verify(view).applyFileFilter(expectedFilter)
+
+        val root = model.resourceFile("root")
+        presenter.onNodeSelected(FileTreeNode(root))
+        Thread.sleep(1000)
+
+        verify(view).onStartLoadingContent()
+        verify(view).displayContent(any(FileList::class.java), eq(expectedFilter))
     }
 }

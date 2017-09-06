@@ -3,6 +3,7 @@ package com.warrior.jetbrains.test.presenter
 import com.warrior.jetbrains.test.model.*
 import com.warrior.jetbrains.test.model.filter.AnyFileFilter
 import com.warrior.jetbrains.test.model.filter.ExtensionFileFilter
+import com.warrior.jetbrains.test.model.filter.FileFilter
 import com.warrior.jetbrains.test.view.*
 import com.warrior.jetbrains.test.view.content.*
 import com.warrior.jetbrains.test.view.tree.FileTreeNode
@@ -21,7 +22,10 @@ open class PresenterImpl(private val view: View): Presenter {
 
     @Volatile
     private var selectedNode: FileTreeNode? = null
-    private var currentFilter = ""
+
+    private var currentFilterString: String = ""
+    @Volatile
+    private var currentFilter: FileFilter = AnyFileFilter
 
     private var contentFuture: Future<*>? = null
     private val contentLoadingTasks: ConcurrentMap<FileInfo, Future<*>> = ConcurrentHashMap()
@@ -54,12 +58,12 @@ open class PresenterImpl(private val view: View): Presenter {
                 onContentLoaded(node, SingleFile(fileInfo))
             }
         } else {
-            view.displayContent(Empty)
+            view.displayContent(Empty, currentFilter)
         }
     }
 
     private fun onContentLoaded(node: FileTreeNode, content: Content) {
-        view.displayContent(content)
+        view.displayContent(content, currentFilter)
         val (files, imageSize) = when (content) {
             is Empty -> emptyList<FileInfo>() to 0
             is SingleFile -> listOf(content.file) to IMAGE_PREVIEW_SIZE
@@ -110,10 +114,10 @@ open class PresenterImpl(private val view: View): Presenter {
 
     override fun onAddFileFilter(filterString: String) {
         logger.debug("onAddFileFilter: $filterString")
-        if (filterString != currentFilter) {
-            currentFilter = filterString
-            val filter = if (filterString.isEmpty()) AnyFileFilter else ExtensionFileFilter(filterString)
-            view.applyFileFilter(filter)
+        if (filterString != currentFilterString) {
+            currentFilterString = filterString
+            currentFilter = if (filterString.isEmpty()) AnyFileFilter else ExtensionFileFilter(filterString)
+            view.applyFileFilter(currentFilter)
         }
     }
 }

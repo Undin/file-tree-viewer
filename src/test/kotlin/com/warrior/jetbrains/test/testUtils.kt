@@ -31,6 +31,11 @@ fun <T> any(clazz: Class<T>): T {
     return uninitialized()
 }
 
+fun <T> eq(value: T): T {
+    Mockito.eq(value)
+    return value
+}
+
 // hack to use Mockito.any() from kotlin
 // see https://medium.com/@elye.project/befriending-kotlin-and-mockito-1c2e7b0ef791
 private fun <T> uninitialized(): T = null as T
