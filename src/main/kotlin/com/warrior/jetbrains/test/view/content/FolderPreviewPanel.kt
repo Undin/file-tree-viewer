@@ -1,7 +1,7 @@
 package com.warrior.jetbrains.test.view.content
 
 import com.warrior.jetbrains.test.model.FileInfo
-import com.warrior.jetbrains.test.presenter.filter.FileFilter
+import com.warrior.jetbrains.test.model.filter.FileFilter
 import com.warrior.jetbrains.test.view.icon.ImageIcon
 import java.awt.Dimension
 import java.awt.GridLayout

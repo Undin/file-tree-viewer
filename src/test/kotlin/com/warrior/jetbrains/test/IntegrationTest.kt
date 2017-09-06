@@ -2,8 +2,8 @@ package com.warrior.jetbrains.test
 
 import com.warrior.jetbrains.test.model.Model
 import com.warrior.jetbrains.test.presenter.Presenter
-import com.warrior.jetbrains.test.presenter.filter.AnyFileFilter
-import com.warrior.jetbrains.test.presenter.filter.ExtensionFileFilter
+import com.warrior.jetbrains.test.model.filter.AnyFileFilter
+import com.warrior.jetbrains.test.model.filter.ExtensionFileFilter
 import com.warrior.jetbrains.test.view.View
 import com.warrior.jetbrains.test.view.content.*
 import com.warrior.jetbrains.test.view.tree.FileTreeNode
@@ -32,7 +32,7 @@ class IntegrationTest {
 
     @Test
     fun `set children`() {
-        val root = model.localFile("root")
+        val root = model.resourceFile("root")
         val node = FileTreeNode(root)
         presenter.onPreNodeExpand(node)
         Thread.sleep(1000)
@@ -44,7 +44,7 @@ class IntegrationTest {
 
     @Test
     fun `select folder`() {
-        val root = model.localFile("root")
+        val root = model.resourceFile("root")
         presenter.onNodeSelected(FileTreeNode(root))
         Thread.sleep(1000)
 
@@ -55,7 +55,7 @@ class IntegrationTest {
 
     @Test
     fun `select generic file`() {
-        val file = model.localFile("root/unknown_file")
+        val file = model.resourceFile("root/unknown_file")
         presenter.onNodeSelected(FileTreeNode(file))
         Thread.sleep(1000)
 
@@ -64,7 +64,7 @@ class IntegrationTest {
 
     @Test
     fun `select archive file`() {
-        val archive = model.localFile("root/archive.zip")
+        val archive = model.resourceFile("root/archive.zip")
         presenter.onNodeSelected(FileTreeNode(archive))
         Thread.sleep(1000)
 
@@ -73,7 +73,7 @@ class IntegrationTest {
 
     @Test
     fun `select image file`() {
-        val image = model.localFile("root/image.png")
+        val image = model.resourceFile("root/image.png")
         presenter.onNodeSelected(FileTreeNode(image))
         Thread.sleep(1000)
 
@@ -83,7 +83,7 @@ class IntegrationTest {
 
     @Test
     fun `select text file`() {
-        val image = model.localFile("root/file.txt")
+        val image = model.resourceFile("root/file.txt")
         presenter.onNodeSelected(FileTreeNode(image))
         Thread.sleep(1000)
 

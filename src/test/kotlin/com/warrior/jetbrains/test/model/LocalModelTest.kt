@@ -1,7 +1,7 @@
 package com.warrior.jetbrains.test.model
 
 import com.warrior.jetbrains.test.getChildrenSync
-import com.warrior.jetbrains.test.localFile
+import com.warrior.jetbrains.test.resourceFile
 import com.warrior.jetbrains.test.model.FileLocation.*
 import com.warrior.jetbrains.test.model.FileType.*
 import org.junit.Test
@@ -10,7 +10,7 @@ class LocalModelTest : BaseModelTest() {
 
     @Test
     fun `get local directory children`() {
-        val folder = model.localFile("root")
+        val folder = model.resourceFile("root")
         checkChildren(folder,
                 file("archive.zip", LOCAL, FileType.ARCHIVE),
                 file("dir", LOCAL, FOLDER),
@@ -23,7 +23,7 @@ class LocalModelTest : BaseModelTest() {
 
     @Test
     fun `get zip children`() {
-        val zip = model.localFile("root/archive.zip")
+        val zip = model.resourceFile("root/archive.zip")
         checkChildren(zip,
                 file("zipDir", FileLocation.ARCHIVE, FOLDER),
                 file("zipFile.txt", FileLocation.ARCHIVE, TEXT)
@@ -32,7 +32,7 @@ class LocalModelTest : BaseModelTest() {
 
     @Test
     fun `get inner zip children`() {
-        val zip = model.localFile("root/outerArchive.zip")
+        val zip = model.resourceFile("root/outerArchive.zip")
         val innerZip = model.getChildrenSync(zip).find { it.name == "innerArchive.zip" }
                 ?: error("'outerArchive.zip' must contain 'innerArchive.zip'")
         checkChildren(innerZip,

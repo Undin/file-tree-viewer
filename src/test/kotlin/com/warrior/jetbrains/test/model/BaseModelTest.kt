@@ -9,8 +9,12 @@ abstract class BaseModelTest {
 
     protected fun checkChildren(file: FileInfo, vararg expectedFiles: TestFile) {
         val children = model.getChildrenSync(file)
-        val files = children.map { (_, name, location, type) -> file(name, location, type) }
-        Assertions.assertThat(files).containsExactlyElementsOf(expectedFiles.toList())
+        checkFiles(children, *expectedFiles)
+    }
+
+    protected fun checkFiles(files: List<FileInfo>, vararg expectedFiles: TestFile) {
+        val testFiles = files.map { (_, name, location, type) -> file(name, location, type) }
+        Assertions.assertThat(testFiles).containsExactlyElementsOf(expectedFiles.toList())
     }
     
     protected fun file(name: String, location: FileLocation, type: FileType): TestFile =

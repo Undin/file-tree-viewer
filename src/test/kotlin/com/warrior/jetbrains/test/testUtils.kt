@@ -14,7 +14,7 @@ fun Model.getChildrenSync(file: FileInfo): List<FileInfo> {
     return children ?: error("Result list is supposed to be not empty")
 }
 
-fun Model.localFile(path: String): FileInfo {
+fun Model.resourceFile(path: String): FileInfo {
     val realPath = Paths.get(javaClass.classLoader.getResource(path).path)
     return getLocalFile(realPath) ?: error("Failed to create 'FileInfo' from $path")
 }

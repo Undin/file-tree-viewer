@@ -3,7 +3,7 @@ package com.warrior.jetbrains.test.view
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.presenter.Presenter
 import com.warrior.jetbrains.test.presenter.PresenterImpl
-import com.warrior.jetbrains.test.presenter.filter.FileFilter
+import com.warrior.jetbrains.test.model.filter.FileFilter
 import com.warrior.jetbrains.test.view.content.Content
 import com.warrior.jetbrains.test.view.content.ContentData
 import com.warrior.jetbrains.test.view.tree.FileTreeNode

@@ -1,8 +1,8 @@
 package com.warrior.jetbrains.test.presenter
 
 import com.warrior.jetbrains.test.model.*
-import com.warrior.jetbrains.test.presenter.filter.AnyFileFilter
-import com.warrior.jetbrains.test.presenter.filter.ExtensionFileFilter
+import com.warrior.jetbrains.test.model.filter.AnyFileFilter
+import com.warrior.jetbrains.test.model.filter.ExtensionFileFilter
 import com.warrior.jetbrains.test.view.*
 import com.warrior.jetbrains.test.view.content.*
 import com.warrior.jetbrains.test.view.tree.FileTreeNode

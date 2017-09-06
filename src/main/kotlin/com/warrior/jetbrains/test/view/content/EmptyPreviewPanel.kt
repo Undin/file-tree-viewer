@@ -1,6 +1,6 @@
 package com.warrior.jetbrains.test.view.content
 
-import com.warrior.jetbrains.test.presenter.filter.FileFilter
+import com.warrior.jetbrains.test.model.filter.FileFilter
 import java.awt.GridLayout
 
 class EmptyPreviewPanel : BasePreviewPanel() {

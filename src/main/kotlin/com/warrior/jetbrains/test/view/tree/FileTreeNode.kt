@@ -2,8 +2,8 @@ package com.warrior.jetbrains.test.view.tree
 
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.model.canHaveChildren
-import com.warrior.jetbrains.test.presenter.filter.AnyFileFilter
-import com.warrior.jetbrains.test.presenter.filter.FileFilter
+import com.warrior.jetbrains.test.model.filter.AnyFileFilter
+import com.warrior.jetbrains.test.model.filter.FileFilter
 import com.warrior.jetbrains.test.view.LoadingState
 import java.util.*
 import javax.swing.tree.DefaultMutableTreeNode
