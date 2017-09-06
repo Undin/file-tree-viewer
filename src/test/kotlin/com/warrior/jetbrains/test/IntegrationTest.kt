@@ -2,13 +2,12 @@ package com.warrior.jetbrains.test
 
 import com.warrior.jetbrains.test.model.Model
 import com.warrior.jetbrains.test.presenter.Presenter
+import com.warrior.jetbrains.test.view.View
 import com.warrior.jetbrains.test.view.content.*
 import com.warrior.jetbrains.test.view.tree.FileTreeNode
-import com.warrior.jetbrains.test.view.View
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.atLeastOnce
-import org.mockito.Mockito.verify
+import org.mockito.Mockito.*
 
 class IntegrationTest {
 
@@ -37,7 +36,7 @@ class IntegrationTest {
         Thread.sleep(1000)
 
         verify(view).onStartLoadingChildren(node)
-        val children = model.getChildrenSync(root).map(::FileTreeNode)
+        val children = model.getChildrenSync(root)
         verify(view).onChildrenLoaded(node, children)
     }
 
@@ -49,6 +48,7 @@ class IntegrationTest {
 
         verify(view).onStartLoadingContent()
         verify(view).onContentLoaded(any(FileList::class.java))
+        verify(view, times(2)).onContentDataLoaded(any(ContentData::class.java))
     }
 
     @Test
@@ -76,6 +76,7 @@ class IntegrationTest {
         Thread.sleep(1000)
 
         verify(view).onContentLoaded(any(SingleFile::class.java))
+        verify(view).onContentDataLoaded(any(Image::class.java))
     }
 
     @Test
@@ -85,6 +86,7 @@ class IntegrationTest {
         Thread.sleep(1000)
 
         verify(view).onContentLoaded(any(SingleFile::class.java))
+        verify(view).onContentDataLoaded(any(Text::class.java))
     }
 
     @Test

@@ -8,9 +8,7 @@ import java.awt.Transparency
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
+import java.util.concurrent.*
 import javax.imageio.ImageIO
 
 object ContentLoader {
@@ -31,6 +29,9 @@ object ContentLoader {
                 val scale = size / maxSize.toDouble()
                 val scaledWidth = (image.width / scale).toInt()
                 val scaledHeight = (image.height / scale).toInt()
+                // Copy scaled image to new BufferedImage
+                // to force execution of scale operation in background thread
+                // because 'Image.getScaledInstance' scales image lazily.
                 val lazyScaledImage = image.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH)
                 val type = if (image.transparency == Transparency.OPAQUE)
                     BufferedImage.TYPE_INT_RGB else BufferedImage.TYPE_INT_ARGB

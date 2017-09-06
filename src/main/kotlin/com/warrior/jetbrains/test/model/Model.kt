@@ -54,6 +54,7 @@ class Model {
         }
     }
 
+    // TODO: make it asynchronous
     fun createFtpServerRoot(host: String, username: String?, password: CharArray?): FileInfo? {
         logger.debug("createFtpServerRoot. host: $host, username: $username, password: ${Arrays.toString(password)}")
         val host = host.removePrefix("ftp://")

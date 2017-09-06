@@ -6,6 +6,7 @@ import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.presenter.Presenter
 import com.warrior.jetbrains.test.presenter.PresenterImpl
 import com.warrior.jetbrains.test.view.content.Content
+import com.warrior.jetbrains.test.view.content.ContentData
 import com.warrior.jetbrains.test.view.tree.FileTreeNode
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -40,7 +41,7 @@ class FileViewerFrame : JFrame("FileViewer"), View {
         SwingUtilities.invokeLater { panel.setLoadingState(node) }
     }
 
-    override fun onChildrenLoaded(node: FileTreeNode, children: List<FileTreeNode>) {
+    override fun onChildrenLoaded(node: FileTreeNode, children: List<FileInfo>) {
         logger.debug("onChildrenLoaded: $node, $children")
         SwingUtilities.invokeLater { panel.setChildren(node, children) }
     }
@@ -53,6 +54,11 @@ class FileViewerFrame : JFrame("FileViewer"), View {
     override fun onContentLoaded(content: Content) {
         logger.debug("onContentLoaded: $content")
         SwingUtilities.invokeLater { panel.setContent(content) }
+    }
+
+    override fun onContentDataLoaded(data: ContentData) {
+        logger.debug("onContentDataLoaded: $data")
+        SwingUtilities.invokeLater { panel.updateContentData(data) }
     }
 
     private fun createMenu(): JMenuBar {

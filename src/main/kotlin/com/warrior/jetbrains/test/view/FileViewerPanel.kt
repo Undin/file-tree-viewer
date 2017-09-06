@@ -3,8 +3,7 @@ package com.warrior.jetbrains.test.view
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.view.filter.FileFilter
 import com.warrior.jetbrains.test.presenter.Presenter
-import com.warrior.jetbrains.test.view.content.Content
-import com.warrior.jetbrains.test.view.content.ContentPanel
+import com.warrior.jetbrains.test.view.content.*
 import com.warrior.jetbrains.test.view.tree.*
 import java.awt.GridLayout
 import javax.swing.*
@@ -20,10 +19,12 @@ class FileViewerPanel(
     private val treeRoot: DefaultMutableTreeNode = DefaultMutableTreeNode()
     private val treeModel: FileTreeModel = FileTreeModel(treeRoot, true)
     private val tree: JTree = createFileTree(treeModel)
-    private val contentPanel: ContentPanel = ContentPanel()
+    private val contentPanel: JPanel = JPanel(GridLayout(1, 1))
+    private var contentPreview: BasePreviewPanel = EmptyPreviewPanel()
 
     init {
         tree.cellRenderer = FileTreeCellRender()
+        contentPanel.add(contentPreview)
         val contentScrollPane = JScrollPane(contentPanel).apply {
             verticalScrollBar.unitIncrement = 16
         }
@@ -44,16 +45,33 @@ class FileViewerPanel(
         treeModel.setLoadingState(node)
     }
 
-    fun setChildren(node: FileTreeNode, children: List<FileTreeNode>) {
-        treeModel.setNodeChildren(node, children)
+    fun setChildren(node: FileTreeNode, children: List<FileInfo>) {
+        val nodes = children.map(::FileTreeNode)
+        treeModel.setNodeChildren(node, nodes)
     }
 
     fun setContent(content: Content) {
-        contentPanel.setContent(content)
+        val previewPanel: BasePreviewPanel = when (content) {
+            is FileList -> FolderPreviewPanel(content.files)
+            is SingleFile -> FilePreviewPanel(content.file)
+        }
+        updateContentPanel(previewPanel)
     }
 
     fun setContentLoading() {
-        contentPanel.setContentLoading()
+        updateContentPanel(LoadingPreviewPanel())
+    }
+
+    fun updateContentData(data: ContentData) {
+        contentPreview.updateContentData(data)
+    }
+
+    private fun updateContentPanel(previewPanel: BasePreviewPanel) {
+        contentPreview = previewPanel
+        contentPanel.removeAll()
+        contentPanel.add(previewPanel)
+        contentPanel.revalidate()
+        contentPanel.repaint()
     }
 
     override fun valueChanged(e: TreeSelectionEvent) {
