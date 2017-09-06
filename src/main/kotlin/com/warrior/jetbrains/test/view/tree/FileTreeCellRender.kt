@@ -15,8 +15,10 @@ class FileTreeCellRender : TreeCellRenderer {
                                               leaf: Boolean, row: Int, hasFocus: Boolean): Component {
         val component = defaultTreeCellRender.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus)
         val label = component as? JLabel ?: return component
-        val file = (value as? FileTreeNode)?.userObject ?: return component
-        label.icon = file.type.smallIcon
+        when (value) {
+            is FileTreeNode -> label.icon = value.userObject.type.smallIcon
+            is LoadingNode -> label.icon = null
+        }
         return label
     }
 }
