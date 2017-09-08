@@ -29,7 +29,7 @@ class FilePreviewPanel(private val file: FileInfo): BasePreviewPanel() {
             // Replace current component with text area
             is Text -> {
                 remove(component)
-                component = JTextArea(data.text)
+                component = JTextArea(data.text).apply { isEditable = false }
                 add(component)
                 revalidate()
                 repaint()

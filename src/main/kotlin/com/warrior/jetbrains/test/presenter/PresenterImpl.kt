@@ -66,8 +66,8 @@ open class PresenterImpl(private val view: View): Presenter {
         view.displayContent(content, currentFilter)
         val (files, imageSize) = when (content) {
             is Empty -> emptyList<FileInfo>() to 0
-            is SingleFile -> listOf(content.file) to IMAGE_PREVIEW_SIZE
-            is FileList -> content.files to SMALL_IMAGE_PREVIEW
+            is SingleFile -> listOf(content.file) to PREVIEW_SIZE
+            is FileList -> content.files to SMALL_PREVIEW_SIZE
         }
 
         loop@for (file in files) {
