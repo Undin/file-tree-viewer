@@ -107,7 +107,7 @@ private class ItemPanel(name: String, defaultIcon: Icon) : JPanel() {
 
     private fun createTextPreviewComponent(text: String): JTextArea = JTextArea(text).apply {
         isEditable = false
-        font = font.deriveFont(3f)
+        font = font.deriveFont(FONT_SIZE)
         preferredSize = Dimension(SMALL_PREVIEW_SIZE, SMALL_PREVIEW_SIZE)
         maximumSize = Dimension(SMALL_PREVIEW_SIZE, SMALL_PREVIEW_SIZE)
     }
@@ -115,5 +115,6 @@ private class ItemPanel(name: String, defaultIcon: Icon) : JPanel() {
     companion object {
         private const val ITEM_WIDTH = SMALL_PREVIEW_SIZE + 2 * 4
         private const val ITEM_HEIGHT = SMALL_PREVIEW_SIZE + 20
+        private const val FONT_SIZE = 3f
     }
 }
