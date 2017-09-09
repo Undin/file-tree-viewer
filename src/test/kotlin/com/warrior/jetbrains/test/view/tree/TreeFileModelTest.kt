@@ -1,6 +1,7 @@
 package com.warrior.jetbrains.test.view.tree
 
 import com.warrior.jetbrains.test.getChildrenSync
+import com.warrior.jetbrains.test.model.FileInfoLoader
 import com.warrior.jetbrains.test.model.filter.ExtensionFileFilter
 import org.junit.Before
 import org.junit.Test
@@ -24,7 +25,7 @@ class TreeFileModelTest : BaseTreeTest() {
 
     @Test
     fun `set children`() {
-        val children = model.getChildrenSync(root)
+        val children = FileInfoLoader.getChildrenSync(root)
         treeModel.setNodeChildren(tree, children)
 
         checkTree(tree, tree("root") {
@@ -39,7 +40,7 @@ class TreeFileModelTest : BaseTreeTest() {
 
     @Test
     fun `apply filter`() {
-        val children = model.getChildrenSync(root)
+        val children = FileInfoLoader.getChildrenSync(root)
         treeModel.setNodeChildren(tree, children)
         treeModel.applyFilter(ExtensionFileFilter("zip"))
 
@@ -52,7 +53,7 @@ class TreeFileModelTest : BaseTreeTest() {
 
     @Test
     fun `apply several filters`() {
-        val children = model.getChildrenSync(root)
+        val children = FileInfoLoader.getChildrenSync(root)
         treeModel.setNodeChildren(tree, children)
 
         treeModel.applyFilter(ExtensionFileFilter("zip"))
@@ -73,7 +74,7 @@ class TreeFileModelTest : BaseTreeTest() {
     fun `set children after applying filter`() {
         treeModel.applyFilter(ExtensionFileFilter("txt"))
 
-        val children = model.getChildrenSync(root)
+        val children = FileInfoLoader.getChildrenSync(root)
         treeModel.setNodeChildren(tree, children)
 
         checkTree(tree, tree("root") {
@@ -86,7 +87,7 @@ class TreeFileModelTest : BaseTreeTest() {
     fun `applyFilter must filter all tree`() {
 
         fun loadFullTree(tree: FileTreeNode) {
-            val children = model.getChildrenSync(tree.userObject)
+            val children = FileInfoLoader.getChildrenSync(tree.userObject)
             treeModel.setNodeChildren(tree, children)
             for (child in tree.children()) {
                 if (child !is FileTreeNode) continue

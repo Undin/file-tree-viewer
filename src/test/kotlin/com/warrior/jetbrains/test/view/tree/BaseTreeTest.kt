@@ -1,7 +1,7 @@
 package com.warrior.jetbrains.test.view.tree
 
 import com.warrior.jetbrains.test.model.FileInfo
-import com.warrior.jetbrains.test.model.Model
+import com.warrior.jetbrains.test.model.FileInfoLoader
 import com.warrior.jetbrains.test.resourceFile
 import org.assertj.core.api.Assertions
 import org.junit.Before
@@ -9,14 +9,12 @@ import javax.swing.tree.DefaultMutableTreeNode
 
 abstract class BaseTreeTest {
 
-    protected lateinit var model: Model
     protected lateinit var root: FileInfo
     protected lateinit var tree: FileTreeNode
 
     @Before
     fun setUp() {
-        model = Model()
-        root = model.resourceFile("root")
+        root = FileInfoLoader.resourceFile("root")
         tree = FileTreeNode(root)
     }
 

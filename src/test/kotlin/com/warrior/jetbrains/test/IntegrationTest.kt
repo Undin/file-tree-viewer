@@ -1,7 +1,9 @@
 package com.warrior.jetbrains.test
 
 import com.warrior.jetbrains.test.event.*
+import com.warrior.jetbrains.test.model.FileInfoLoader
 import com.warrior.jetbrains.test.model.Model
+import com.warrior.jetbrains.test.model.ModelImpl
 import com.warrior.jetbrains.test.model.filter.AnyFileFilter
 import com.warrior.jetbrains.test.model.filter.ExtensionFileFilter
 import com.warrior.jetbrains.test.view.content.*
@@ -16,22 +18,21 @@ import org.mockito.internal.matchers.InstanceOf
 class IntegrationTest {
 
     private lateinit var view: FakeView
-    private lateinit var presenter: TestPresenter
     private lateinit var model: Model
 
     @Before
     fun setUp() {
         view = mock()
-        presenter = TestPresenter()
-        model = presenter.model()
+        model = ModelImpl()
 
         EventBus.register(view)
+        EventBus.register(model)
     }
 
     @After
     fun tearDown() {
         EventBus.unregister(view)
-        EventBus.unregister(presenter)
+        EventBus.unregister(model)
     }
 
     @Test
@@ -44,23 +45,23 @@ class IntegrationTest {
 
     @Test
     fun `set children`() {
-        val root = model.resourceFile("root")
+        val root = FileInfoLoader.resourceFile("root")
         val node = FileTreeNode(root)
         PreNodeExpandEvent(node).post()
         Thread.sleep(1000)
 
         verify(view).onStartLoadingChildren(StartLoadingChildrenEvent(node))
-        val children = model.getChildrenSync(root)
+        val children = FileInfoLoader.getChildrenSync(root)
         verify(view).setNodeChildren(ChildrenLoadedEvent(node, children))
     }
 
     @Test
     fun `select folder`() {
-        val root = model.resourceFile("root")
+        val root = FileInfoLoader.resourceFile("root")
         NodeSelectedEvent(FileTreeNode(root)).post()
         Thread.sleep(1000)
 
-        val children = model.getChildrenSync(root)
+        val children = FileInfoLoader.getChildrenSync(root)
         verify(view).onStartLoadingContent(StartLoadingContentEvent)
         verify(view).displayContent(DisplayContentEvent(FileList(children), AnyFileFilter))
         verify(view, times(2)).updateContentData(any())
@@ -68,7 +69,7 @@ class IntegrationTest {
 
     @Test
     fun `select generic file`() {
-        val file = model.resourceFile("root/unknown_file")
+        val file = FileInfoLoader.resourceFile("root/unknown_file")
         NodeSelectedEvent(FileTreeNode(file)).post()
         Thread.sleep(1000)
 
@@ -77,17 +78,17 @@ class IntegrationTest {
 
     @Test
     fun `select archive file`() {
-        val archive = model.resourceFile("root/archive.zip")
+        val archive = FileInfoLoader.resourceFile("root/archive.zip")
         NodeSelectedEvent(FileTreeNode(archive)).post()
         Thread.sleep(1000)
 
-        val children = model.getChildrenSync(archive)
+        val children = FileInfoLoader.getChildrenSync(archive)
         verify(view).displayContent(DisplayContentEvent(FileList(children), AnyFileFilter))
     }
 
     @Test
     fun `select image file`() {
-        val image = model.resourceFile("root/image.png")
+        val image = FileInfoLoader.resourceFile("root/image.png")
         NodeSelectedEvent(FileTreeNode(image)).post()
         Thread.sleep(1000)
 
@@ -97,7 +98,7 @@ class IntegrationTest {
 
     @Test
     fun `select text file`() {
-        val text = model.resourceFile("root/file.txt")
+        val text = FileInfoLoader.resourceFile("root/file.txt")
         NodeSelectedEvent(FileTreeNode(text)).post()
         Thread.sleep(1000)
 
@@ -126,7 +127,7 @@ class IntegrationTest {
         }
 
         AddNewFtpServerEvent("localhost:${ftpServer.serverControlPort}", user, password.toCharArray()).post()
-        val ftpRoot = model.createFtpServerRoot("localhost:${ftpServer.serverControlPort}", user, password.toCharArray())
+        val ftpRoot = FileInfoLoader.createFtpServerRoot("localhost:${ftpServer.serverControlPort}", user, password.toCharArray())
                 ?: error("Failed to connect to ftp server")
 
         Thread.sleep(100)
@@ -175,11 +176,11 @@ class IntegrationTest {
         Thread.sleep(100)
         verify(view).applyFileFilter(ApplyFileFilterEvent(expectedFilter))
 
-        val root = model.resourceFile("root")
+        val root = FileInfoLoader.resourceFile("root")
         NodeSelectedEvent(FileTreeNode(root)).post()
         Thread.sleep(1000)
 
-        val children = model.getChildrenSync(root)
+        val children = FileInfoLoader.getChildrenSync(root)
         verify(view).onStartLoadingContent(StartLoadingContentEvent)
         verify(view).displayContent(DisplayContentEvent(FileList(children), expectedFilter))
     }

@@ -38,7 +38,7 @@ class FileViewerPanel: JPanel(GridLayout(1, 1)), TreeSelectionListener, TreeWill
 
         add(splitView)
 
-        EventBus.register(this)
+        EventBus.register(treeModel)
         EventBus.register(contentPreview)
     }
 

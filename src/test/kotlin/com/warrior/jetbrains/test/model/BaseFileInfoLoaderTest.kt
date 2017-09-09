@@ -2,19 +2,11 @@ package com.warrior.jetbrains.test.model
 
 import com.warrior.jetbrains.test.getChildrenSync
 import org.assertj.core.api.Assertions
-import org.junit.Before
 
-abstract class BaseModelTest {
-
-    protected lateinit var model: Model
-
-    @Before
-    fun setUp() {
-        model = Model()
-    }
+abstract class BaseFileInfoLoaderTest {
 
     protected fun checkChildren(file: FileInfo, vararg expectedFiles: TestFile) {
-        val children = model.getChildrenSync(file)
+        val children = FileInfoLoader.getChildrenSync(file)
         checkFiles(children, *expectedFiles)
     }
 

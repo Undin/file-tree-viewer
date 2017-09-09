@@ -1,8 +1,6 @@
 package com.warrior.jetbrains.test.view
 
-import com.warrior.jetbrains.test.event.AddNewFtpServerEvent
-import com.warrior.jetbrains.test.event.SetFileFilterEvent
-import com.warrior.jetbrains.test.event.StartEvent
+import com.warrior.jetbrains.test.event.*
 import java.awt.Dimension
 import javax.swing.*
 
@@ -18,6 +16,8 @@ class FileViewerFrame : JFrame("FileViewer") {
         jMenuBar = createMenu()
         preferredSize = Dimension(INITIAL_WIDTH, INITIAL_HEIGHT)
         pack()
+
+        EventBus.register(panel)
         StartEvent.post()
     }
 

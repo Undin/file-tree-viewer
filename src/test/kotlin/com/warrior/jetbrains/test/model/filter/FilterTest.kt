@@ -1,13 +1,11 @@
 package com.warrior.jetbrains.test.model.filter
 
 import com.warrior.jetbrains.test.getChildrenSync
-import com.warrior.jetbrains.test.model.BaseModelTest
-import com.warrior.jetbrains.test.model.FileLocation
-import com.warrior.jetbrains.test.model.FileType
+import com.warrior.jetbrains.test.model.*
 import com.warrior.jetbrains.test.resourceFile
 import org.junit.Test
 
-class FilterTest : BaseModelTest() {
+class FilterTest : BaseFileInfoLoaderTest() {
 
     @Test
     fun `any filter`() = doTest(AnyFileFilter,
@@ -27,8 +25,8 @@ class FilterTest : BaseModelTest() {
     )
 
     private fun doTest(filter: FileFilter, vararg expectedFiles: TestFile) {
-        val root = model.resourceFile("root")
-        val children = model.getChildrenSync(root)
+        val root = FileInfoLoader.resourceFile("root")
+        val children = FileInfoLoader.getChildrenSync(root)
         val filteredChildren = children.filter(filter::accept)
         checkFiles(filteredChildren, *expectedFiles)
     }

@@ -1,14 +1,15 @@
 package com.warrior.jetbrains.test.model
 
 import com.warrior.jetbrains.test.ftp
-import com.warrior.jetbrains.test.model.FileLocation.*
-import com.warrior.jetbrains.test.model.FileType.*
+import com.warrior.jetbrains.test.model.FileLocation.FTP
+import com.warrior.jetbrains.test.model.FileType.FOLDER
+import com.warrior.jetbrains.test.model.FileType.TEXT
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Test
 import org.mockftpserver.fake.FakeFtpServer
 
-class FtpModelTest : BaseModelTest() {
+class FtpFileInfoTest : BaseFileInfoLoaderTest() {
 
     private lateinit var ftpServer: FakeFtpServer
 
@@ -73,7 +74,7 @@ class FtpModelTest : BaseModelTest() {
             content { file("/file.txt") }
             user(USER1, PASSWORD)
         }
-        val ftpObject = model.createFtpServerRoot("ftp://localhost:${ftpServer.serverControlPort}", USER1, PASSWORD.toCharArray())
+        val ftpObject = FileInfoLoader.createFtpServerRoot("ftp://localhost:${ftpServer.serverControlPort}", USER1, PASSWORD.toCharArray())
         assertThat(ftpObject).isNotNull()
     }
 
@@ -88,7 +89,7 @@ class FtpModelTest : BaseModelTest() {
     }
 
     private fun localFtpServerRoot(port: Int, username: String, password: String): FileInfo? =
-            model.createFtpServerRoot("localhost:$port", username, password.toCharArray())
+            FileInfoLoader.createFtpServerRoot("localhost:$port", username, password.toCharArray())
 
     companion object {
         private const val USER1 = "user"

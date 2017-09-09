@@ -1,8 +1,7 @@
-package com.warrior.jetbrains.test.presenter
+package com.warrior.jetbrains.test.model
 
 import com.google.common.eventbus.Subscribe
 import com.warrior.jetbrains.test.event.*
-import com.warrior.jetbrains.test.model.*
 import com.warrior.jetbrains.test.model.filter.AnyFileFilter
 import com.warrior.jetbrains.test.model.filter.ExtensionFileFilter
 import com.warrior.jetbrains.test.model.filter.FileFilter
@@ -17,11 +16,9 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 import java.util.concurrent.Future
 
-open class PresenterImpl : Presenter {
+class ModelImpl : Model {
 
     private val logger: Logger = LogManager.getLogger(javaClass)
-
-    protected val model: Model = Model()
 
     @Volatile
     private var selectedNode: FileTreeNode? = null
@@ -34,13 +31,13 @@ open class PresenterImpl : Presenter {
     private val contentLoadingTasks: ConcurrentMap<FileInfo, Future<*>> = ConcurrentHashMap()
 
     init {
-        EventBus.register(this)
+
     }
 
     @Subscribe
     override fun onStart(event: StartEvent) {
         logger.debug("onStart")
-        val roots = model.getLocalRoots()
+        val roots = FileInfoLoader.getLocalRoots()
         for (root in roots) {
             AddRootEvent(root).post()
         }
@@ -61,7 +58,7 @@ open class PresenterImpl : Presenter {
             val fileInfo = node.userObject
             if (fileInfo.canHaveChildren) {
                 StartLoadingContentEvent.post()
-                contentFuture = model.getChildrenAsync(fileInfo) { files ->
+                contentFuture = FileInfoLoader.getChildrenAsync(fileInfo) { files ->
                     onContentLoaded(node, FileList(files))
                 }
             } else {
@@ -108,7 +105,7 @@ open class PresenterImpl : Presenter {
         val node = event.node
         if (node.state == LoadingState.EMPTY) {
             StartLoadingChildrenEvent(node).post()
-            model.getChildrenAsync(node.userObject) { files ->
+            FileInfoLoader.getChildrenAsync(node.userObject) { files ->
                 ChildrenLoadedEvent(node, files).post()
             }
         }
@@ -118,7 +115,7 @@ open class PresenterImpl : Presenter {
     override fun onAddNewFtpServer(event: AddNewFtpServerEvent) {
         logger.debug("onAddNewFtpServer: $event")
         val (host, username, password) = event
-        val ftpRoot = model.createFtpServerRoot(host, username, password) ?: return
+        val ftpRoot = FileInfoLoader.createFtpServerRoot(host, username, password) ?: return
         AddRootEvent(ftpRoot).post()
     }
 

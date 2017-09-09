@@ -1,7 +1,7 @@
 package com.warrior.jetbrains.test
 
 import com.warrior.jetbrains.test.model.FileInfo
-import com.warrior.jetbrains.test.model.Model
+import com.warrior.jetbrains.test.model.FileInfoLoader
 import org.mockftpserver.fake.FakeFtpServer
 import org.mockftpserver.fake.UserAccount
 import org.mockftpserver.fake.filesystem.*
@@ -9,13 +9,13 @@ import org.mockito.ArgumentMatcher
 import org.mockito.Mockito
 import java.nio.file.Paths
 
-fun Model.getChildrenSync(file: FileInfo): List<FileInfo> {
+fun FileInfoLoader.getChildrenSync(file: FileInfo): List<FileInfo> {
     var children: List<FileInfo>? = null
     getChildrenAsync(file) { children = it }.get()
     return children ?: error("Result list is supposed to be not empty")
 }
 
-fun Model.resourceFile(path: String): FileInfo {
+fun FileInfoLoader.resourceFile(path: String): FileInfo {
     val realPath = Paths.get(javaClass.classLoader.getResource(path).path)
     return getLocalFile(realPath) ?: error("Failed to create 'FileInfo' from $path")
 }

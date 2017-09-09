@@ -16,7 +16,7 @@ class FileTreeModel(private val treeRoot: MutableTreeNode) :
     private var filter: FileFilter = AnyFileFilter
 
     init {
-        EventBus.register(this)
+
     }
 
     @Subscribe
