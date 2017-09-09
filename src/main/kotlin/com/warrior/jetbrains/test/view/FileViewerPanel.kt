@@ -48,11 +48,10 @@ class FileViewerPanel: JPanel(GridLayout(1, 1)), TreeSelectionListener, TreeWill
         val (content, filter) = event
         val previewPanel: BasePreviewPanel = when (content) {
             is Empty -> EmptyPreviewPanel()
-            is FileList -> FolderPreviewPanel(content.files)
+            is FileList -> FolderPreviewPanel(content.files, filter)
             is SingleFile -> FilePreviewPanel(content.file)
         }
         updateContentPanel(previewPanel)
-        contentPreview.applyFileFilter(ApplyFileFilterEvent(filter))
     }
 
     @Subscribe

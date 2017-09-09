@@ -4,13 +4,14 @@ import com.google.common.eventbus.Subscribe
 import com.warrior.jetbrains.test.event.ApplyFileFilterEvent
 import com.warrior.jetbrains.test.event.ContentDataLoadedEvent
 import com.warrior.jetbrains.test.model.FileInfo
+import com.warrior.jetbrains.test.model.filter.FileFilter
 import com.warrior.jetbrains.test.view.SMALL_PREVIEW_SIZE
 import com.warrior.jetbrains.test.view.icon.ImageIcon
 import com.warrior.jetbrains.test.view.uiAction
 import java.awt.*
 import javax.swing.*
 
-class FolderPreviewPanel(private val files: List<FileInfo>): BasePreviewPanel() {
+class FolderPreviewPanel(private val files: List<FileInfo>, currentFilter: FileFilter): BasePreviewPanel() {
 
     private val items: MutableMap<FileInfo, ItemPanel> = HashMap(files.size)
 
@@ -18,8 +19,10 @@ class FolderPreviewPanel(private val files: List<FileInfo>): BasePreviewPanel() 
         layout = GridLayout(0, COLUMNS, GAP, GAP)
         for (file in files) {
             val itemPanel = ItemPanel(file.name, file.type.icon)
-            add(itemPanel)
             items[file] = itemPanel
+            if (currentFilter.accept(file)) {
+                add(itemPanel)
+            }
         }
     }
 
