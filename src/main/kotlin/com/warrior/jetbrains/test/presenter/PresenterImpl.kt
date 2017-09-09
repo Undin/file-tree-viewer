@@ -1,20 +1,23 @@
 package com.warrior.jetbrains.test.presenter
 
+import com.google.common.eventbus.Subscribe
+import com.warrior.jetbrains.test.event.*
 import com.warrior.jetbrains.test.model.*
 import com.warrior.jetbrains.test.model.filter.AnyFileFilter
 import com.warrior.jetbrains.test.model.filter.ExtensionFileFilter
 import com.warrior.jetbrains.test.model.filter.FileFilter
-import com.warrior.jetbrains.test.view.*
+import com.warrior.jetbrains.test.view.LoadingState
+import com.warrior.jetbrains.test.view.PREVIEW_SIZE
+import com.warrior.jetbrains.test.view.SMALL_PREVIEW_SIZE
 import com.warrior.jetbrains.test.view.content.*
 import com.warrior.jetbrains.test.view.tree.FileTreeNode
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 import java.util.concurrent.Future
 
-open class PresenterImpl(private val view: View): Presenter {
+open class PresenterImpl : Presenter {
 
     private val logger: Logger = LogManager.getLogger(javaClass)
 
@@ -30,16 +33,23 @@ open class PresenterImpl(private val view: View): Presenter {
     private var contentFuture: Future<*>? = null
     private val contentLoadingTasks: ConcurrentMap<FileInfo, Future<*>> = ConcurrentHashMap()
 
-    override fun onStart() {
+    init {
+        EventBus.register(this)
+    }
+
+    @Subscribe
+    override fun onStart(event: StartEvent) {
         logger.debug("onStart")
         val roots = model.getLocalRoots()
         for (root in roots) {
-            view.addRoot(root)
+            AddRootEvent(root).post()
         }
     }
 
-    override fun onNodeSelected(node: FileTreeNode?) {
-        logger.debug("onNodeSelected: $node")
+    @Subscribe
+    override fun onNodeSelected(event: NodeSelectedEvent) {
+        logger.debug("onNodeSelected: $event")
+        val node = event.node
         selectedNode = node
 
         contentFuture?.cancel(true)
@@ -50,7 +60,7 @@ open class PresenterImpl(private val view: View): Presenter {
         if (node != null) {
             val fileInfo = node.userObject
             if (fileInfo.canHaveChildren) {
-                view.onStartLoadingContent()
+                StartLoadingContentEvent.post()
                 contentFuture = model.getChildrenAsync(fileInfo) { files ->
                     onContentLoaded(node, FileList(files))
                 }
@@ -58,12 +68,12 @@ open class PresenterImpl(private val view: View): Presenter {
                 onContentLoaded(node, SingleFile(fileInfo))
             }
         } else {
-            view.displayContent(Empty, currentFilter)
+            DisplayContentEvent(Empty, currentFilter).post()
         }
     }
 
     private fun onContentLoaded(node: FileTreeNode, content: Content) {
-        view.displayContent(content, currentFilter)
+        DisplayContentEvent(content, currentFilter).post()
         val (files, imageSize) = when (content) {
             is Empty -> emptyList<FileInfo>() to 0
             is SingleFile -> listOf(content.file) to PREVIEW_SIZE
@@ -78,12 +88,12 @@ open class PresenterImpl(private val view: View): Presenter {
             val task = when (file.type) {
                 FileType.IMAGE -> ContentLoader.loadImage(file, imageSize) { image ->
                     if (image != null && selectedNode == node) {
-                        view.onContentDataLoaded(Image(file, image))
+                        ContentDataLoadedEvent(Image(file, image)).post()
                     }
                 }
                 FileType.TEXT -> ContentLoader.loadText(file) { text ->
                     if (text != null && selectedNode == node) {
-                        view.onContentDataLoaded(Text(file, text))
+                        ContentDataLoadedEvent(Text(file, text)).post()
                     }
                 }
                 else -> continue@loop
@@ -92,32 +102,34 @@ open class PresenterImpl(private val view: View): Presenter {
         }
     }
 
-    override fun onPreNodeExpand(node: FileTreeNode) {
-        logger.debug("onPreNodeExpand: $node")
+    @Subscribe
+    override fun onPreNodeExpand(event: PreNodeExpandEvent) {
+        logger.debug("onPreNodeExpand: $event")
+        val node = event.node
         if (node.state == LoadingState.EMPTY) {
-            view.onStartLoadingChildren(node)
+            StartLoadingChildrenEvent(node).post()
             model.getChildrenAsync(node.userObject) { files ->
-                view.onChildrenLoaded(node, files)
+                ChildrenLoadedEvent(node, files).post()
             }
         }
     }
 
-    override fun onPreNodeCollapse(node: FileTreeNode) {
-        logger.debug("onPreNodeCollapse: $node")
-    }
-
-    override fun onAddNewFtpServer(host: String, username: String?, password: CharArray) {
-        logger.debug("onAddNewFtpServer. host: $host, username: $username, password: ${Arrays.toString(password)}")
+    @Subscribe
+    override fun onAddNewFtpServer(event: AddNewFtpServerEvent) {
+        logger.debug("onAddNewFtpServer: $event")
+        val (host, username, password) = event
         val ftpRoot = model.createFtpServerRoot(host, username, password) ?: return
-        view.addRoot(ftpRoot)
+        AddRootEvent(ftpRoot).post()
     }
 
-    override fun onAddFileFilter(filterString: String) {
-        logger.debug("onAddFileFilter: $filterString")
+    @Subscribe
+    override fun onSetFileFilter(event: SetFileFilterEvent) {
+        logger.debug("onSetFileFilter: $event")
+        val filterString = event.filterString
         if (filterString != currentFilterString) {
             currentFilterString = filterString
             currentFilter = if (filterString.isEmpty()) AnyFileFilter else ExtensionFileFilter(filterString)
-            view.applyFileFilter(currentFilter)
+            ApplyFileFilterEvent(currentFilter).post()
         }
     }
 }

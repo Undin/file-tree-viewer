@@ -1,23 +1,14 @@
 package com.warrior.jetbrains.test.view
 
-import com.warrior.jetbrains.test.model.FileInfo
-import com.warrior.jetbrains.test.presenter.Presenter
-import com.warrior.jetbrains.test.presenter.PresenterImpl
-import com.warrior.jetbrains.test.model.filter.FileFilter
-import com.warrior.jetbrains.test.view.content.Content
-import com.warrior.jetbrains.test.view.content.ContentData
-import com.warrior.jetbrains.test.view.tree.FileTreeNode
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
+import com.warrior.jetbrains.test.event.AddNewFtpServerEvent
+import com.warrior.jetbrains.test.event.SetFileFilterEvent
+import com.warrior.jetbrains.test.event.StartEvent
 import java.awt.Dimension
 import javax.swing.*
 
-class FileViewerFrame : JFrame("FileViewer"), View {
+class FileViewerFrame : JFrame("FileViewer") {
 
-    private val logger: Logger = LogManager.getLogger(javaClass)
-
-    private val presenter: Presenter = PresenterImpl(this)
-    private val panel: FileViewerPanel = FileViewerPanel(presenter)
+    private val panel: FileViewerPanel = FileViewerPanel()
 
     private var currentExtension: String = ""
 
@@ -27,42 +18,7 @@ class FileViewerFrame : JFrame("FileViewer"), View {
         jMenuBar = createMenu()
         preferredSize = Dimension(INITIAL_WIDTH, INITIAL_HEIGHT)
         pack()
-        presenter.onStart()
-    }
-
-    override fun addRoot(root: FileInfo) {
-        logger.debug("addRoot: $root")
-        SwingUtilities.invokeLater { panel.addRoot(root) }
-    }
-
-    override fun onStartLoadingChildren(node: FileTreeNode) {
-        logger.debug("setContentLoading: $node")
-        SwingUtilities.invokeLater { panel.setLoadingState(node) }
-    }
-
-    override fun onChildrenLoaded(node: FileTreeNode, children: List<FileInfo>) {
-        logger.debug("onChildrenLoaded: $node, $children")
-        SwingUtilities.invokeLater { panel.setChildren(node, children) }
-    }
-
-    override fun onStartLoadingContent() {
-        logger.debug("onStartLoadingContent")
-        SwingUtilities.invokeLater { panel.setContentLoading() }
-    }
-
-    override fun displayContent(content: Content, filter: FileFilter) {
-        logger.debug("displayContent: $content")
-        SwingUtilities.invokeLater { panel.setContent(content, filter) }
-    }
-
-    override fun onContentDataLoaded(data: ContentData) {
-        logger.debug("onContentDataLoaded: $data")
-        SwingUtilities.invokeLater { panel.updateContentData(data) }
-    }
-
-    override fun applyFileFilter(filter: FileFilter) {
-        logger.debug("applyFileFilter: $filter")
-        panel.applyFileFilter(filter)
+        StartEvent.post()
     }
 
     private fun createMenu(): JMenuBar {
@@ -91,13 +47,13 @@ class FileViewerFrame : JFrame("FileViewer"), View {
         val result = JOptionPane.showConfirmDialog(null, inputs,
                 "Add new FTP server", JOptionPane.OK_CANCEL_OPTION)
         if (result == JOptionPane.OK_OPTION) {
-            presenter.onAddNewFtpServer(host.text, username.text, password.password)
+            AddNewFtpServerEvent(host.text, username.text, password.password).post()
         }
     }
 
     private fun showAddFileFilterDialog() {
         val result = JOptionPane.showInputDialog("Input file extension", currentExtension) ?: return
         currentExtension = result
-        presenter.onAddFileFilter(result)
+        SetFileFilterEvent(result).post()
     }
 }

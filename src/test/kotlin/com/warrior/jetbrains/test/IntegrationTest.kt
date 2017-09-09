@@ -1,32 +1,44 @@
 package com.warrior.jetbrains.test
 
+import com.warrior.jetbrains.test.event.*
 import com.warrior.jetbrains.test.model.Model
 import com.warrior.jetbrains.test.model.filter.AnyFileFilter
 import com.warrior.jetbrains.test.model.filter.ExtensionFileFilter
-import com.warrior.jetbrains.test.presenter.Presenter
-import com.warrior.jetbrains.test.view.View
 import com.warrior.jetbrains.test.view.content.*
 import com.warrior.jetbrains.test.view.tree.FileTreeNode
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatcher
 import org.mockito.Mockito.*
+import org.mockito.internal.matchers.InstanceOf
 
 class IntegrationTest {
 
-    private lateinit var view: View
-    private lateinit var presenter: Presenter
+    private lateinit var view: FakeView
+    private lateinit var presenter: TestPresenter
     private lateinit var model: Model
 
     @Before
     fun setUp() {
         view = mock()
-        presenter = TestPresenter(view)
-        model = (presenter as TestPresenter).model()
+        presenter = TestPresenter()
+        model = presenter.model()
+
+        EventBus.register(view)
+    }
+
+    @After
+    fun tearDown() {
+        EventBus.unregister(view)
+        EventBus.unregister(presenter)
     }
 
     @Test
     fun `add roots on start`() {
-        presenter.onStart()
+        StartEvent.post()
+
+        Thread.sleep(100)
         verify(view, atLeastOnce()).addRoot(any())
     }
 
@@ -34,68 +46,71 @@ class IntegrationTest {
     fun `set children`() {
         val root = model.resourceFile("root")
         val node = FileTreeNode(root)
-        presenter.onPreNodeExpand(node)
+        PreNodeExpandEvent(node).post()
         Thread.sleep(1000)
 
-        verify(view).onStartLoadingChildren(node)
+        verify(view).onStartLoadingChildren(StartLoadingChildrenEvent(node))
         val children = model.getChildrenSync(root)
-        verify(view).onChildrenLoaded(node, children)
+        verify(view).setNodeChildren(ChildrenLoadedEvent(node, children))
     }
 
     @Test
     fun `select folder`() {
         val root = model.resourceFile("root")
-        presenter.onNodeSelected(FileTreeNode(root))
+        NodeSelectedEvent(FileTreeNode(root)).post()
         Thread.sleep(1000)
 
-        verify(view).onStartLoadingContent()
-        verify(view).displayContent(any(FileList::class.java), eq(AnyFileFilter))
-        verify(view, times(2)).onContentDataLoaded(any(ContentData::class.java))
+        val children = model.getChildrenSync(root)
+        verify(view).onStartLoadingContent(StartLoadingContentEvent)
+        verify(view).displayContent(DisplayContentEvent(FileList(children), AnyFileFilter))
+        verify(view, times(2)).updateContentData(any())
     }
 
     @Test
     fun `select generic file`() {
         val file = model.resourceFile("root/unknown_file")
-        presenter.onNodeSelected(FileTreeNode(file))
+        NodeSelectedEvent(FileTreeNode(file)).post()
         Thread.sleep(1000)
 
-        verify(view).displayContent(any(SingleFile::class.java), eq(AnyFileFilter))
+        verify(view).displayContent(DisplayContentEvent(SingleFile(file), AnyFileFilter))
     }
 
     @Test
     fun `select archive file`() {
         val archive = model.resourceFile("root/archive.zip")
-        presenter.onNodeSelected(FileTreeNode(archive))
+        NodeSelectedEvent(FileTreeNode(archive)).post()
         Thread.sleep(1000)
 
-        verify(view).displayContent(any(FileList::class.java), eq(AnyFileFilter))
+        val children = model.getChildrenSync(archive)
+        verify(view).displayContent(DisplayContentEvent(FileList(children), AnyFileFilter))
     }
 
     @Test
     fun `select image file`() {
         val image = model.resourceFile("root/image.png")
-        presenter.onNodeSelected(FileTreeNode(image))
+        NodeSelectedEvent(FileTreeNode(image)).post()
         Thread.sleep(1000)
 
-        verify(view).displayContent(any(SingleFile::class.java), eq(AnyFileFilter))
-        verify(view).onContentDataLoaded(any(Image::class.java))
+        verify(view).displayContent(DisplayContentEvent(SingleFile(image), AnyFileFilter))
+        verify(view).updateContentData(argThat(ContentDataLoadedMatcher(Image::class.java)))
     }
 
     @Test
     fun `select text file`() {
-        val image = model.resourceFile("root/file.txt")
-        presenter.onNodeSelected(FileTreeNode(image))
+        val text = model.resourceFile("root/file.txt")
+        NodeSelectedEvent(FileTreeNode(text)).post()
         Thread.sleep(1000)
 
-        verify(view).displayContent(any(SingleFile::class.java), eq(AnyFileFilter))
-        verify(view).onContentDataLoaded(any(Text::class.java))
+        verify(view).displayContent(DisplayContentEvent(SingleFile(text), AnyFileFilter))
+        verify(view).updateContentData(argThat(ContentDataLoadedMatcher(Text::class.java)))
     }
 
     @Test
     fun `select nothing`() {
-        presenter.onNodeSelected(null)
+        NodeSelectedEvent(null).post()
 
-        verify(view).displayContent(Empty, AnyFileFilter)
+        Thread.sleep(100)
+        verify(view).displayContent(DisplayContentEvent(Empty, AnyFileFilter))
     }
 
     @Test
@@ -110,20 +125,22 @@ class IntegrationTest {
             user(user, password)
         }
 
-        presenter.onAddNewFtpServer("localhost:${ftpServer.serverControlPort}", user, password.toCharArray())
+        AddNewFtpServerEvent("localhost:${ftpServer.serverControlPort}", user, password.toCharArray()).post()
         val ftpRoot = model.createFtpServerRoot("localhost:${ftpServer.serverControlPort}", user, password.toCharArray())
                 ?: error("Failed to connect to ftp server")
 
-        verify(view).addRoot(ftpRoot)
+        Thread.sleep(100)
+        verify(view).addRoot(AddRootEvent(ftpRoot))
         ftpServer.stop()
     }
 
     @Test
     fun `add filter`() {
         val extension = "png"
-        presenter.onAddFileFilter(extension)
+        SetFileFilterEvent(extension).post()
 
-        verify(view).applyFileFilter(ExtensionFileFilter(extension))
+        Thread.sleep(100)
+        verify(view).applyFileFilter(ApplyFileFilterEvent(ExtensionFileFilter(extension)))
     }
 
     @Test
@@ -131,18 +148,21 @@ class IntegrationTest {
         val extensions = listOf("png", "", "pdf")
         val expectedFilters = listOf(ExtensionFileFilter("png"), AnyFileFilter, ExtensionFileFilter("pdf"))
         for ((ext, filter) in extensions.zip(expectedFilters)) {
-            presenter.onAddFileFilter(ext)
-            verify(view).applyFileFilter(filter)
+            SetFileFilterEvent(ext).post()
+
+            Thread.sleep(100)
+            verify(view).applyFileFilter(ApplyFileFilterEvent(filter))
         }
     }
 
     @Test
     fun `add same filter several times`() {
         val extension = "png"
-        presenter.onAddFileFilter(extension)
-        presenter.onAddFileFilter(extension)
+        SetFileFilterEvent(extension).post()
+        SetFileFilterEvent(extension).post()
 
-        verify(view).applyFileFilter(ExtensionFileFilter(extension))
+        Thread.sleep(100)
+        verify(view).applyFileFilter(ApplyFileFilterEvent(ExtensionFileFilter(extension)))
     }
 
     @Test
@@ -150,14 +170,21 @@ class IntegrationTest {
         val extension = "png"
         val expectedFilter = ExtensionFileFilter(extension)
 
-        presenter.onAddFileFilter(extension)
-        verify(view).applyFileFilter(expectedFilter)
+        SetFileFilterEvent(extension).post()
+
+        Thread.sleep(100)
+        verify(view).applyFileFilter(ApplyFileFilterEvent(expectedFilter))
 
         val root = model.resourceFile("root")
-        presenter.onNodeSelected(FileTreeNode(root))
+        NodeSelectedEvent(FileTreeNode(root)).post()
         Thread.sleep(1000)
 
-        verify(view).onStartLoadingContent()
-        verify(view).displayContent(any(FileList::class.java), eq(expectedFilter))
+        val children = model.getChildrenSync(root)
+        verify(view).onStartLoadingContent(StartLoadingContentEvent)
+        verify(view).displayContent(DisplayContentEvent(FileList(children), expectedFilter))
     }
+}
+
+private class ContentDataLoadedMatcher<T: ContentData>(private val clazz: Class<T>) : ArgumentMatcher<ContentDataLoadedEvent> {
+    override fun matches(argument: ContentDataLoadedEvent): Boolean = InstanceOf(clazz).matches(argument.data)
 }

@@ -1,9 +1,12 @@
 package com.warrior.jetbrains.test.view.content
 
+import com.google.common.eventbus.Subscribe
+import com.warrior.jetbrains.test.event.ApplyFileFilterEvent
+import com.warrior.jetbrains.test.event.ContentDataLoadedEvent
 import com.warrior.jetbrains.test.model.FileInfo
-import com.warrior.jetbrains.test.model.filter.FileFilter
 import com.warrior.jetbrains.test.view.SMALL_PREVIEW_SIZE
 import com.warrior.jetbrains.test.view.icon.ImageIcon
+import com.warrior.jetbrains.test.view.uiAction
 import java.awt.*
 import javax.swing.*
 
@@ -20,17 +23,20 @@ class FolderPreviewPanel(private val files: List<FileInfo>): BasePreviewPanel() 
         }
     }
 
-    override fun updateContentData(data: ContentData) {
+    @Subscribe
+    override fun updateContentData(event: ContentDataLoadedEvent) = uiAction {
+        val data = event.data
         when (data) {
             is Image -> items[data.file]?.setImagePreview(data.image)
             is Text -> items[data.file]?.setTextPreview(data.text)
         }
     }
 
-    override fun applyFileFilter(filter: FileFilter) {
+    @Subscribe
+    override fun applyFileFilter(event: ApplyFileFilterEvent) = uiAction {
         removeAll()
         for (file in files) {
-            if (filter.accept(file)) {
+            if (event.filter.accept(file)) {
                 // We are sure that there is corresponding component in items map
                 add(items[file])
             }

@@ -1,7 +1,12 @@
 package com.warrior.jetbrains.test.view.tree
 
+import com.google.common.annotations.VisibleForTesting
+import com.google.common.eventbus.Subscribe
+import com.warrior.jetbrains.test.event.*
+import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.model.filter.AnyFileFilter
 import com.warrior.jetbrains.test.model.filter.FileFilter
+import com.warrior.jetbrains.test.view.uiAction
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode
 
@@ -10,17 +15,38 @@ class FileTreeModel(private val treeRoot: MutableTreeNode) :
 
     private var filter: FileFilter = AnyFileFilter
 
+    init {
+        EventBus.register(this)
+    }
+
+    @Subscribe
+    fun addRoot(event: AddRootEvent) = uiAction {
+        val count = treeRoot.childCount
+        insertNodeInto(FileTreeNode(event.root), treeRoot, count)
+    }
+
+    @Subscribe
+    fun onStartLoadingChildren(event: StartLoadingChildrenEvent) = uiAction { setLoadingState(event.node) }
+
+    @Subscribe
+    fun setNodeChildren(event: ChildrenLoadedEvent) = uiAction { setNodeChildren(event.node, event.children) }
+
+    @Subscribe
+    fun applyFilter(event: ApplyFileFilterEvent) = uiAction { applyFilter(event.filter) }
+
+    @VisibleForTesting
     fun setLoadingState(node: FileTreeNode) {
         node.setLoadingState().apply(node)
     }
 
-    fun setNodeChildren(node: FileTreeNode, children: List<FileTreeNode>) {
-        node.setUnfilteredChildren(children, filter).apply(node)
+    @VisibleForTesting
+    fun setNodeChildren(node: FileTreeNode, children: List<FileInfo>) {
+        val nodes = children.map(::FileTreeNode)
+        node.setUnfilteredChildren(nodes, filter).apply(node)
     }
 
-    fun applyFilter(filter: FileFilter) {
-        applyFilter(treeRoot, filter)
-    }
+    @VisibleForTesting
+    fun applyFilter(filter: FileFilter) = applyFilter(treeRoot, filter)
 
     private fun applyFilter(node: MutableTreeNode, filter: FileFilter) {
         this.filter = filter

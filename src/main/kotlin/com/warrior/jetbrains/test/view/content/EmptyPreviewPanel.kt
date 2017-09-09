@@ -1,6 +1,8 @@
 package com.warrior.jetbrains.test.view.content
 
-import com.warrior.jetbrains.test.model.filter.FileFilter
+import com.google.common.eventbus.Subscribe
+import com.warrior.jetbrains.test.event.ApplyFileFilterEvent
+import com.warrior.jetbrains.test.event.ContentDataLoadedEvent
 import java.awt.GridLayout
 
 class EmptyPreviewPanel : BasePreviewPanel() {
@@ -9,6 +11,8 @@ class EmptyPreviewPanel : BasePreviewPanel() {
         layout = GridLayout(1, 1)
     }
 
-    override fun updateContentData(data: ContentData) {}
-    override fun applyFileFilter(filter: FileFilter) {}
+    @Subscribe
+    override fun updateContentData(event: ContentDataLoadedEvent) {}
+    @Subscribe
+    override fun applyFileFilter(event: ApplyFileFilterEvent) {}
 }

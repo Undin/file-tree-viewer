@@ -1,12 +1,17 @@
 package com.warrior.jetbrains.test.presenter
 
-import com.warrior.jetbrains.test.view.tree.FileTreeNode
+import com.google.common.eventbus.Subscribe
+import com.warrior.jetbrains.test.event.*
 
 interface Presenter {
-    fun onStart()
-    fun onNodeSelected(node: FileTreeNode?)
-    fun onPreNodeExpand(node: FileTreeNode)
-    fun onPreNodeCollapse(node: FileTreeNode)
-    fun onAddNewFtpServer(host: String, username: String?, password: CharArray)
-    fun onAddFileFilter(filterString: String)
+    @Subscribe
+    fun onStart(event: StartEvent)
+    @Subscribe
+    fun onNodeSelected(event: NodeSelectedEvent)
+    @Subscribe
+    fun onPreNodeExpand(event: PreNodeExpandEvent)
+    @Subscribe
+    fun onAddNewFtpServer(event: AddNewFtpServerEvent)
+    @Subscribe
+    fun onSetFileFilter(event: SetFileFilterEvent)
 }

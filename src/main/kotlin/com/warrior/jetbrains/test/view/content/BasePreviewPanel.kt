@@ -1,6 +1,8 @@
 package com.warrior.jetbrains.test.view.content
 
-import com.warrior.jetbrains.test.model.filter.FileFilter
+import com.google.common.eventbus.Subscribe
+import com.warrior.jetbrains.test.event.ApplyFileFilterEvent
+import com.warrior.jetbrains.test.event.ContentDataLoadedEvent
 import java.awt.Color
 import javax.swing.JPanel
 
@@ -10,8 +12,10 @@ abstract class BasePreviewPanel: JPanel() {
         background = Color.WHITE
     }
 
-    abstract fun updateContentData(data: ContentData)
-    abstract fun applyFileFilter(filter: FileFilter)
+    @Subscribe
+    abstract fun updateContentData(event: ContentDataLoadedEvent)
+    @Subscribe
+    abstract fun applyFileFilter(event: ApplyFileFilterEvent)
 
     protected fun update() {
         revalidate()

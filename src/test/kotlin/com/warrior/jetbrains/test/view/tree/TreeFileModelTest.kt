@@ -25,7 +25,7 @@ class TreeFileModelTest : BaseTreeTest() {
     @Test
     fun `set children`() {
         val children = model.getChildrenSync(root)
-        treeModel.setNodeChildren(tree, children.map(::FileTreeNode))
+        treeModel.setNodeChildren(tree, children)
 
         checkTree(tree, tree("root") {
             node("archive.zip")
@@ -40,7 +40,7 @@ class TreeFileModelTest : BaseTreeTest() {
     @Test
     fun `apply filter`() {
         val children = model.getChildrenSync(root)
-        treeModel.setNodeChildren(tree, children.map(::FileTreeNode))
+        treeModel.setNodeChildren(tree, children)
         treeModel.applyFilter(ExtensionFileFilter("zip"))
 
         checkTree(tree, tree("root") {
@@ -53,7 +53,7 @@ class TreeFileModelTest : BaseTreeTest() {
     @Test
     fun `apply several filters`() {
         val children = model.getChildrenSync(root)
-        treeModel.setNodeChildren(tree, children.map(::FileTreeNode))
+        treeModel.setNodeChildren(tree, children)
 
         treeModel.applyFilter(ExtensionFileFilter("zip"))
         checkTree(tree, tree("root") {
@@ -74,7 +74,7 @@ class TreeFileModelTest : BaseTreeTest() {
         treeModel.applyFilter(ExtensionFileFilter("txt"))
 
         val children = model.getChildrenSync(root)
-        treeModel.setNodeChildren(tree, children.map(::FileTreeNode))
+        treeModel.setNodeChildren(tree, children)
 
         checkTree(tree, tree("root") {
             node("dir")
@@ -86,9 +86,12 @@ class TreeFileModelTest : BaseTreeTest() {
     fun `applyFilter must filter all tree`() {
 
         fun loadFullTree(tree: FileTreeNode) {
-            val children = model.getChildrenSync(tree.userObject).map(::FileTreeNode)
+            val children = model.getChildrenSync(tree.userObject)
             treeModel.setNodeChildren(tree, children)
-            children.forEach { loadFullTree(it) }
+            for (child in tree.children()) {
+                if (child !is FileTreeNode) continue
+                loadFullTree(child)
+            }
         }
 
         loadFullTree(tree)

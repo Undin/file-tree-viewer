@@ -5,6 +5,7 @@ import com.warrior.jetbrains.test.model.Model
 import org.mockftpserver.fake.FakeFtpServer
 import org.mockftpserver.fake.UserAccount
 import org.mockftpserver.fake.filesystem.*
+import org.mockito.ArgumentMatcher
 import org.mockito.Mockito
 import java.nio.file.Paths
 
@@ -21,24 +22,19 @@ fun Model.resourceFile(path: String): FileInfo {
 
 inline fun <reified T> mock(): T = Mockito.mock(T::class.java)
 
-fun <T> any(): T {
-    Mockito.any<T>()
+inline fun <reified T> any(): T {
+    Mockito.any(T::class.java)
     return uninitialized()
 }
 
-fun <T> any(clazz: Class<T>): T {
-    Mockito.any(clazz)
+fun <T> argThat(matcher: ArgumentMatcher<T>): T {
+    Mockito.argThat(matcher)
     return uninitialized()
-}
-
-fun <T> eq(value: T): T {
-    Mockito.eq(value)
-    return value
 }
 
 // hack to use Mockito.any() from kotlin
 // see https://medium.com/@elye.project/befriending-kotlin-and-mockito-1c2e7b0ef791
-private fun <T> uninitialized(): T = null as T
+fun <T> uninitialized(): T = null as T
 
 inline fun ftp(block: FtpServerBuilder.() -> Unit): FakeFtpServer {
     val ftpServer = FtpServerBuilder().apply(block).ftpServer

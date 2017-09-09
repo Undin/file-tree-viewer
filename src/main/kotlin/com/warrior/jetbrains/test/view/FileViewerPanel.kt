@@ -1,20 +1,23 @@
 package com.warrior.jetbrains.test.view
 
-import com.warrior.jetbrains.test.model.FileInfo
-import com.warrior.jetbrains.test.model.filter.FileFilter
-import com.warrior.jetbrains.test.presenter.Presenter
+import com.google.common.eventbus.Subscribe
+import com.warrior.jetbrains.test.event.*
 import com.warrior.jetbrains.test.view.content.*
-import com.warrior.jetbrains.test.view.tree.*
+import com.warrior.jetbrains.test.view.tree.FileTreeCellRender
+import com.warrior.jetbrains.test.view.tree.FileTreeModel
+import com.warrior.jetbrains.test.view.tree.FileTreeNode
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import java.awt.GridLayout
 import javax.swing.*
 import javax.swing.event.*
-import javax.swing.tree.*
+import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.TreeModel
+import javax.swing.tree.TreeSelectionModel
 
-class FileViewerPanel(
-        private val presenter: Presenter
-) : JPanel(GridLayout(1, 1)),
-    TreeSelectionListener,
-    TreeWillExpandListener {
+class FileViewerPanel: JPanel(GridLayout(1, 1)), TreeSelectionListener, TreeWillExpandListener {
+
+    private val logger: Logger = LogManager.getLogger(javaClass)
 
     private val treeRoot: DefaultMutableTreeNode = DefaultMutableTreeNode()
     private val treeModel: FileTreeModel = FileTreeModel(treeRoot)
@@ -34,66 +37,50 @@ class FileViewerPanel(
         }
 
         add(splitView)
+
+        EventBus.register(this)
+        EventBus.register(contentPreview)
     }
 
-    fun addRoot(root: FileInfo) {
-        val count = treeRoot.childCount
-        treeModel.insertNodeInto(FileTreeNode(root), treeRoot, count)
-    }
-
-    fun setLoadingState(node: FileTreeNode) {
-        treeModel.setLoadingState(node)
-    }
-
-    fun setChildren(node: FileTreeNode, children: List<FileInfo>) {
-        val nodes = children.map(::FileTreeNode)
-        treeModel.setNodeChildren(node, nodes)
-    }
-
-    fun setContent(content: Content, filter: FileFilter) {
+    @Subscribe
+    fun displayContent(event: DisplayContentEvent) = uiAction {
+        logger.debug("displayContent: $event")
+        val (content, filter) = event
         val previewPanel: BasePreviewPanel = when (content) {
             is Empty -> EmptyPreviewPanel()
             is FileList -> FolderPreviewPanel(content.files)
             is SingleFile -> FilePreviewPanel(content.file)
         }
         updateContentPanel(previewPanel)
-        contentPreview.applyFileFilter(filter)
-
+        contentPreview.applyFileFilter(ApplyFileFilterEvent(filter))
     }
 
-    fun setContentLoading() {
+    @Subscribe
+    fun onStartLoadingContent(event: StartLoadingContentEvent) = uiAction {
+        logger.debug("onStartLoadingContent: $event")
         updateContentPanel(LoadingPreviewPanel())
     }
 
-    fun updateContentData(data: ContentData) {
-        contentPreview.updateContentData(data)
+    override fun valueChanged(e: TreeSelectionEvent) {
+        NodeSelectedEvent(e.newLeadSelectionPath?.lastPathComponent as? FileTreeNode).post()
     }
 
-    fun applyFileFilter(filter: FileFilter) {
-        treeModel.applyFilter(filter)
-        contentPreview.applyFileFilter(filter)
+    override fun treeWillExpand(event: TreeExpansionEvent) {
+        val node = event.path.lastPathComponent as? FileTreeNode ?: return
+        PreNodeExpandEvent(node).post()
     }
+
+    override fun treeWillCollapse(event: TreeExpansionEvent) {}
 
     private fun updateContentPanel(previewPanel: BasePreviewPanel) {
+        EventBus.unregister(contentPreview)
+        EventBus.register(previewPanel)
+
         contentPreview = previewPanel
         contentPanel.removeAll()
         contentPanel.add(previewPanel)
         contentPanel.revalidate()
         contentPanel.repaint()
-    }
-
-    override fun valueChanged(e: TreeSelectionEvent) {
-        presenter.onNodeSelected(e.newLeadSelectionPath?.lastPathComponent as? FileTreeNode)
-    }
-
-    override fun treeWillExpand(event: TreeExpansionEvent) {
-        val node = event.path.lastPathComponent as? FileTreeNode ?: return
-        presenter.onPreNodeExpand(node)
-    }
-
-    override fun treeWillCollapse(event: TreeExpansionEvent) {
-        val node = event.path.lastPathComponent as? FileTreeNode ?: return
-        presenter.onPreNodeCollapse(node)
     }
 
     private fun createFileTree(model: TreeModel): JTree {
