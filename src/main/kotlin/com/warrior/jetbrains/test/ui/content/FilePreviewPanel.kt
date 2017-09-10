@@ -1,9 +1,7 @@
 package com.warrior.jetbrains.test.ui.content
 
-import com.google.common.eventbus.Subscribe
-import com.warrior.jetbrains.test.event.ApplyFileFilterEvent
-import com.warrior.jetbrains.test.event.ContentDataLoadedEvent
 import com.warrior.jetbrains.test.model.FileInfo
+import com.warrior.jetbrains.test.model.filter.FileFilter
 import com.warrior.jetbrains.test.ui.icon.ImageIcon
 import com.warrior.jetbrains.test.ui.uiAction
 import java.awt.Component
@@ -25,9 +23,7 @@ class FilePreviewPanel(private val file: FileInfo): BasePreviewPanel() {
         add(component)
     }
 
-    @Subscribe
-    override fun updateContentData(event: ContentDataLoadedEvent) = uiAction {
-        val data = event.data
+    override fun updateContentData(data: ContentData) {
         when (data) {
         // Change default icon with image
             is Image -> (component as? JLabel)?.icon = ImageIcon(data.image)
@@ -42,9 +38,8 @@ class FilePreviewPanel(private val file: FileInfo): BasePreviewPanel() {
         }
     }
 
-    @Subscribe
-    override fun applyFileFilter(event: ApplyFileFilterEvent) = uiAction {
-        val accept = event.filter.accept(file)
+    override fun applyFileFilter(filter: FileFilter) = uiAction {
+        val accept = filter.accept(file)
         if (accept && component.parent == null) { // file preview should be shown but its component isn't added
             add(component)
         } else if (!accept && component.parent != null) { // file preview shouldn't be shown but its component is added

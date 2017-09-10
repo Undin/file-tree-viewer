@@ -1,8 +1,6 @@
 package com.warrior.jetbrains.test.ui.content
 
-import com.google.common.eventbus.Subscribe
-import com.warrior.jetbrains.test.event.ApplyFileFilterEvent
-import com.warrior.jetbrains.test.event.ContentDataLoadedEvent
+import com.warrior.jetbrains.test.model.filter.FileFilter
 import java.awt.GridLayout
 import javax.swing.JLabel
 import javax.swing.SwingConstants
@@ -14,8 +12,6 @@ class LoadingPreviewPanel : BasePreviewPanel() {
         add(JLabel("Loading...", SwingConstants.CENTER))
     }
 
-    @Subscribe
-    override fun updateContentData(event: ContentDataLoadedEvent) {}
-    @Subscribe
-    override fun applyFileFilter(event: ApplyFileFilterEvent) {}
+    override fun updateContentData(data: ContentData) {}
+    override fun applyFileFilter(filter: FileFilter) {}
 }

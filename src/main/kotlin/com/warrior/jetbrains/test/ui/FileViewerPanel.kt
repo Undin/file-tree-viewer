@@ -60,6 +60,18 @@ class FileViewerPanel: JPanel(GridLayout(1, 1)), TreeSelectionListener, TreeWill
         updateContentPanel(LoadingPreviewPanel())
     }
 
+    @Subscribe
+    fun updateContentData(event: ContentDataLoadedEvent) = uiAction {
+        logger.debug("updateContentData: $event")
+        contentPreview.updateContentData(event.data)
+    }
+
+    @Subscribe
+    fun applyFileFilter(event: ApplyFileFilterEvent) = uiAction {
+        logger.debug("applyFileFilter: $event")
+        contentPreview.applyFileFilter(event.filter)
+    }
+
     override fun valueChanged(e: TreeSelectionEvent) {
         NodeSelectedEvent(e.newLeadSelectionPath?.lastPathComponent as? FileTreeNode).post()
     }
@@ -72,9 +84,6 @@ class FileViewerPanel: JPanel(GridLayout(1, 1)), TreeSelectionListener, TreeWill
     override fun treeWillCollapse(event: TreeExpansionEvent) {}
 
     private fun updateContentPanel(previewPanel: BasePreviewPanel) {
-        EventBus.unregister(contentPreview)
-        EventBus.register(previewPanel)
-
         contentPreview = previewPanel
         contentPanel.removeAll()
         contentPanel.add(previewPanel)
