@@ -26,6 +26,10 @@ class ModelImpl : Model {
     @Volatile
     private var currentFilter: FileFilter = AnyFileFilter
 
+    // Contains all tasks of root FileInfo to quickly cancel all tasks after removing root node
+    // rootFile -> (file -> future)
+    private val childrenLoadingTasks: ConcurrentMap<FileInfo, ConcurrentMap<FileInfo, Future<*>>> = ConcurrentHashMap()
+
     private var contentFuture: Future<*>? = null
     private val contentLoadingTasks: ConcurrentMap<FileInfo, Future<*>> = ConcurrentHashMap()
 
@@ -102,9 +106,14 @@ class ModelImpl : Model {
         val node = event.node
         if (node.state == LoadingState.EMPTY) {
             StartLoadingChildrenEvent(node).post()
-            FileInfoLoader.getChildrenAsync(node.userObject) { files ->
+            val file = node.userObject
+            val rootFile = node.rootUserObject
+            val rootTasks = childrenLoadingTasks.getOrPut(rootFile) { ConcurrentHashMap() }
+            val task = FileInfoLoader.getChildrenAsync(node.userObject) { files ->
                 ChildrenLoadedEvent(node, files).post()
+                rootTasks.remove(file)
             }
+            rootTasks[file] = task
         }
     }
 
@@ -139,4 +148,21 @@ class ModelImpl : Model {
             ApplyFileFilterEvent(currentFilter).post()
         }
     }
+
+    @Subscribe
+    override fun onRootRemoved(event: RootRemoved) {
+        logger.debug("onRootRemoved: $event")
+        for ((file, task) in childrenLoadingTasks[event.root].orEmpty()) {
+            println("cancel task for ${file.name}")
+            task.cancel(true)
+        }
+    }
+}
+
+private val FileTreeNode.rootUserObject: FileInfo get() {
+    var node = this
+    while (!node.userObject.isRoot) {
+        node = node.parent as FileTreeNode // It cast is safe because only parent of root is not FileTreeNode
+    }
+    return node.userObject
 }

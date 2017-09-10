@@ -1,5 +1,6 @@
 package com.warrior.jetbrains.test.event
 
+import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 
 interface UiEvent : Event
@@ -24,3 +25,5 @@ object CancelResolvingFtpServerEvent : UiEvent {
 }
 
 data class SetFileFilterEvent(val filterString: String) : UiEvent
+
+data class RootRemoved(val root: FileInfo) : UiEvent

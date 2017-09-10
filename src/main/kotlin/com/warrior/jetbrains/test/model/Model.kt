@@ -16,4 +16,6 @@ interface Model {
     fun onCancelResolvingFtpServer(event: CancelResolvingFtpServerEvent)
     @Subscribe
     fun onSetFileFilter(event: SetFileFilterEvent)
+    @Subscribe
+    fun onRootRemoved(event: RootRemoved)
 }

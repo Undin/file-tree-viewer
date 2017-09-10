@@ -8,7 +8,8 @@ data class FileInfo(
         val file: FileObject,
         val name: String,
         val location: FileLocation,
-        val type: FileType
+        val type: FileType,
+        val isRoot: Boolean
 ) {
     override fun toString(): String = name
     override fun equals(other: Any?): Boolean {

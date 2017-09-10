@@ -30,19 +30,19 @@ object FileInfoLoader {
         fileSystemManager.init()
     }
 
-    fun getLocalFile(path: Path): FileInfo? {
+    fun getLocalFile(path: Path, isRoot: Boolean = false): FileInfo? {
         val fileObject = resolveFile(path.toUri()) ?: return null
         val baseName = fileObject.name.baseName
         val name = if (baseName.isNotEmpty()) baseName else path.toString()
         val type = fileType(fileObject)
-        return FileInfo(fileObject, name, FileLocation.LOCAL, type)
+        return FileInfo(fileObject, name, FileLocation.LOCAL, type, isRoot)
     }
 
     fun getLocalRoots(): List<FileInfo> {
         logger.debug("getLocalRoots")
         return FileSystems.getDefault()
                 .rootDirectories
-                .mapNotNull { getLocalFile(it) }
+                .mapNotNull { getLocalFile(it, true) }
                 .sortedBy { it.name } //+ listOfNotNull(resolveFtpServer("ftp.lip6.fr", "", CharArray(0)))
     }
 
@@ -70,7 +70,7 @@ object FileInfoLoader {
         return createFtpUri(host, username, password).andThen { uri ->
             val file = resolveFile(uri) ?: return@andThen Err(RESOLVE_FAILED)
             val serverName = if (name.isNullOrEmpty()) host else name!! // !! is safe here because of check
-            Ok(FileInfo(file, serverName, FileLocation.FTP, fileType(file)))
+            Ok(FileInfo(file, serverName, FileLocation.FTP, fileType(file), true))
         }
     }
 
@@ -87,7 +87,7 @@ object FileInfoLoader {
             fileInfo.file
                     .children
                     .filter { !it.isHidden }
-                    .map { FileInfo(it, it.name.baseName, fileInfo.location, fileType(it)) }
+                    .map { FileInfo(it, it.name.baseName, fileInfo.location, fileType(it), false) }
                     .sortedBy { it.name }
         } catch (e: IOException) {
             logger.error("Failed to get children of $fileInfo", e)
@@ -101,7 +101,7 @@ object FileInfoLoader {
         }
         val extension = fileInfo.file.name.extension
         val archiveRoot = resolveFile(URI.create("$extension:${fileInfo.file}!")) ?: return null
-        val archive = FileInfo(archiveRoot, "", FileLocation.ARCHIVE, fileType(archiveRoot))
+        val archive = FileInfo(archiveRoot, "", FileLocation.ARCHIVE, fileType(archiveRoot), false)
         return getChildren(archive)
     }
 

@@ -2,6 +2,7 @@ package com.warrior.jetbrains.test.ui
 
 import com.google.common.eventbus.Subscribe
 import com.warrior.jetbrains.test.event.*
+import com.warrior.jetbrains.test.model.FileLocation
 import com.warrior.jetbrains.test.ui.content.*
 import com.warrior.jetbrains.test.ui.tree.FileTreeCellRender
 import com.warrior.jetbrains.test.ui.tree.FileTreeModel
@@ -9,6 +10,8 @@ import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.awt.GridLayout
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.*
 import javax.swing.event.*
 import javax.swing.tree.DefaultMutableTreeNode
@@ -27,6 +30,7 @@ class FileViewerPanel: JPanel(GridLayout(1, 1)), TreeSelectionListener, TreeWill
 
     init {
         tree.cellRenderer = FileTreeCellRender()
+        tree.addMouseListener(TreePopupAdapter(this::showContentMenu))
         contentPanel.add(contentPreview)
         val contentScrollPane = JScrollPane(contentPanel).apply {
             verticalScrollBar.unitIncrement = 16
@@ -97,6 +101,37 @@ class FileViewerPanel: JPanel(GridLayout(1, 1)), TreeSelectionListener, TreeWill
             isRootVisible = false
             addTreeSelectionListener(this@FileViewerPanel)
             addTreeWillExpandListener(this@FileViewerPanel)
+        }
+    }
+
+    private fun showContentMenu(e: MouseEvent) {
+        val node = tree.getPathForLocation(e.x, e.y)?.lastPathComponent as? FileTreeNode ?: return
+        val file = node.userObject
+        // We want to allow remove only ftp servers
+        if (file.isRoot && file.location == FileLocation.FTP) {
+            val popup = JPopupMenu()
+            val removeItem = JMenuItem("Remove")
+            removeItem.addActionListener {
+                treeModel.removeNodeFromParent(node)
+                // notify model to cancel all tasks of all inherited files
+                RootRemoved(file).post()
+            }
+            popup.add(removeItem)
+            popup.show(tree, e.x, e.y)
+        }
+    }
+
+    private class TreePopupAdapter(private val action: (MouseEvent) -> Unit) : MouseAdapter() {
+        override fun mouseReleased(e: MouseEvent) {
+            if (e.isPopupTrigger) {
+                action(e)
+            }
+        }
+
+        override fun mousePressed(e: MouseEvent) {
+            if (e.isPopupTrigger) {
+                action(e)
+            }
         }
     }
 }
