@@ -17,8 +17,8 @@ class FilterTest : BaseIntegrationTest() {
     fun `add filter`() {
         val extension = "png"
         SetFileFilterEvent(extension).post()
-
         Thread.sleep(100)
+
         verify(view).applyFileFilter(ApplyFileFilterEvent(ExtensionFileFilter(extension)))
     }
 
@@ -28,8 +28,8 @@ class FilterTest : BaseIntegrationTest() {
         val expectedFilters = listOf(ExtensionFileFilter("png"), AnyFileFilter, ExtensionFileFilter("pdf"))
         for ((ext, filter) in extensions.zip(expectedFilters)) {
             SetFileFilterEvent(ext).post()
-
             Thread.sleep(100)
+
             verify(view).applyFileFilter(ApplyFileFilterEvent(filter))
         }
     }
@@ -39,8 +39,8 @@ class FilterTest : BaseIntegrationTest() {
         val extension = "png"
         SetFileFilterEvent(extension).post()
         SetFileFilterEvent(extension).post()
-
         Thread.sleep(100)
+
         verify(view).applyFileFilter(ApplyFileFilterEvent(ExtensionFileFilter(extension)))
     }
 
@@ -50,8 +50,8 @@ class FilterTest : BaseIntegrationTest() {
         val expectedFilter = ExtensionFileFilter(extension)
 
         SetFileFilterEvent(extension).post()
-
         Thread.sleep(100)
+
         verify(view).applyFileFilter(ApplyFileFilterEvent(expectedFilter))
 
         val root = FileInfoLoader.resourceFile("root", true)

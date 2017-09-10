@@ -6,11 +6,11 @@ import com.warrior.jetbrains.test.getChildrenSync
 import com.warrior.jetbrains.test.model.FileInfoLoader
 import com.warrior.jetbrains.test.model.filter.AnyFileFilter
 import com.warrior.jetbrains.test.resourceFile
+import com.warrior.jetbrains.test.ui.UISizes
 import com.warrior.jetbrains.test.ui.content.*
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import org.junit.Test
 import org.mockito.ArgumentMatcher
-import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.internal.matchers.InstanceOf
 
@@ -24,7 +24,6 @@ class SelectTest : BaseIntegrationTest() {
         val children = FileInfoLoader.getChildrenSync(root)
         verify(view).onStartLoadingContent(StartLoadingContentEvent)
         verify(view).displayContent(DisplayContentEvent(FileList(children), AnyFileFilter))
-        verify(view, times(2)).updateContentData(com.warrior.jetbrains.test.any())
     }
 
     @Test
@@ -50,9 +49,13 @@ class SelectTest : BaseIntegrationTest() {
     fun `select image file`() {
         val image = FileInfoLoader.resourceFile("root/image.png", false)
         NodeSelectedEvent(FileTreeNode(image)).post()
-        Thread.sleep(5000)
+        Thread.sleep(1000)
 
         verify(view).displayContent(DisplayContentEvent(SingleFile(image), AnyFileFilter))
+
+        LoadContentDataEvent(0, image, UISizes.previewSize).post()
+        Thread.sleep(1000)
+
         verify(view).updateContentData(argThat(ContentDataLoadedMatcher(Image::class.java)))
     }
 
@@ -60,17 +63,21 @@ class SelectTest : BaseIntegrationTest() {
     fun `select text file`() {
         val text = FileInfoLoader.resourceFile("root/file.txt", false)
         NodeSelectedEvent(FileTreeNode(text)).post()
-        Thread.sleep(5000)
+        Thread.sleep(1000)
 
         verify(view).displayContent(DisplayContentEvent(SingleFile(text), AnyFileFilter))
+
+        LoadContentDataEvent(0, text).post()
+        Thread.sleep(1000)
+
         verify(view).updateContentData(argThat(ContentDataLoadedMatcher(Text::class.java)))
     }
 
     @Test
     fun `select nothing`() {
         NodeSelectedEvent(null).post()
-
         Thread.sleep(100)
+
         verify(view).displayContent(DisplayContentEvent(Empty, AnyFileFilter))
     }
 }

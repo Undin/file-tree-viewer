@@ -37,7 +37,7 @@ class FolderPreviewDataModel(private val files: List<FileInfo>, private val stat
     override fun getRowCount(): Int = (filteredFiles.size + columnCount - 1) / columnCount
     override fun getColumnCount(): Int = COLUMN_COUNT
 
-    override fun getValueAt(rowIndex: Int, columnIndex: Int): Any? {
+    override fun getValueAt(rowIndex: Int, columnIndex: Int): ItemView? {
         val flatIndex = rowIndex * columnCount + columnIndex
         val file = filteredFiles.getOrNull(flatIndex) ?: return null
         val holder = itemsCache.get(file) {

@@ -38,8 +38,8 @@ class FtpTest : BaseIntegrationTest() {
     fun `add ftp server`() {
         AddNewFtpServerEvent("localhost:${ftpServer.serverControlPort}", USER, PASSWORD.toCharArray(), null).post()
         val ftpRoot = resolveLocalFtpServer(ftpServer.serverControlPort, USER, PASSWORD)
-
         Thread.sleep(1000)
+
         verify(view).onFtpServerResolved(FtpServerResolvedEvent(Ok(ftpRoot)))
         verify(view).addRoot(AddRootEvent(ftpRoot))
     }
@@ -47,8 +47,8 @@ class FtpTest : BaseIntegrationTest() {
     @Test
     fun `ftp server resolve failed 1`() {
         AddNewFtpServerEvent("", "", PASSWORD.toCharArray(), null).post()
-
         Thread.sleep(1000)
+
         verify(view).onFtpServerResolved(FtpServerResolvedEvent(Err(FileInfoLoader.INVALID_URI)))
         verify(view, never()).addRoot(any())
     }
@@ -56,8 +56,8 @@ class FtpTest : BaseIntegrationTest() {
     @Test
     fun `ftp server resolve failed 2`() {
         AddNewFtpServerEvent("localhost:${ftpServer.serverControlPort}", USER + "1", PASSWORD.toCharArray(), null).post()
-
         Thread.sleep(1000)
+
         verify(view).onFtpServerResolved(FtpServerResolvedEvent(Err(FileInfoLoader.RESOLVE_FAILED)))
         verify(view, never()).addRoot(any())
     }

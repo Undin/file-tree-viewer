@@ -15,8 +15,8 @@ class GeneralTest : BaseIntegrationTest() {
     @Test
     fun `add roots on start`() {
         StartEvent.post()
-
         Thread.sleep(100)
+
         verify(view, atLeastOnce()).addRoot(any())
     }
 
