@@ -17,6 +17,7 @@ class FolderPreviewPanel(state: Int, files: List<FileInfo>, currentFilter: FileF
         layout = GridLayout(1, 1)
         val table = JTable(dataModel)
         table.cellSelectionEnabled = false
+        table.setShowGrid(false)
         table.setDefaultRenderer(FileInfo::class.java) { _, value, _, _, _, _ -> value as? Component }
         table.rowHeight = ItemView.ITEM_HEIGHT
         add(table)
