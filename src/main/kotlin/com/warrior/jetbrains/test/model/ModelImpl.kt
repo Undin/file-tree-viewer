@@ -6,8 +6,7 @@ import com.warrior.jetbrains.test.model.filter.AnyFileFilter
 import com.warrior.jetbrains.test.model.filter.ExtensionFileFilter
 import com.warrior.jetbrains.test.model.filter.FileFilter
 import com.warrior.jetbrains.test.view.LoadingState
-import com.warrior.jetbrains.test.view.PREVIEW_SIZE
-import com.warrior.jetbrains.test.view.SMALL_PREVIEW_SIZE
+import com.warrior.jetbrains.test.view.UISizes
 import com.warrior.jetbrains.test.view.content.*
 import com.warrior.jetbrains.test.view.tree.FileTreeNode
 import org.apache.logging.log4j.LogManager
@@ -71,8 +70,8 @@ class ModelImpl : Model {
         DisplayContentEvent(content, currentFilter).post()
         val (files, imageSize) = when (content) {
             is Empty -> emptyList<FileInfo>() to 0
-            is SingleFile -> listOf(content.file) to PREVIEW_SIZE
-            is FileList -> content.files to SMALL_PREVIEW_SIZE
+            is SingleFile -> listOf(content.file) to UISizes.previewSize
+            is FileList -> content.files to UISizes.smallPreviewSize
         }
 
         loop@for (file in files) {

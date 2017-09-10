@@ -32,8 +32,8 @@ class FileViewerPanel: JPanel(GridLayout(1, 1)), TreeSelectionListener, TreeWill
             verticalScrollBar.unitIncrement = 16
         }
         val splitView = JSplitPane(JSplitPane.HORIZONTAL_SPLIT, JScrollPane(tree), contentScrollPane).apply {
-            dividerLocation = INITIAL_DIVIDER_LOCATION
-            dividerSize = DIVIDER_SIZE
+            dividerLocation = UISizes.initialDividerLocation
+            dividerSize = UISizes.dividerSize
         }
 
         add(splitView)

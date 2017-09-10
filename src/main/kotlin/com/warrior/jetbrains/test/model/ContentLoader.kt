@@ -1,6 +1,5 @@
 package com.warrior.jetbrains.test.model
 
-import com.warrior.jetbrains.test.view.TEXT_PREVIEW_LINES
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.awt.Image
@@ -12,6 +11,8 @@ import java.util.concurrent.*
 import javax.imageio.ImageIO
 
 object ContentLoader {
+
+    private const val TEXT_PREVIEW_LINES = 16
 
     private val logger: Logger = LogManager.getLogger(javaClass)
 

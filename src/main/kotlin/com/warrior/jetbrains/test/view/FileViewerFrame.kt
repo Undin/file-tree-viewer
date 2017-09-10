@@ -15,7 +15,7 @@ class FileViewerFrame : JFrame("FileViewer") {
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         add(panel)
         jMenuBar = createMenu()
-        preferredSize = Dimension(INITIAL_WIDTH, INITIAL_HEIGHT)
+        preferredSize = Dimension(UISizes.initialWidth, UISizes.initialHeight)
         pack()
 
         EventBus.register(panel)

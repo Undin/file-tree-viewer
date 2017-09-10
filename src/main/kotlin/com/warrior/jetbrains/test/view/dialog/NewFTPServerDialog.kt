@@ -5,6 +5,7 @@ import com.warrior.jetbrains.test.event.AddNewFtpServerEvent
 import com.warrior.jetbrains.test.event.FtpServerResolvedEvent
 import com.warrior.jetbrains.test.model.Err
 import com.warrior.jetbrains.test.model.Ok
+import com.warrior.jetbrains.test.view.UISizes
 import com.warrior.jetbrains.test.view.uiAction
 import net.miginfocom.layout.AC
 import net.miginfocom.layout.CC
@@ -42,7 +43,7 @@ class NewFTPServerDialog(owner: Frame) : BaseDialog(owner, "Add new FTP server")
 
         optionPane = JOptionPane(panel, JOptionPane.QUESTION_MESSAGE,
                 JOptionPane.YES_NO_OPTION, null, arrayOf(CANCEL, OK))
-        optionPane.preferredSize = Dimension(WIDTH, HEIGHT)
+        optionPane.preferredSize = Dimension(UISizes.ftpDialogWidth, UISizes.ftpDialogHeight)
         optionPane.addPropertyChangeListener(this)
         contentPane = optionPane
 
@@ -92,8 +93,5 @@ class NewFTPServerDialog(owner: Frame) : BaseDialog(owner, "Add new FTP server")
     companion object {
         private const val OK = "Ok"
         private const val CANCEL = "Cancel"
-
-        private const val WIDTH = 450
-        private const val HEIGHT = 220
     }
 }

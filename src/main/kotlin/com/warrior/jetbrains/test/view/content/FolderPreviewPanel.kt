@@ -5,7 +5,7 @@ import com.warrior.jetbrains.test.event.ApplyFileFilterEvent
 import com.warrior.jetbrains.test.event.ContentDataLoadedEvent
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.model.filter.FileFilter
-import com.warrior.jetbrains.test.view.SMALL_PREVIEW_SIZE
+import com.warrior.jetbrains.test.view.UISizes
 import com.warrior.jetbrains.test.view.icon.ImageIcon
 import com.warrior.jetbrains.test.view.uiAction
 import java.awt.*
@@ -66,7 +66,7 @@ private class ItemPanel(name: String, defaultIcon: Icon) : JPanel() {
             horizontalAlignment = SwingConstants.CENTER
             verticalAlignment = SwingConstants.CENTER
             alignmentX = Component.CENTER_ALIGNMENT
-            preferredSize = Dimension(SMALL_PREVIEW_SIZE, SMALL_PREVIEW_SIZE)
+            preferredSize = Dimension(UISizes.smallPreviewSize, UISizes.smallPreviewSize)
 
         }
         add(imageLabel)
@@ -108,13 +108,13 @@ private class ItemPanel(name: String, defaultIcon: Icon) : JPanel() {
     private fun createTextPreviewComponent(text: String): JTextArea = JTextArea(text).apply {
         isEditable = false
         font = font.deriveFont(FONT_SIZE)
-        preferredSize = Dimension(SMALL_PREVIEW_SIZE, SMALL_PREVIEW_SIZE)
-        maximumSize = Dimension(SMALL_PREVIEW_SIZE, SMALL_PREVIEW_SIZE)
+        preferredSize = Dimension(UISizes.smallPreviewSize, UISizes.smallPreviewSize)
+        maximumSize = Dimension(UISizes.smallPreviewSize, UISizes.smallPreviewSize)
     }
 
     companion object {
-        private const val ITEM_WIDTH = SMALL_PREVIEW_SIZE + 2 * 4
-        private const val ITEM_HEIGHT = SMALL_PREVIEW_SIZE + 20
+        private val ITEM_WIDTH = UISizes.smallPreviewSize * 18 / 16
+        private val ITEM_HEIGHT = UISizes.smallPreviewSize * 5 / 4
         private const val FONT_SIZE = 3f
     }
 }

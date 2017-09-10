@@ -50,7 +50,7 @@ class SelectTest : BaseIntegrationTest() {
     fun `select image file`() {
         val image = FileInfoLoader.resourceFile("root/image.png")
         NodeSelectedEvent(FileTreeNode(image)).post()
-        Thread.sleep(1000)
+        Thread.sleep(5000)
 
         verify(view).displayContent(DisplayContentEvent(SingleFile(image), AnyFileFilter))
         verify(view).updateContentData(argThat(ContentDataLoadedMatcher(Image::class.java)))
@@ -60,7 +60,7 @@ class SelectTest : BaseIntegrationTest() {
     fun `select text file`() {
         val text = FileInfoLoader.resourceFile("root/file.txt")
         NodeSelectedEvent(FileTreeNode(text)).post()
-        Thread.sleep(1000)
+        Thread.sleep(5000)
 
         verify(view).displayContent(DisplayContentEvent(SingleFile(text), AnyFileFilter))
         verify(view).updateContentData(argThat(ContentDataLoadedMatcher(Text::class.java)))
