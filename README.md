@@ -7,11 +7,11 @@ Swing application to display file tree.
 Features:
 * Shows file tree of: 
     * local file system
-    * zip archives: zip and jar
+    * archives (zip and jar)
     * FTP servers 
 * Allows to add/remove FTP servers
 * Shows preview of image and text files
-* Filtering displaying files by their extension
+* Filters displaying files by their extensions
  
 ## Build and test
 Run `./gradlew shadowJar` to build project (without launching tests). It'll create fat jar in `build/libs/`.
