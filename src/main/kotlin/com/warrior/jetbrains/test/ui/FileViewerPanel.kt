@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe
 import com.warrior.jetbrains.test.event.*
 import com.warrior.jetbrains.test.model.FileLocation
 import com.warrior.jetbrains.test.ui.content.*
+import com.warrior.jetbrains.test.ui.content.folder.FolderPreviewPanel
 import com.warrior.jetbrains.test.ui.tree.FileTreeCellRender
 import com.warrior.jetbrains.test.ui.tree.FileTreeModel
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
@@ -25,8 +26,13 @@ class FileViewerPanel: JPanel(GridLayout(1, 1)), TreeSelectionListener, TreeWill
     private val treeRoot: DefaultMutableTreeNode = DefaultMutableTreeNode()
     private val treeModel: FileTreeModel = FileTreeModel(treeRoot)
     private val tree: JTree = createFileTree(treeModel)
+
     private val contentPanel: JPanel = JPanel(GridLayout(1, 1))
-    private var contentPreview: BasePreviewPanel = EmptyPreviewPanel()
+    // represents state of content panel.
+    // allows to check which content data events must be applied
+    // or should be discard because corresponding task hadn't been canceled.
+    private var contentState: Int = 0
+    private var contentPreview: BasePreviewPanel = EmptyPreviewPanel(contentState)
 
     init {
         tree.cellRenderer = FileTreeCellRender()
@@ -35,6 +41,7 @@ class FileViewerPanel: JPanel(GridLayout(1, 1)), TreeSelectionListener, TreeWill
         val contentScrollPane = JScrollPane(contentPanel).apply {
             verticalScrollBar.unitIncrement = 16
         }
+        contentScrollPane.verticalScrollBar.model
         val splitView = JSplitPane(JSplitPane.HORIZONTAL_SPLIT, JScrollPane(tree), contentScrollPane).apply {
             dividerLocation = UISizes.initialDividerLocation
             dividerSize = UISizes.dividerSize
@@ -49,11 +56,12 @@ class FileViewerPanel: JPanel(GridLayout(1, 1)), TreeSelectionListener, TreeWill
     @Subscribe
     fun displayContent(event: DisplayContentEvent) = uiAction {
         logger.debug("displayContent: $event")
+        contentState++
         val (content, filter) = event
         val previewPanel: BasePreviewPanel = when (content) {
-            is Empty -> EmptyPreviewPanel()
-            is FileList -> FolderPreviewPanel(content.files, filter)
-            is SingleFile -> FilePreviewPanel(content.file)
+            is Empty -> EmptyPreviewPanel(contentState)
+            is FileList -> FolderPreviewPanel(contentState, content.files, filter)
+            is SingleFile -> FilePreviewPanel(contentState, content.file)
         }
         updateContentPanel(previewPanel)
     }
@@ -61,13 +69,16 @@ class FileViewerPanel: JPanel(GridLayout(1, 1)), TreeSelectionListener, TreeWill
     @Subscribe
     fun onStartLoadingContent(event: StartLoadingContentEvent) = uiAction {
         logger.debug("onStartLoadingContent: $event")
-        updateContentPanel(LoadingPreviewPanel())
+        contentState++
+        updateContentPanel(LoadingPreviewPanel(contentState))
     }
 
     @Subscribe
     fun updateContentData(event: ContentDataLoadedEvent) = uiAction {
         logger.debug("updateContentData: $event")
-        contentPreview.updateContentData(event.data)
+        if (contentState == event.state) {
+            contentPreview.updateContentData(event.data)
+        }
     }
 
     @Subscribe
@@ -114,7 +125,7 @@ class FileViewerPanel: JPanel(GridLayout(1, 1)), TreeSelectionListener, TreeWill
             removeItem.addActionListener {
                 treeModel.removeNodeFromParent(node)
                 // notify model to cancel all tasks of all inherited files
-                RootRemoved(file).post()
+                RootRemovedEvent(file).post()
             }
             popup.add(removeItem)
             popup.show(tree, e.x, e.y)

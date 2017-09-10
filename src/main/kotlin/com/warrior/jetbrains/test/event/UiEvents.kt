@@ -11,6 +11,8 @@ object StartEvent : UiEvent {
 
 data class NodeSelectedEvent(val node: FileTreeNode?) : UiEvent
 
+data class LoadContentDataEvent(val state: Int, val file: FileInfo, val imageSize: Int = 0) : UiEvent
+
 data class PreNodeExpandEvent(val node: FileTreeNode) : UiEvent
 
 data class AddNewFtpServerEvent(
@@ -26,4 +28,4 @@ object CancelResolvingFtpServerEvent : UiEvent {
 
 data class SetFileFilterEvent(val filterString: String) : UiEvent
 
-data class RootRemoved(val root: FileInfo) : UiEvent
+data class RootRemovedEvent(val root: FileInfo) : UiEvent

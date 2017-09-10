@@ -23,6 +23,6 @@ object StartLoadingContentEvent : DataEvent {
 
 data class DisplayContentEvent(val content: Content, val filter: FileFilter): DataEvent
 
-data class ContentDataLoadedEvent(val data: ContentData) : DataEvent
+data class ContentDataLoadedEvent(val state: Int, val data: ContentData) : DataEvent
 
 data class ApplyFileFilterEvent(val filter: FileFilter) : DataEvent

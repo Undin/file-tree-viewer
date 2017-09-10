@@ -5,7 +5,7 @@ import java.awt.GridLayout
 import javax.swing.JLabel
 import javax.swing.SwingConstants
 
-class LoadingPreviewPanel : BasePreviewPanel() {
+class LoadingPreviewPanel(state: Int) : BasePreviewPanel(state) {
 
     init {
         layout = GridLayout(1, 1)

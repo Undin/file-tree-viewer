@@ -9,6 +9,8 @@ interface Model {
     @Subscribe
     fun onNodeSelected(event: NodeSelectedEvent)
     @Subscribe
+    fun onLoadContentData(event: LoadContentDataEvent)
+    @Subscribe
     fun onPreNodeExpand(event: PreNodeExpandEvent)
     @Subscribe
     fun onAddNewFtpServer(event: AddNewFtpServerEvent)
@@ -17,5 +19,5 @@ interface Model {
     @Subscribe
     fun onSetFileFilter(event: SetFileFilterEvent)
     @Subscribe
-    fun onRootRemoved(event: RootRemoved)
+    fun onRootRemoved(event: RootRemovedEvent)
 }

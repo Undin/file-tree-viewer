@@ -6,7 +6,6 @@ import com.warrior.jetbrains.test.model.filter.AnyFileFilter
 import com.warrior.jetbrains.test.model.filter.ExtensionFileFilter
 import com.warrior.jetbrains.test.model.filter.FileFilter
 import com.warrior.jetbrains.test.ui.LoadingState
-import com.warrior.jetbrains.test.ui.UISizes
 import com.warrior.jetbrains.test.ui.content.*
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import org.apache.logging.log4j.LogManager
@@ -19,9 +18,6 @@ class ModelImpl : Model {
 
     private val logger: Logger = LogManager.getLogger(javaClass)
 
-    @Volatile
-    private var selectedNode: FileTreeNode? = null
-
     private var currentFilterString: String = ""
     @Volatile
     private var currentFilter: FileFilter = AnyFileFilter
@@ -31,7 +27,7 @@ class ModelImpl : Model {
     private val childrenLoadingTasks: ConcurrentMap<FileInfo, ConcurrentMap<FileInfo, Future<*>>> = ConcurrentHashMap()
 
     private var contentFuture: Future<*>? = null
-    private val contentLoadingTasks: ConcurrentMap<FileInfo, Future<*>> = ConcurrentHashMap()
+    private val contentLoadingTasks: MutableList<Future<*>> = ArrayList()
 
     private var ftpFuture: Future<*>? = null
 
@@ -48,11 +44,10 @@ class ModelImpl : Model {
     override fun onNodeSelected(event: NodeSelectedEvent) {
         logger.debug("onNodeSelected: $event")
         val node = event.node
-        selectedNode = node
 
         contentFuture?.cancel(true)
         contentFuture = null
-        contentLoadingTasks.forEach { _, task -> task.cancel(true) }
+        contentLoadingTasks.forEach { it.cancel(true) }
         contentLoadingTasks.clear()
 
         if (node != null) {
@@ -60,44 +55,34 @@ class ModelImpl : Model {
             if (fileInfo.canHaveChildren) {
                 StartLoadingContentEvent.post()
                 contentFuture = FileInfoLoader.getChildrenAsync(fileInfo) { files ->
-                    onContentLoaded(node, FileList(files))
+                    DisplayContentEvent(FileList(files), currentFilter).post()
                 }
             } else {
-                onContentLoaded(node, SingleFile(fileInfo))
+                DisplayContentEvent(SingleFile(fileInfo), currentFilter).post()
             }
         } else {
             DisplayContentEvent(Empty, currentFilter).post()
         }
     }
 
-    private fun onContentLoaded(node: FileTreeNode, content: Content) {
-        DisplayContentEvent(content, currentFilter).post()
-        val (files, imageSize) = when (content) {
-            is Empty -> emptyList<FileInfo>() to 0
-            is SingleFile -> listOf(content.file) to UISizes.previewSize
-            is FileList -> content.files to UISizes.smallPreviewSize
-        }
-
-        loop@for (file in files) {
-            // All child files have same location.
-            // We can load content of file only if its location is `FileLocation.LOCAL`.
-            // So if location of file isn't FileLocation.LOCAL we can skip other children.
-            if (file.location != FileLocation.LOCAL) break
-            val task = when (file.type) {
-                FileType.IMAGE -> ContentLoader.loadImage(file, imageSize) { image ->
-                    if (image != null && selectedNode == node) {
-                        ContentDataLoadedEvent(Image(file, image)).post()
-                    }
+    @Subscribe
+    override fun onLoadContentData(event: LoadContentDataEvent) {
+        logger.debug("onLoadContentData: $event")
+        val (state, file, imageSize) = event
+        val task = when (file.type) {
+            FileType.IMAGE -> ContentLoader.loadImage(file, imageSize) { image ->
+                if (image != null) {
+                    ContentDataLoadedEvent(state, Image(file, image)).post()
                 }
-                FileType.TEXT -> ContentLoader.loadText(file) { text ->
-                    if (text != null && selectedNode == node) {
-                        ContentDataLoadedEvent(Text(file, text)).post()
-                    }
-                }
-                else -> continue@loop
             }
-            contentLoadingTasks[file] = task
+            FileType.TEXT -> ContentLoader.loadText(file) { text ->
+                if (text != null) {
+                    ContentDataLoadedEvent(state, Text(file, text)).post()
+                }
+            }
+            else -> return
         }
+        contentLoadingTasks.add(task)
     }
 
     @Subscribe
@@ -150,7 +135,7 @@ class ModelImpl : Model {
     }
 
     @Subscribe
-    override fun onRootRemoved(event: RootRemoved) {
+    override fun onRootRemoved(event: RootRemovedEvent) {
         logger.debug("onRootRemoved: $event")
         for ((file, task) in childrenLoadingTasks[event.root].orEmpty()) {
             println("cancel task for ${file.name}")

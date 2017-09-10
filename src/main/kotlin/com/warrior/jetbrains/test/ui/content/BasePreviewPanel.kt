@@ -4,7 +4,7 @@ import com.warrior.jetbrains.test.model.filter.FileFilter
 import java.awt.Color
 import javax.swing.JPanel
 
-abstract class BasePreviewPanel: JPanel() {
+abstract class BasePreviewPanel(protected val state: Int): JPanel() {
 
     init {
         background = Color.WHITE

@@ -35,6 +35,9 @@ val FileInfo.isFolder: Boolean get() = type == FileType.FOLDER
 val FileInfo.isArchive: Boolean get() = type == FileType.ARCHIVE
 val FileInfo.canHaveChildren: Boolean get() = isFolder || isLocal && isArchive
 
+val FileInfo.needLoadPreview: Boolean get() = location == FileLocation.LOCAL &&
+        (type == FileType.IMAGE || type == FileType.TEXT)
+
 enum class FileType(val smallIcon: Icon, val icon: Icon, val largeIcon: Icon) {
     TEXT(Icons.SMALL_TEXT_FILE_ICON, Icons.TEXT_FILE_ICON, Icons.LARGE_TEXT_FILE_ICON),
     IMAGE(Icons.SMALL_IMAGE_FILE_ICON, Icons.IMAGE_FILE_ICON, Icons.LARGE_IMAGE_FILE_ICON),
