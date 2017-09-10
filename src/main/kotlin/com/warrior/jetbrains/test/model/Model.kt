@@ -13,5 +13,7 @@ interface Model {
     @Subscribe
     fun onAddNewFtpServer(event: AddNewFtpServerEvent)
     @Subscribe
+    fun onCancelResolvingFtpServer(event: CancelResolvingFtpServerEvent)
+    @Subscribe
     fun onSetFileFilter(event: SetFileFilterEvent)
 }

@@ -11,12 +11,14 @@ import java.io.IOException
 import java.net.URI
 import java.nio.file.FileSystems
 import java.nio.file.Path
-import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 
 object FileInfoLoader {
+
+    const val INVALID_URI = "Can't create valid FTP uri"
+    const val RESOLVE_FAILED = "Can't connect to FTP server"
 
     private val logger: Logger = LogManager.getLogger(javaClass)
 
@@ -41,7 +43,7 @@ object FileInfoLoader {
         return FileSystems.getDefault()
                 .rootDirectories
                 .mapNotNull { getLocalFile(it) }
-                .sortedBy { it.name } //+ listOfNotNull(createFtpServerRoot("ftp.lip6.fr", "", CharArray(0)))
+                .sortedBy { it.name } //+ listOfNotNull(resolveFtpServer("ftp.lip6.fr", "", CharArray(0)))
     }
 
     fun getChildrenAsync(fileInfo: FileInfo, onSuccess: (List<FileInfo>) -> Unit): Future<*> {
@@ -54,13 +56,22 @@ object FileInfoLoader {
         }
     }
 
-    // TODO: make it asynchronous
-    fun createFtpServerRoot(host: String, username: String?, password: CharArray?): FileInfo? {
-        logger.debug("createFtpServerRoot. host: $host, username: $username, password: ${Arrays.toString(password)}")
+    fun resolveFtpServerAsync(host: String, username: String?, password: CharArray?, name: String?,
+                              callback: (Result<FileInfo, String>) -> Unit): Future<*> {
+        logger.debug("resolveFtpServerAsync. host: $host")
+        return executor.submit {
+            val result = resolveFtpServer(host, username, password, name)
+            callback(result)
+        }
+    }
+
+    private fun resolveFtpServer(host: String, username: String?, password: CharArray?, name: String?): Result<FileInfo, String> {
         val host = host.removePrefix("ftp://")
-        val uri = createFtpUri(host, username, password) ?: return null
-        val file = resolveFile(uri) ?: return null
-        return FileInfo(file, host, FileLocation.FTP, fileType(file))
+        return createFtpUri(host, username, password).andThen { uri ->
+            val file = resolveFile(uri) ?: return@andThen Err(RESOLVE_FAILED)
+            val serverName = if (name.isNullOrEmpty()) host else name!! // !! is safe here because of check
+            Ok(FileInfo(file, serverName, FileLocation.FTP, fileType(file)))
+        }
     }
 
     private fun getChildren(fileInfo: FileInfo): List<FileInfo> {
@@ -109,7 +120,8 @@ object FileInfoLoader {
         return detector.fileType(file.name.baseName)
     }
 
-    private fun createFtpUri(host: String, username: String?, password: CharArray?): URI? {
+    private fun createFtpUri(host: String, username: String?, password: CharArray?): Result<URI, String> {
+        if (host.isBlank()) return Err(INVALID_URI)
         val stringURI = buildString {
             append("ftp://")
             if (!username.isNullOrEmpty()) {
@@ -126,10 +138,10 @@ object FileInfoLoader {
             append(host)
         }
         return try {
-            URI.create(stringURI)
+            Ok(URI.create(stringURI))
         } catch (e: Exception) {
             logger.error("Invalid uri: $stringURI", e)
-            null
+            Err(INVALID_URI)
         }
     }
 

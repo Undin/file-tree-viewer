@@ -2,9 +2,7 @@ package com.warrior.jetbrains.test
 
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.model.FileInfoLoader
-import org.mockftpserver.fake.FakeFtpServer
-import org.mockftpserver.fake.UserAccount
-import org.mockftpserver.fake.filesystem.*
+import com.warrior.jetbrains.test.model.Result
 import org.mockito.ArgumentMatcher
 import org.mockito.Mockito
 import java.nio.file.Paths
@@ -13,6 +11,13 @@ fun FileInfoLoader.getChildrenSync(file: FileInfo): List<FileInfo> {
     var children: List<FileInfo>? = null
     getChildrenAsync(file) { children = it }.get()
     return children ?: error("Result list is supposed to be not empty")
+}
+
+fun FileInfoLoader.resolveFtpServerSync(host: String, username: String?,
+                                        password: CharArray?, name: String?): Result<FileInfo, String> {
+    var result: Result<FileInfo, String>? = null
+    resolveFtpServerAsync(host, username, password, name) { result = it }.get()
+    return result ?: error("Result is supposed to be not empty")
 }
 
 fun FileInfoLoader.resourceFile(path: String): FileInfo {
@@ -35,29 +40,3 @@ fun <T> argThat(matcher: ArgumentMatcher<T>): T {
 // hack to use Mockito.any() from kotlin
 // see https://medium.com/@elye.project/befriending-kotlin-and-mockito-1c2e7b0ef791
 fun <T> uninitialized(): T = null as T
-
-inline fun ftp(block: FtpServerBuilder.() -> Unit): FakeFtpServer {
-    val ftpServer = FtpServerBuilder().apply(block).ftpServer
-    ftpServer.serverControlPort = 0
-    ftpServer.start()
-    return ftpServer
-}
-
-
-class FtpServerBuilder {
-    val ftpServer: FakeFtpServer = FakeFtpServer()
-
-    inline fun content(block: FileSystemBuilder.() -> Unit) {
-        val builder = FileSystemBuilder()
-        builder.block()
-        ftpServer.fileSystem = builder.fileSystem
-    }
-
-    fun user(name: String, password: String, userDir: String = "/") =
-            ftpServer.addUserAccount(UserAccount(name, password, userDir))
-}
-
-class FileSystemBuilder(val fileSystem: FileSystem = UnixFakeFileSystem()) {
-    fun file(path: String) = fileSystem.add(FileEntry(path))
-    fun dir(path: String) = fileSystem.add(DirectoryEntry(path))
-}

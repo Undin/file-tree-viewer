@@ -4,6 +4,8 @@ import com.warrior.jetbrains.test.ftp
 import com.warrior.jetbrains.test.model.FileLocation.FTP
 import com.warrior.jetbrains.test.model.FileType.FOLDER
 import com.warrior.jetbrains.test.model.FileType.TEXT
+import com.warrior.jetbrains.test.resolveFtpServerSync
+import com.warrior.jetbrains.test.resolveLocalFtpServer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Test
@@ -28,8 +30,7 @@ class FtpFileInfoTest : BaseFileInfoLoaderTest() {
             user(USER1, PASSWORD)
         }
 
-        val ftpObject = localFtpServerRoot(ftpServer.serverControlPort, USER1, PASSWORD)
-                ?: error("Failed to create ftp server object")
+        val ftpObject = resolveLocalFtpServer(ftpServer.serverControlPort, USER1, PASSWORD)
         checkChildren(
                 ftpObject,
                 file("dir", FTP, FOLDER),
@@ -49,8 +50,7 @@ class FtpFileInfoTest : BaseFileInfoLoaderTest() {
             user(USER1, PASSWORD, "/user1")
         }
 
-        val ftpObject = localFtpServerRoot(ftpServer.serverControlPort, USER1, PASSWORD)
-                ?: error("Failed to create ftp server object")
+        val ftpObject = resolveLocalFtpServer(ftpServer.serverControlPort, USER1, PASSWORD)
         checkChildren(
                 ftpObject,
                 file("dir", FTP, FOLDER),
@@ -64,8 +64,10 @@ class FtpFileInfoTest : BaseFileInfoLoaderTest() {
             content { file("/file.txt") }
             user(USER1, PASSWORD)
         }
-        val ftpObject = localFtpServerRoot(ftpServer.serverControlPort, USER1, WRONG_PASSWORD)
-        assertThat(ftpObject).isNull()
+        val result = FileInfoLoader.resolveFtpServerSync("localhost:${ftpServer.serverControlPort}",
+                USER1, WRONG_PASSWORD.toCharArray(), null)
+
+        assertThat(result).isInstanceOf(Err::class.java)
     }
 
     @Test
@@ -74,7 +76,8 @@ class FtpFileInfoTest : BaseFileInfoLoaderTest() {
             content { file("/file.txt") }
             user(USER1, PASSWORD)
         }
-        val ftpObject = FileInfoLoader.createFtpServerRoot("ftp://localhost:${ftpServer.serverControlPort}", USER1, PASSWORD.toCharArray())
+        val ftpObject = FileInfoLoader.resolveFtpServerSync("ftp://localhost:${ftpServer.serverControlPort}",
+                USER1, PASSWORD.toCharArray(), null)
         assertThat(ftpObject).isNotNull()
     }
 
@@ -84,12 +87,9 @@ class FtpFileInfoTest : BaseFileInfoLoaderTest() {
             content { file("/file.txt") }
             user(USER2, PASSWORD)
         }
-        val ftpObject = localFtpServerRoot(ftpServer.serverControlPort, USER2, PASSWORD)
+        val ftpObject = resolveLocalFtpServer(ftpServer.serverControlPort, USER2, PASSWORD)
         assertThat(ftpObject).isNotNull()
     }
-
-    private fun localFtpServerRoot(port: Int, username: String, password: String): FileInfo? =
-            FileInfoLoader.createFtpServerRoot("localhost:$port", username, password.toCharArray())
 
     companion object {
         private const val USER1 = "user"

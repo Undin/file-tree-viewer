@@ -1,6 +1,7 @@
 package com.warrior.jetbrains.test.view
 
 import com.warrior.jetbrains.test.event.*
+import com.warrior.jetbrains.test.view.dialog.NewFTPServerDialog
 import java.awt.Dimension
 import javax.swing.*
 
@@ -36,19 +37,10 @@ class FileViewerFrame : JFrame("FileViewer") {
     }
 
     private fun showAddFtpServerDialog() {
-        val host = JTextField()
-        val username = JTextField()
-        val password = JPasswordField()
-        val inputs = arrayOf<JComponent>(
-                JLabel("Host"), host,
-                JLabel("User"), username,
-                JLabel("Password"), password
-        )
-        val result = JOptionPane.showConfirmDialog(null, inputs,
-                "Add new FTP server", JOptionPane.OK_CANCEL_OPTION)
-        if (result == JOptionPane.OK_OPTION) {
-            AddNewFtpServerEvent(host.text, username.text, password.password).post()
-        }
+        val dialog = NewFTPServerDialog(this)
+        EventBus.register(dialog)
+        dialog.isVisible = true
+        EventBus.unregister(dialog)
     }
 
     private fun showAddFileFilterDialog() {

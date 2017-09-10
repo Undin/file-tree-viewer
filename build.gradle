@@ -48,6 +48,7 @@ dependencies {
     compile 'commons-httpclient:commons-httpclient:3.1'
     compile 'commons-net:commons-net:3.3'
     compile 'com.google.guava:guava:23.0'
+    compile 'com.miglayout:miglayout-swing:5.0'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:3.8.0'

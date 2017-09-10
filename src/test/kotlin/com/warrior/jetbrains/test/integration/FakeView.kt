@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test
+package com.warrior.jetbrains.test.integration
 
 import com.google.common.eventbus.Subscribe
 import com.warrior.jetbrains.test.event.*
@@ -22,4 +22,7 @@ interface FakeView {
 
     @Subscribe
     fun applyFileFilter(event: ApplyFileFilterEvent)
+
+    @Subscribe
+    fun onFtpServerResolved(event: FtpServerResolvedEvent)
 }

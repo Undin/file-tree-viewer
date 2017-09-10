@@ -30,9 +30,7 @@ class ModelImpl : Model {
     private var contentFuture: Future<*>? = null
     private val contentLoadingTasks: ConcurrentMap<FileInfo, Future<*>> = ConcurrentHashMap()
 
-    init {
-
-    }
+    private var ftpFuture: Future<*>? = null
 
     @Subscribe
     override fun onStart(event: StartEvent) {
@@ -114,9 +112,22 @@ class ModelImpl : Model {
     @Subscribe
     override fun onAddNewFtpServer(event: AddNewFtpServerEvent) {
         logger.debug("onAddNewFtpServer: $event")
-        val (host, username, password) = event
-        val ftpRoot = FileInfoLoader.createFtpServerRoot(host, username, password) ?: return
-        AddRootEvent(ftpRoot).post()
+        ftpFuture?.cancel(true)
+
+        val (host, username, password, name) = event
+        ftpFuture = FileInfoLoader.resolveFtpServerAsync(host, username, password, name) { result ->
+            FtpServerResolvedEvent(result).post()
+            if (result is Ok) {
+                AddRootEvent(result.value).post()
+            }
+        }
+    }
+
+    @Subscribe
+    override fun onCancelResolvingFtpServer(event: CancelResolvingFtpServerEvent) {
+        logger.debug("onCancelResolvingFtpServer: $event")
+        ftpFuture?.cancel(true)
+        ftpFuture = null
     }
 
     @Subscribe
