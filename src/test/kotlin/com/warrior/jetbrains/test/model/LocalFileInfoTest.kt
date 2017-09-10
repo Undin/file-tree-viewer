@@ -10,7 +10,7 @@ class LocalFileInfoTest : BaseFileInfoLoaderTest() {
 
     @Test
     fun `get local directory children`() {
-        val folder = FileInfoLoader.resourceFile("root")
+        val folder = FileInfoLoader.resourceFile("root", true)
         checkChildren(folder,
                 file("archive.zip", LOCAL, FileType.ARCHIVE),
                 file("dir", LOCAL, FOLDER),
@@ -23,7 +23,7 @@ class LocalFileInfoTest : BaseFileInfoLoaderTest() {
 
     @Test
     fun `get zip children`() {
-        val zip = FileInfoLoader.resourceFile("root/archive.zip")
+        val zip = FileInfoLoader.resourceFile("root/archive.zip", true)
         checkChildren(zip,
                 file("zipDir", FileLocation.ARCHIVE, FOLDER),
                 file("zipFile.txt", FileLocation.ARCHIVE, TEXT)
@@ -32,7 +32,7 @@ class LocalFileInfoTest : BaseFileInfoLoaderTest() {
 
     @Test
     fun `get inner zip children`() {
-        val zip = FileInfoLoader.resourceFile("root/outerArchive.zip")
+        val zip = FileInfoLoader.resourceFile("root/outerArchive.zip", true)
         val innerZip = FileInfoLoader.getChildrenSync(zip).find { it.name == "innerArchive.zip" }
                 ?: error("'outerArchive.zip' must contain 'innerArchive.zip'")
         checkChildren(innerZip,

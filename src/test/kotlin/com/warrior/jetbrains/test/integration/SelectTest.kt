@@ -17,7 +17,7 @@ import org.mockito.internal.matchers.InstanceOf
 class SelectTest : BaseIntegrationTest() {
     @Test
     fun `select folder`() {
-        val root = FileInfoLoader.resourceFile("root")
+        val root = FileInfoLoader.resourceFile("root", true)
         NodeSelectedEvent(FileTreeNode(root)).post()
         Thread.sleep(1000)
 
@@ -29,7 +29,7 @@ class SelectTest : BaseIntegrationTest() {
 
     @Test
     fun `select generic file`() {
-        val file = FileInfoLoader.resourceFile("root/unknown_file")
+        val file = FileInfoLoader.resourceFile("root/unknown_file", false)
         NodeSelectedEvent(FileTreeNode(file)).post()
         Thread.sleep(1000)
 
@@ -38,7 +38,7 @@ class SelectTest : BaseIntegrationTest() {
 
     @Test
     fun `select archive file`() {
-        val archive = FileInfoLoader.resourceFile("root/archive.zip")
+        val archive = FileInfoLoader.resourceFile("root/archive.zip", true)
         NodeSelectedEvent(FileTreeNode(archive)).post()
         Thread.sleep(1000)
 
@@ -48,7 +48,7 @@ class SelectTest : BaseIntegrationTest() {
 
     @Test
     fun `select image file`() {
-        val image = FileInfoLoader.resourceFile("root/image.png")
+        val image = FileInfoLoader.resourceFile("root/image.png", false)
         NodeSelectedEvent(FileTreeNode(image)).post()
         Thread.sleep(5000)
 
@@ -58,7 +58,7 @@ class SelectTest : BaseIntegrationTest() {
 
     @Test
     fun `select text file`() {
-        val text = FileInfoLoader.resourceFile("root/file.txt")
+        val text = FileInfoLoader.resourceFile("root/file.txt", false)
         NodeSelectedEvent(FileTreeNode(text)).post()
         Thread.sleep(5000)
 

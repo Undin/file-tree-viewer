@@ -20,9 +20,9 @@ fun FileInfoLoader.resolveFtpServerSync(host: String, username: String?,
     return result ?: error("Result is supposed to be not empty")
 }
 
-fun FileInfoLoader.resourceFile(path: String): FileInfo {
+fun FileInfoLoader.resourceFile(path: String, isRoot: Boolean): FileInfo {
     val realPath = Paths.get(javaClass.classLoader.getResource(path).path)
-    return getLocalFile(realPath) ?: error("Failed to create 'FileInfo' from $path")
+    return getLocalFile(realPath, isRoot) ?: error("Failed to create 'FileInfo' from $path")
 }
 
 inline fun <reified T> mock(): T = Mockito.mock(T::class.java)

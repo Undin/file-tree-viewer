@@ -25,7 +25,7 @@ class FilterTest : BaseFileInfoLoaderTest() {
     )
 
     private fun doTest(filter: FileFilter, vararg expectedFiles: TestFile) {
-        val root = FileInfoLoader.resourceFile("root")
+        val root = FileInfoLoader.resourceFile("root", true)
         val children = FileInfoLoader.getChildrenSync(root)
         val filteredChildren = children.filter(filter::accept)
         checkFiles(filteredChildren, *expectedFiles)

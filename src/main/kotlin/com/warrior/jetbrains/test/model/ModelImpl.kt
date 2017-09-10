@@ -109,7 +109,7 @@ class ModelImpl : Model {
             val file = node.userObject
             val rootFile = node.rootUserObject
             val rootTasks = childrenLoadingTasks.getOrPut(rootFile) { ConcurrentHashMap() }
-            val task = FileInfoLoader.getChildrenAsync(node.userObject) { files ->
+            val task = FileInfoLoader.getChildrenAsync(file) { files ->
                 ChildrenLoadedEvent(node, files).post()
                 rootTasks.remove(file)
             }

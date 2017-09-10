@@ -14,7 +14,7 @@ abstract class BaseTreeTest {
 
     @Before
     fun setUp() {
-        root = FileInfoLoader.resourceFile("root")
+        root = FileInfoLoader.resourceFile("root", true)
         tree = FileTreeNode(root)
     }
 

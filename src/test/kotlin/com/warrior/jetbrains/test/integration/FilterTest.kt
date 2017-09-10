@@ -54,7 +54,7 @@ class FilterTest : BaseIntegrationTest() {
         Thread.sleep(100)
         verify(view).applyFileFilter(ApplyFileFilterEvent(expectedFilter))
 
-        val root = FileInfoLoader.resourceFile("root")
+        val root = FileInfoLoader.resourceFile("root", true)
         NodeSelectedEvent(FileTreeNode(root)).post()
         Thread.sleep(1000)
 

@@ -1,5 +1,8 @@
 package com.warrior.jetbrains.test.event
 
 interface Event {
-    fun post() = EventBus.post(this)
+    fun post() {
+        println(this)
+        EventBus.post(this)
+    }
 }

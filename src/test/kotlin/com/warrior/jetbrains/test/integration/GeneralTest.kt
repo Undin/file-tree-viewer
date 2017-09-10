@@ -22,7 +22,7 @@ class GeneralTest : BaseIntegrationTest() {
 
     @Test
     fun `set children`() {
-        val root = FileInfoLoader.resourceFile("root")
+        val root = FileInfoLoader.resourceFile("root", true)
         val node = FileTreeNode(root)
         PreNodeExpandEvent(node).post()
         Thread.sleep(1000)
