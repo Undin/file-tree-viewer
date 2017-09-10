@@ -28,6 +28,7 @@ data class FileInfo(
 
 val FileInfo.path: String get() = file.name.path
 val FileInfo.extension: String get() = file.name.extension
+val FileInfo.inputStream get() = file.content.inputStream
 
 val FileInfo.isLocal: Boolean get() = location == FileLocation.LOCAL || location == FileLocation.ARCHIVE
 val FileInfo.isFolder: Boolean get() = type == FileType.FOLDER
