@@ -7,6 +7,9 @@ import com.warrior.jetbrains.test.ui.content.Content
 import com.warrior.jetbrains.test.ui.content.ContentData
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 
+/**
+ * Root interface of events which model sends to ui components
+ */
 interface DataEvent : Event
 
 data class AddRootEvent(val root: FileInfo): DataEvent

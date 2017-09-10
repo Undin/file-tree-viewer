@@ -3,6 +3,9 @@ package com.warrior.jetbrains.test.model
 import com.google.common.eventbus.Subscribe
 import com.warrior.jetbrains.test.event.*
 
+/**
+ * Main interface of all business logic of application
+ */
 interface Model {
     @Subscribe
     fun onStart(event: StartEvent)

@@ -3,6 +3,9 @@ package com.warrior.jetbrains.test.event
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 
+/**
+ * Root interface of events which ui components send to model
+ */
 interface UiEvent : Event
 
 object StartEvent : UiEvent {

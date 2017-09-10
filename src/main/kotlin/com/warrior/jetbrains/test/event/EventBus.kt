@@ -4,6 +4,12 @@ import com.google.common.eventbus.AsyncEventBus
 import com.google.common.eventbus.EventBus
 import java.util.concurrent.Executors
 
+/**
+ * Global event bus wrapper under guava [AsyncEventBus].
+ *
+ * Important: async event bus uses single thread executor
+ * so all callbacks will be called from same thread.
+ */
 object EventBus {
 
     private val eventBus: EventBus = AsyncEventBus(Executors.newSingleThreadExecutor())
