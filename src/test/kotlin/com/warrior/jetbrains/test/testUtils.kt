@@ -21,7 +21,7 @@ fun FileInfoLoader.resolveFtpServerSync(host: String, username: String?,
 }
 
 fun FileInfoLoader.resourceFile(path: String, isRoot: Boolean): FileInfo {
-    val realPath = Paths.get(javaClass.classLoader.getResource(path).path)
+    val realPath = Paths.get(javaClass.classLoader.getResource(path).toURI())
     return getLocalFile(realPath, isRoot) ?: error("Failed to create 'FileInfo' from $path")
 }
 

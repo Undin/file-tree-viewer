@@ -1,5 +1,6 @@
 ## File Tree Viewer 
 [![Build Status](https://travis-ci.org/Undin/file-tree-viewer.svg?branch=master)](https://travis-ci.org/Undin/file-tree-viewer)
+[![Build status](https://ci.appveyor.com/api/projects/status/iwrdhes90qq96e8l/branch/master?svg=true)](https://ci.appveyor.com/project/Undin/file-tree-viewer/branch/master)
 
 Swing application to display file tree.
 
