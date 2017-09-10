@@ -1,11 +1,11 @@
-package com.warrior.jetbrains.test.view
+package com.warrior.jetbrains.test.ui
 
 import com.google.common.eventbus.Subscribe
 import com.warrior.jetbrains.test.event.*
-import com.warrior.jetbrains.test.view.content.*
-import com.warrior.jetbrains.test.view.tree.FileTreeCellRender
-import com.warrior.jetbrains.test.view.tree.FileTreeModel
-import com.warrior.jetbrains.test.view.tree.FileTreeNode
+import com.warrior.jetbrains.test.ui.content.*
+import com.warrior.jetbrains.test.ui.tree.FileTreeCellRender
+import com.warrior.jetbrains.test.ui.tree.FileTreeModel
+import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.awt.GridLayout

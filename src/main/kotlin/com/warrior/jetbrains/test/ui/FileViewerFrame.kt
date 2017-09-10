@@ -1,7 +1,7 @@
-package com.warrior.jetbrains.test.view
+package com.warrior.jetbrains.test.ui
 
 import com.warrior.jetbrains.test.event.*
-import com.warrior.jetbrains.test.view.dialog.NewFTPServerDialog
+import com.warrior.jetbrains.test.ui.dialog.NewFTPServerDialog
 import java.awt.Dimension
 import javax.swing.*
 

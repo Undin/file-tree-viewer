@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test.view
+package com.warrior.jetbrains.test.ui
 
 import java.awt.Dimension
 import java.awt.GraphicsEnvironment

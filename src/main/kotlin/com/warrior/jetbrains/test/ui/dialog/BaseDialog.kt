@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test.view.dialog
+package com.warrior.jetbrains.test.ui.dialog
 
 import java.awt.Frame
 import java.beans.PropertyChangeEvent

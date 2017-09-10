@@ -1,13 +1,13 @@
-package com.warrior.jetbrains.test.view.content
+package com.warrior.jetbrains.test.ui.content
 
 import com.google.common.eventbus.Subscribe
 import com.warrior.jetbrains.test.event.ApplyFileFilterEvent
 import com.warrior.jetbrains.test.event.ContentDataLoadedEvent
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.model.filter.FileFilter
-import com.warrior.jetbrains.test.view.UISizes
-import com.warrior.jetbrains.test.view.icon.ImageIcon
-import com.warrior.jetbrains.test.view.uiAction
+import com.warrior.jetbrains.test.ui.UISizes
+import com.warrior.jetbrains.test.ui.icon.ImageIcon
+import com.warrior.jetbrains.test.ui.uiAction
 import java.awt.*
 import javax.swing.*
 

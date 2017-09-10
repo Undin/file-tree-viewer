@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test.view.tree
+package com.warrior.jetbrains.test.ui.tree
 
 import java.awt.Component
 import javax.swing.JLabel

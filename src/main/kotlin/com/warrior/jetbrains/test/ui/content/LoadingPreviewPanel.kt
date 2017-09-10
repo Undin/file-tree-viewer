@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test.view.content
+package com.warrior.jetbrains.test.ui.content
 
 import com.google.common.eventbus.Subscribe
 import com.warrior.jetbrains.test.event.ApplyFileFilterEvent

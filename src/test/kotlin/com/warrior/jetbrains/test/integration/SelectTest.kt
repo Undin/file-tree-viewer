@@ -6,8 +6,8 @@ import com.warrior.jetbrains.test.getChildrenSync
 import com.warrior.jetbrains.test.model.FileInfoLoader
 import com.warrior.jetbrains.test.model.filter.AnyFileFilter
 import com.warrior.jetbrains.test.resourceFile
-import com.warrior.jetbrains.test.view.content.*
-import com.warrior.jetbrains.test.view.tree.FileTreeNode
+import com.warrior.jetbrains.test.ui.content.*
+import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import org.junit.Test
 import org.mockito.ArgumentMatcher
 import org.mockito.Mockito.times

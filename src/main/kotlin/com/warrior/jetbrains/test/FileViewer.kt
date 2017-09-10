@@ -3,8 +3,8 @@ package com.warrior.jetbrains.test
 import com.warrior.jetbrains.test.event.EventBus
 import com.warrior.jetbrains.test.model.Model
 import com.warrior.jetbrains.test.model.ModelImpl
-import com.warrior.jetbrains.test.view.FileViewerFrame
-import com.warrior.jetbrains.test.view.uiAction
+import com.warrior.jetbrains.test.ui.FileViewerFrame
+import com.warrior.jetbrains.test.ui.uiAction
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import javax.swing.UIManager

@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test.view.dialog
+package com.warrior.jetbrains.test.ui.dialog
 
 import com.warrior.jetbrains.test.event.CancelResolvingFtpServerEvent
 import java.awt.event.WindowAdapter

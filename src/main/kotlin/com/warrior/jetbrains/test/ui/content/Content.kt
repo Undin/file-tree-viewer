@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test.view.content
+package com.warrior.jetbrains.test.ui.content
 
 import com.warrior.jetbrains.test.model.FileInfo
 import java.awt.Image

@@ -1,12 +1,12 @@
-package com.warrior.jetbrains.test.view.dialog
+package com.warrior.jetbrains.test.ui.dialog
 
 import com.google.common.eventbus.Subscribe
 import com.warrior.jetbrains.test.event.AddNewFtpServerEvent
 import com.warrior.jetbrains.test.event.FtpServerResolvedEvent
 import com.warrior.jetbrains.test.model.Err
 import com.warrior.jetbrains.test.model.Ok
-import com.warrior.jetbrains.test.view.UISizes
-import com.warrior.jetbrains.test.view.uiAction
+import com.warrior.jetbrains.test.ui.UISizes
+import com.warrior.jetbrains.test.ui.uiAction
 import net.miginfocom.layout.AC
 import net.miginfocom.layout.CC
 import net.miginfocom.layout.LC

@@ -3,9 +3,9 @@ package com.warrior.jetbrains.test.event
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.model.Result
 import com.warrior.jetbrains.test.model.filter.FileFilter
-import com.warrior.jetbrains.test.view.content.Content
-import com.warrior.jetbrains.test.view.content.ContentData
-import com.warrior.jetbrains.test.view.tree.FileTreeNode
+import com.warrior.jetbrains.test.ui.content.Content
+import com.warrior.jetbrains.test.ui.content.ContentData
+import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 
 interface DataEvent : Event
 

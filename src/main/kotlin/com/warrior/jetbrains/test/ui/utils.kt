@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test.view
+package com.warrior.jetbrains.test.ui
 
 import javax.swing.SwingUtilities
 

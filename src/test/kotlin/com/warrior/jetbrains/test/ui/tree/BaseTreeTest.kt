@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test.view.tree
+package com.warrior.jetbrains.test.ui.tree
 
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.model.FileInfoLoader

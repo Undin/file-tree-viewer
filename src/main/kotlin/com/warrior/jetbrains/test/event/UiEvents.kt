@@ -1,6 +1,6 @@
 package com.warrior.jetbrains.test.event
 
-import com.warrior.jetbrains.test.view.tree.FileTreeNode
+import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 
 interface UiEvent : Event
 

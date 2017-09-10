@@ -5,7 +5,7 @@ import com.warrior.jetbrains.test.event.*
 import com.warrior.jetbrains.test.getChildrenSync
 import com.warrior.jetbrains.test.model.FileInfoLoader
 import com.warrior.jetbrains.test.resourceFile
-import com.warrior.jetbrains.test.view.tree.FileTreeNode
+import com.warrior.jetbrains.test.ui.tree.FileTreeNode
 import org.junit.Test
 import org.mockito.Mockito.atLeastOnce
 import org.mockito.Mockito.verify

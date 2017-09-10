@@ -1,4 +1,4 @@
-package com.warrior.jetbrains.test.view.tree
+package com.warrior.jetbrains.test.ui.tree
 
 import com.google.common.annotations.VisibleForTesting
 import com.google.common.eventbus.Subscribe
@@ -6,7 +6,7 @@ import com.warrior.jetbrains.test.event.*
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.model.filter.AnyFileFilter
 import com.warrior.jetbrains.test.model.filter.FileFilter
-import com.warrior.jetbrains.test.view.uiAction
+import com.warrior.jetbrains.test.ui.uiAction
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode
 
