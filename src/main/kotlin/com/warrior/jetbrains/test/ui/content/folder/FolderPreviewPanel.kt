@@ -5,7 +5,6 @@ import com.warrior.jetbrains.test.model.filter.FileFilter
 import com.warrior.jetbrains.test.ui.content.BasePreviewPanel
 import com.warrior.jetbrains.test.ui.content.ContentData
 import com.warrior.jetbrains.test.ui.uiAction
-import java.awt.Component
 import java.awt.GridLayout
 import javax.swing.JTable
 
@@ -18,7 +17,7 @@ class FolderPreviewPanel(state: Int, files: List<FileInfo>, currentFilter: FileF
         val table = JTable(dataModel)
         table.cellSelectionEnabled = false
         table.setShowGrid(false)
-        table.setDefaultRenderer(FileInfo::class.java) { _, value, _, _, _, _ -> value as? Component }
+        table.setDefaultRenderer(FileInfo::class.java, FolderPreviewCellRenderer())
         table.rowHeight = ItemView.ITEM_HEIGHT
         add(table)
     }
