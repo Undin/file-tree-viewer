@@ -37,16 +37,13 @@ class FolderPreviewDataModel(private val files: List<FileInfo>, private val stat
     override fun getRowCount(): Int = (filteredFiles.size + columnCount - 1) / columnCount
     override fun getColumnCount(): Int = COLUMN_COUNT
 
-    override fun getValueAt(rowIndex: Int, columnIndex: Int): ItemView? {
+    override fun getValueAt(rowIndex: Int, columnIndex: Int): ViewHolder? {
         val flatIndex = rowIndex * columnCount + columnIndex
         val file = filteredFiles.getOrNull(flatIndex) ?: return null
-        val holder = itemsCache.get(file) {
-            val item = ItemView(file.name, file.type.icon)
-            ViewHolder(item, rowIndex, columnIndex)
-        }
+        val holder = itemsCache.get(file) { ViewHolder(file, rowIndex, columnIndex) }
         holder.updatePosition(rowIndex, columnIndex)
-        setContent(holder.item, file)
-        return holder.item
+        setContent(holder)
+        return holder
     }
 
     override fun isCellEditable(rowIndex: Int, columnIndex: Int): Boolean = false
@@ -63,11 +60,12 @@ class FolderPreviewDataModel(private val files: List<FileInfo>, private val stat
         fireTableCellUpdated(holder.row, holder.column)
     }
 
-    private fun setContent(item: ItemView, file: FileInfo) {
+    private fun setContent(holder: ViewHolder) {
+        val file = holder.file
         if (file.needLoadPreview) {
             val content = contentCache.getIfPresent(file)
             when (content) {
-                is Loaded -> item.setContentData(content.data)
+                is Loaded -> holder.item.setContentData(content.data)
                 is Loading -> {} // wait for update
                 null -> {
                     // if cache doesn't contain content ask load it
@@ -80,13 +78,6 @@ class FolderPreviewDataModel(private val files: List<FileInfo>, private val stat
 
     companion object {
         private const val COLUMN_COUNT = 5
-    }
-}
-
-private class ViewHolder(val item: ItemView, var row: Int, var column: Int) {
-    fun updatePosition(row: Int, column: Int) {
-        this.row = row
-        this.column = column
     }
 }
 
