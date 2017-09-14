@@ -6,7 +6,7 @@ import com.warrior.jetbrains.test.ui.content.BasePreviewPanel
 import com.warrior.jetbrains.test.ui.content.ContentData
 import com.warrior.jetbrains.test.ui.uiAction
 import java.awt.GridLayout
-import javax.swing.JTable
+import javax.swing.ListSelectionModel
 
 class FolderPreviewPanel(state: Int, files: List<FileInfo>, currentFilter: FileFilter): BasePreviewPanel(state) {
 
@@ -14,8 +14,9 @@ class FolderPreviewPanel(state: Int, files: List<FileInfo>, currentFilter: FileF
 
     init {
         layout = GridLayout(1, 1)
-        val table = JTable(dataModel)
-        table.cellSelectionEnabled = false
+        val table = FolderPreviewTable(files.size, dataModel)
+        table.cellSelectionEnabled = true
+        table.selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION
         table.setShowGrid(false)
         table.setDefaultRenderer(FileInfo::class.java, FolderPreviewCellRenderer())
         table.rowHeight = ItemView.ITEM_HEIGHT

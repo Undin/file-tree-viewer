@@ -12,10 +12,15 @@ class FolderPreviewCellRenderer : DefaultTableCellRenderer() {
                                                isSelected: Boolean,
                                                hasFocus: Boolean,
                                                row: Int,
-                                               column: Int): Component =
-            // Return invisible component if table doesn't have value for this cell
-            // to prevent NPE with some LnF UI (for example, SynthLookAndFeel)
-            (value as? Component) ?: EmptyCell()
+                                               column: Int): Component {
+        // Return invisible component if table doesn't have value for this cell
+        // to prevent NPE with some LnF UI (for example, SynthLookAndFeel)
+        val item = (value as? Component) ?: return EmptyCell()
+        item.background = if (isSelected) table.selectionBackground else table.background
+        item.foreground = if (isSelected) table.selectionForeground else table.foreground
+        return item
+    }
+
 }
 
 private class EmptyCell : Component() {

@@ -12,22 +12,23 @@ import javax.swing.*
 
 class ItemView(name: String, defaultIcon: Icon) : JPanel() {
 
+    // This property is nullable because it is used in setForeground/setBackground methods
+    // which are called during ItemView initialization before label creation
+    private val label: JLabel? = JLabel(name, SwingConstants.CENTER).apply {
+        horizontalAlignment = SwingConstants.CENTER
+        verticalAlignment = SwingConstants.CENTER
+        alignmentX = Component.CENTER_ALIGNMENT
+    }
+
     // We support invariant that one of 'imageLabel' and 'textArea' is not null
     // and other is null at same time
-    private var imageLabel: JLabel?
+    private var imageLabel: JLabel? = createImagePreviewComponent(defaultIcon)
     private var textArea: JTextArea? = null
 
     init {
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
-        background = Color.WHITE
         add(Box.createVerticalGlue())
-        imageLabel = createImagePreviewComponent(defaultIcon)
         add(imageLabel)
-        val label = JLabel(name, SwingConstants.CENTER).apply {
-            horizontalAlignment = SwingConstants.CENTER
-            verticalAlignment = SwingConstants.CENTER
-            alignmentX = Component.CENTER_ALIGNMENT
-        }
         add(label)
         add(Box.createVerticalGlue())
         minimumSize = Dimension(ITEM_WIDTH, ITEM_HEIGHT)
@@ -39,6 +40,20 @@ class ItemView(name: String, defaultIcon: Icon) : JPanel() {
             is Image -> setImagePreview(data.image)
             is Text -> setTextPreview(data.text)
         }
+    }
+
+    override fun setForeground(fg: Color?) {
+        label?.foreground = fg
+        imageLabel?.foreground = fg
+        textArea?.foreground = fg
+        super.setForeground(fg)
+    }
+
+    override fun setBackground(bg: Color?) {
+        label?.background = bg
+        imageLabel?.background = bg
+        textArea?.background = bg
+        super.setBackground(bg)
     }
 
     private fun setImagePreview(image: java.awt.Image) {
