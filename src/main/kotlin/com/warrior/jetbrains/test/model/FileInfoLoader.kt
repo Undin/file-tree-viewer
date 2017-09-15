@@ -146,4 +146,11 @@ object FileInfoLoader {
     }
 
     private val String.escaped get() = URIUtil.encodeAll(this)
+
+    private val FileObject.isDirectory get(): Boolean = try {
+        isFolder
+    } catch (e: IOException) {
+        logger.error("Failed to check if file is folder", e)
+        false
+    }
 }
