@@ -1,5 +1,6 @@
 package com.warrior.jetbrains.test.ui.content.folder
 
+import java.awt.Color
 import java.awt.Component
 import java.awt.Dimension
 import javax.swing.JTable
@@ -16,11 +17,14 @@ class FolderPreviewCellRenderer : DefaultTableCellRenderer() {
         // Return invisible component if table doesn't have value for this cell
         // to prevent NPE with some LnF UI (for example, SynthLookAndFeel)
         val item = (value as? ViewHolder)?.item ?: return EmptyCell()
-        item.background = if (isSelected) table.selectionBackground else table.background
+        item.background = when {
+            isSelected && hasFocus -> table.selectionBackground
+            isSelected && !hasFocus -> Color.LIGHT_GRAY
+            else -> table.background
+        }
         item.foreground = if (isSelected) table.selectionForeground else table.foreground
         return item
     }
-
 }
 
 private class EmptyCell : Component() {
