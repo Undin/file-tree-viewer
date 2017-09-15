@@ -31,4 +31,13 @@ class GeneralTest : BaseIntegrationTest() {
         val children = FileInfoLoader.getChildrenSync(root)
         verify(view).setNodeChildren(ChildrenLoadedEvent(node, children))
     }
+
+    @Test
+    fun `open selected file`() {
+        val file = FileInfoLoader.resourceFile("root", true)
+        OpenSelectedFileEvent(file).post()
+        Thread.sleep(1000)
+
+        verify(view).selectedFileInTree(SelectFileInTree(file))
+    }
 }

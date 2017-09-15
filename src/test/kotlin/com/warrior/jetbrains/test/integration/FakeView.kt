@@ -25,4 +25,7 @@ interface FakeView {
 
     @Subscribe
     fun onFtpServerResolved(event: FtpServerResolvedEvent)
+
+    @Subscribe
+    fun selectedFileInTree(event: SelectFileInTree)
 }
