@@ -6,33 +6,53 @@ import com.warrior.jetbrains.test.event.*
 import com.warrior.jetbrains.test.model.FileInfo
 import com.warrior.jetbrains.test.model.filter.AnyFileFilter
 import com.warrior.jetbrains.test.model.filter.FileFilter
+import com.warrior.jetbrains.test.ui.LoadingState
 import com.warrior.jetbrains.test.ui.uiAction
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode
 
 class FileTreeModel(private val treeRoot: MutableTreeNode) :
         DefaultTreeModel(treeRoot, true) {
 
+    private val logger: Logger = LogManager.getLogger(javaClass)
+
+    private val nodeMapping: MutableMap<FileInfo, FileTreeNode> = HashMap()
+
     private var filter: FileFilter = AnyFileFilter
-
-    init {
-
-    }
 
     @Subscribe
     fun addRoot(event: AddRootEvent) = uiAction {
+        logger.debug("addRoot: $event")
         val count = treeRoot.childCount
-        insertNodeInto(FileTreeNode(event.root), treeRoot, count)
+        val node = FileTreeNode(event.root)
+        nodeMapping[event.root] = node
+        insertNodeInto(node, treeRoot, count)
     }
 
     @Subscribe
-    fun onStartLoadingChildren(event: StartLoadingChildrenEvent) = uiAction { setLoadingState(event.node) }
+    fun onStartLoadingChildren(event: StartLoadingChildrenEvent) = uiAction {
+        logger.debug("onStartLoadingChildren: $event")
+        if (event.node.state != LoadingState.EMPTY) return@uiAction
+        setLoadingState(event.node)
+    }
 
     @Subscribe
-    fun setNodeChildren(event: ChildrenLoadedEvent) = uiAction { setNodeChildren(event.node, event.children) }
+    fun setNodeChildren(event: ChildrenLoadedEvent) = uiAction {
+        logger.debug("setNodeChildren: $event")
+        if (event.node.state != LoadingState.LOADED) {
+            setNodeChildren(event.node, event.children)
+        }
+    }
 
     @Subscribe
-    fun applyFilter(event: ApplyFileFilterEvent) = uiAction { applyFilter(event.filter) }
+    fun applyFilter(event: ApplyFileFilterEvent) = uiAction {
+        logger.debug("applyFilter: $event")
+        applyFilter(event.filter)
+    }
+
+    fun getNode(file: FileInfo): FileTreeNode? = nodeMapping[file]
 
     @VisibleForTesting
     fun setLoadingState(node: FileTreeNode) {
@@ -41,8 +61,14 @@ class FileTreeModel(private val treeRoot: MutableTreeNode) :
 
     @VisibleForTesting
     fun setNodeChildren(node: FileTreeNode, children: List<FileInfo>) {
-        val nodes = children.map(::FileTreeNode)
-        node.setUnfilteredChildren(nodes, filter).apply(node)
+        val childNodes = ArrayList<FileTreeNode>(children.size)
+        for (file in children) {
+            val childNode = FileTreeNode(file)
+            childNodes += childNode
+            nodeMapping[file] = childNode
+        }
+
+        node.setUnfilteredChildren(childNodes, filter).apply(node)
     }
 
     @VisibleForTesting

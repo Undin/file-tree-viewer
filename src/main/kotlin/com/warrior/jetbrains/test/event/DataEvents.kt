@@ -29,3 +29,5 @@ data class DisplayContentEvent(val content: Content, val filter: FileFilter): Da
 data class ContentDataLoadedEvent(val state: Int, val data: ContentData) : DataEvent
 
 data class ApplyFileFilterEvent(val filter: FileFilter) : DataEvent
+
+data class SelectFileInTree(val file: FileInfo) : DataEvent

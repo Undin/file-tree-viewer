@@ -15,9 +15,7 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.*
 import javax.swing.event.*
-import javax.swing.tree.DefaultMutableTreeNode
-import javax.swing.tree.TreeModel
-import javax.swing.tree.TreeSelectionModel
+import javax.swing.tree.*
 
 class FileViewerPanel: JPanel(GridLayout(1, 1)), TreeSelectionListener, TreeWillExpandListener {
 
@@ -85,6 +83,15 @@ class FileViewerPanel: JPanel(GridLayout(1, 1)), TreeSelectionListener, TreeWill
     fun applyFileFilter(event: ApplyFileFilterEvent) = uiAction {
         logger.debug("applyFileFilter: $event")
         contentPreview.applyFileFilter(event.filter)
+    }
+
+    @Subscribe
+    fun selectedFileInTree(event: SelectFileInTree) = uiAction {
+        logger.debug("selectedFileInTree: $event")
+        val node = treeModel.getNode(event.file) ?: return@uiAction
+        val path = TreePath(node.path)
+        tree.selectionPath = path
+        tree.scrollPathToVisible(path)
     }
 
     override fun valueChanged(e: TreeSelectionEvent) {

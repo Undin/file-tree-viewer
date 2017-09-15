@@ -32,3 +32,5 @@ object CancelResolvingFtpServerEvent : UiEvent {
 data class SetFileFilterEvent(val filterString: String) : UiEvent
 
 data class RootRemovedEvent(val root: FileInfo) : UiEvent
+
+data class OpenSelectedFileEvent(val file: FileInfo) : UiEvent

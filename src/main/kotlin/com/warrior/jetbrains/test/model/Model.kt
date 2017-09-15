@@ -23,4 +23,6 @@ interface Model {
     fun onSetFileFilter(event: SetFileFilterEvent)
     @Subscribe
     fun onRootRemoved(event: RootRemovedEvent)
+    @Subscribe
+    fun onOpenSelectedFile(event: OpenSelectedFileEvent)
 }
