@@ -55,6 +55,9 @@ class ModelImpl : Model {
             if (fileInfo.canHaveChildren) {
                 StartLoadingContentEvent.post()
                 contentFuture = FileInfoLoader.getChildrenAsync(fileInfo) { files ->
+                    if (node.state != LoadingState.LOADED) {
+                        ChildrenLoadedEvent(node, files).post()
+                    }
                     DisplayContentEvent(FileList(files), currentFilter).post()
                 }
             } else {
@@ -137,10 +140,17 @@ class ModelImpl : Model {
     @Subscribe
     override fun onRootRemoved(event: RootRemovedEvent) {
         logger.debug("onRootRemoved: $event")
-        for ((file, task) in childrenLoadingTasks[event.root].orEmpty()) {
-            println("cancel task for ${file.name}")
+        for ((_, task) in childrenLoadingTasks[event.root].orEmpty()) {
             task.cancel(true)
         }
+    }
+
+    @Subscribe
+    override fun onOpenSelectedFile(event: OpenSelectedFileEvent) {
+        logger.debug("onOpenSelectedFile: $event")
+        // Just select file in tree.
+        // It'll call children loading of corresponding tree node and preview updating .
+        SelectFileInTree(event.file).post()
     }
 }
 

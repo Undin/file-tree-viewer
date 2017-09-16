@@ -3,6 +3,7 @@ package com.warrior.jetbrains.test.ui.tree
 import com.warrior.jetbrains.test.getChildrenSync
 import com.warrior.jetbrains.test.model.FileInfoLoader
 import com.warrior.jetbrains.test.model.filter.ExtensionFileFilter
+import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 
@@ -103,5 +104,15 @@ class TreeFileModelTest : BaseTreeTest() {
             }
             node("image.png")
         })
+    }
+
+    @Test
+    fun `get node by file`() {
+        val files = FileInfoLoader.getChildrenSync(root)
+        treeModel.setNodeChildren(tree, files)
+
+        val nodeFromModel = treeModel.getNode(files[0])
+        val nodeFromTree = tree.firstChild as FileTreeNode
+        Assertions.assertThat(nodeFromModel).isSameAs(nodeFromTree)
     }
 }

@@ -42,6 +42,30 @@ class FolderPreviewDataModelTest {
         checkModel(model, filteredChildren.size)
     }
 
+    @Test
+    fun `items count without filter`() {
+        val model = FolderPreviewDataModel(children, 0, AnyFileFilter)
+
+        assertThat(model.itemsCount).isEqualTo(children.size)
+    }
+
+    @Test
+    fun `items count with filter`() {
+        val filter = ExtensionFileFilter("zip")
+        val model = FolderPreviewDataModel(children, 0, filter)
+
+        assertThat(model.itemsCount).isEqualTo(children.count(filter::accept))
+    }
+
+    @Test
+    fun `items count after applying filter`() {
+        val filter = ExtensionFileFilter("zip")
+        val model = FolderPreviewDataModel(children, 0, AnyFileFilter)
+        model.applyFilter(filter)
+
+        assertThat(model.itemsCount).isEqualTo(children.count(filter::accept))
+    }
+
     private fun checkModel(model: FolderPreviewDataModel, expectedFileCount: Int) {
         for (row in 0 until model.rowCount) {
             for (column in 0 until model.columnCount) {

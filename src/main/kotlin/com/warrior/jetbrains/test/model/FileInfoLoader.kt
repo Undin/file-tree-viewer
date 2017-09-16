@@ -43,7 +43,7 @@ object FileInfoLoader {
         return FileSystems.getDefault()
                 .rootDirectories
                 .mapNotNull { getLocalFile(it, true) }
-                .sortedBy { it.name } //+ listOfNotNull(resolveFtpServer("ftp.lip6.fr", "", CharArray(0)))
+                .sortedBy { it.name }
     }
 
     fun getChildrenAsync(fileInfo: FileInfo, onSuccess: (List<FileInfo>) -> Unit): Future<*> {
@@ -51,7 +51,6 @@ object FileInfoLoader {
         return executor.submit {
             logger.debug("runAsync: $fileInfo")
             val children = getChildren(fileInfo)
-//            Thread.sleep(2000)
             onSuccess(children)
         }
     }
@@ -146,4 +145,11 @@ object FileInfoLoader {
     }
 
     private val String.escaped get() = URIUtil.encodeAll(this)
+
+    private val FileObject.isDirectory get(): Boolean = try {
+        isFolder
+    } catch (e: IOException) {
+        logger.error("Failed to check if file is folder", e)
+        false
+    }
 }
