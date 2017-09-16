@@ -13,7 +13,7 @@ import javax.swing.*
 class FolderPreviewPanel(state: Int, files: List<FileInfo>, currentFilter: FileFilter): BasePreviewPanel(state) {
 
     private val dataModel: FolderPreviewDataModel = FolderPreviewDataModel(files, state, currentFilter)
-    private val table = FolderPreviewTable(files.size, dataModel)
+    private val table = FolderPreviewTable(dataModel)
 
     init {
         layout = GridLayout(1, 1)
