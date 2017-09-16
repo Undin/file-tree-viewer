@@ -19,6 +19,7 @@ class FolderPreviewPanel(state: Int, files: List<FileInfo>, currentFilter: FileF
         layout = GridLayout(1, 1)
         table.cellSelectionEnabled = true
         table.selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION
+        table.columnModel.selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION
         table.setShowGrid(false)
         table.setDefaultRenderer(FileInfo::class.java, FolderPreviewCellRenderer())
         table.rowHeight = ItemView.ITEM_HEIGHT
@@ -29,7 +30,7 @@ class FolderPreviewPanel(state: Int, files: List<FileInfo>, currentFilter: FileF
     private fun setupTableListeners(table: FolderPreviewTable) {
         table.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent) {
-                if (e.clickCount == 2 && e.button == MouseEvent.BUTTON1) {
+                if (e.clickCount == 2 && SwingUtilities.isLeftMouseButton(e)) {
                     openSelectedItem()
                 }
             }
